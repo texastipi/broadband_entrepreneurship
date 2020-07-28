@@ -1,0 +1,12 @@
+name: "broadband_entrepreneurship"
+output_dir: "docs"
+navbar:
+  title: "Broadband & Entrepreneurship"
+  left:
+  - text: "Home"
+    href: index.html
+  - text: "Dataset Prep"
+    href: dataset-prep.html
+output:
+  html_document:
+theme: cosmo
