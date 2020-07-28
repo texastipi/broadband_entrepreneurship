@@ -1,13 +1,14 @@
 ---
 title: "About"
-author: "Jaewon R. Choi"
 output: html_document
 ---
 
-# About
+## About the Website
 
 This website presents data collection, cleaning, and analyses processes involved in an ongoing project investigating the relationships between **broadband and entrepreneurship**. It is a part of a research project conducted by a group of researchers at the [Technology & Information Polity Institute](https://texastipi.org) at the University of Texas at Austin. This particular project is funded by the [$IC^{2}$ Institute](https://ic2.utexas.edu).
 
 Each page of the website will demonstrate the ways in which the research team has collected relevant datasets from various sources and conducted several kinds of analyses. **The project is in its early stage, and this page will be updated regularly.**
 
-We welcome thoughtful feedbacks and questions! Please contact Jaewon R. Choi at jaewonrchoi@utexas.edu for any inquiries.
+We welcome thoughtful feedbacks and questions! 
+
+Please contact Jaewon R. Choi at jaewonrchoi@utexas.edu for any inquiries.
