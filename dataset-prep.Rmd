@@ -1,5 +1,10 @@
 ---
-title: "dataset-prep"
+title: "Dataset Preparation"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Jaewon R. Choi"
 date: "7/28/2020"
 output: html_document
@@ -495,11 +500,10 @@ nonemp2018_tx <- nonemp2018 %>% filter(state == "48")
 ```{r CBP & Nonemployer Dataset Aggregation}
 #### CBP Dataset Aggregation ####
 cbp2012_tx_agg <- cbp2012_tx %>% 
-  filter(NAICS2012 == "00") %>% # Filter for all sectors
   filter(EMPSZES == "001"|
            EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001" & NAICS2012 == "00", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001" & NAICS2012 == "00", EMP, 0),
+  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
+         emp_total = ifelse(EMPSZES == "001", EMP, 0),
          est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
          est_10 = ifelse(EMPSZES == "212" | EMPSZES == "220", ESTAB, 0)) %>% 
   group_by(county_FIPS) %>% 
@@ -511,11 +515,10 @@ cbp2012_tx_agg <- cbp2012_tx %>%
          pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)
 
 cbp2017_tx_agg <- cbp2017_tx %>% 
-  filter(NAICS2017 == "00") %>% # Filter for all sectors
   filter(EMPSZES == "001"|
            EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001" & NAICS2017 == "00", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001" & NAICS2017 == "00", EMP, 0),
+  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
+         emp_total = ifelse(EMPSZES == "001", EMP, 0),
          est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
          est_10 = ifelse(EMPSZES == "212" | EMPSZES == "220", ESTAB, 0)) %>% 
   group_by(county_FIPS) %>% 
@@ -527,11 +530,10 @@ cbp2017_tx_agg <- cbp2017_tx %>%
          pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
 
 cbp2018_tx_agg <- cbp2018_tx %>% 
-  filter(NAICS2017 == "00") %>% # Filter for all sectors
   filter(EMPSZES == "001"|
            EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001" & NAICS2017 == "00", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001" & NAICS2017 == "00", EMP, 0),
+  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
+         emp_total = ifelse(EMPSZES == "001", EMP, 0),
          est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
          est_10 = ifelse(EMPSZES == "212" | EMPSZES == "220", ESTAB, 0)) %>% 
   group_by(county_FIPS) %>% 
