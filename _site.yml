@@ -4,9 +4,17 @@ navbar:
   title: "Broadband & Entrepreneurship"
   left:
   - text: "Home"
+    icon: fa-home
     href: index.html
   - text: "Dataset Prep"
     href: dataset-prep.html
+  - text: "Measurements"
+    icon: ion-bar-chart-sharp
+    menu:
+      - text: "Broadband"
+        href: broadband-measure.html
 output:
   html_document:
-theme: cosmo
+    theme: cosmo
+    include:
+      after_body: footer.html

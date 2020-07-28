@@ -15,13 +15,16 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -272,10 +275,28 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
 </li>
 <li>
   <a href="dataset-prep.html">Dataset Prep</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="ion ion-bar-chart-sharp"></span>
+     
+    Measurements
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="broadband-measure.html">Broadband</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -309,16 +330,8 @@ $(document).ready(function () {
 
 #install.packages(&quot;tidyverse&quot;)
 #install.packages(&quot;ggplot2&quot;)
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
-## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(ggplot2)</code></pre>
+library(tidyverse)
+library(ggplot2)</code></pre>
 <hr />
 <div id="microsoft-broadband-availability-dataset" class="section level2">
 <h2>Microsoft Broadband Availability Dataset</h2>
@@ -423,22 +436,9 @@ mlab_dec_tx &lt;- mlab_dec %&gt;%
 <h2>Texas Sole Proprietors Dataset</h2>
 <p>This dataset contains information of sole proprietors number provided by the Bureau of Business Research at <span class="math inline">\(IC^{2}\)</span> Institute. The information is presented at the county level.</p>
 <pre class="r"><code>## Import the Dataset
-tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   county = col_character(),
-##   pct_change_proprietors_2000_2017 = col_double(),
-##   proprietors_2000 = col_double(),
-##   proprietors_2017 = col_double(),
-##   pct_proprietors_employment_2000 = col_double(),
-##   pct_proprietors_employment_2010 = col_double(),
-##   pct_proprietors_employment_2017 = col_double(),
-##   total_employment_2017 = col_double(),
-##   wage_salary_jobs_2017 = col_double(),
-##   pct_change_pro_emp_2000_2017 = col_double(),
-##   pct_change_pro_emp_2010_2017 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect the Structure
+tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)
+
+## Inspect the Structure
 str(tx_proprietor)</code></pre>
 <p>This dataset’s variables are straighforward as it was pre-cleaned on Excel spreadsheet.</p>
 </div>
@@ -447,21 +447,10 @@ str(tx_proprietor)</code></pre>
 <p>This dataset contains information of IRR index at the county level. The index calculates the extent to which a certain county could be considered as <em>‘rural’</em>. Smaller the value of the index, more rural the county is considered to be.</p>
 <p>There are two datasets that contains data from 2000 and 2010. I will import these datasets, filter for Texas and set up for a final merge of all datasets we have.</p>
 <pre class="r"><code>## Import the Dataset
-rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2000 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2000 = col_double()
-## )</code></pre>
-<pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2010 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2010 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect Structure
+rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)
+rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)
+
+## Inspect Structure
 str(rural_2000)
 str(rural_2010)
 
@@ -759,9 +748,9 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2012 = sum(est_50, na.rm = T),
             est_10_cbp_2012 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2012 = est_50_cbp_2012 / est_cbp_2012,
-         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2017_tx_agg &lt;- cbp2017_tx %&gt;% 
+         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)
+
+cbp2017_tx_agg &lt;- cbp2017_tx %&gt;% 
   filter(EMPSZES == &quot;001&quot;|
            EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
@@ -774,9 +763,9 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2017 = sum(est_50, na.rm = T),
             est_10_cbp_2017 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2017 = est_50_cbp_2017 / est_cbp_2017,
-         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2018_tx_agg &lt;- cbp2018_tx %&gt;% 
+         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
+
+cbp2018_tx_agg &lt;- cbp2018_tx %&gt;% 
   filter(EMPSZES == &quot;001&quot;|
            EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
@@ -789,9 +778,9 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2018 = sum(est_50, na.rm = T),
             est_10_cbp_2018 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2018 = est_50_cbp_2018 / est_cbp_2018,
-         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
+         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)
+
+## Merge three years datasets ##
 cbp_tx &lt;- left_join(cbp2012_tx_agg, cbp2017_tx_agg, by = &quot;county_FIPS&quot;) %&gt;% left_join(., cbp2018_tx_agg, by = &quot;county_FIPS&quot;)
 
 #### Nonemployer Dataset Aggregation ####
@@ -803,9 +792,9 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2012 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2012 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2017_tx_agg &lt;- nonemp2017_tx %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
+
+nonemp2017_tx_agg &lt;- nonemp2017_tx %&gt;% 
   mutate(est_total = ifelse(NAICS2017 == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -813,9 +802,9 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2017 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2017 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2018_tx_agg &lt;- nonemp2018_tx %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
+
+nonemp2018_tx_agg &lt;- nonemp2018_tx %&gt;% 
   mutate(est_total = ifelse(NAICS2017 == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -823,9 +812,9 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2018 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2018 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
+  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)
+
+## Merge three years datasets ##
 nonemp_tx &lt;- left_join(nonemp2012_tx_agg, nonemp2017_tx_agg, by= &quot;county_FIPS&quot;) %&gt;% left_join(., nonemp2018_tx_agg, by = &quot;county_FIPS&quot;) %&gt;% 
   mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)</code></pre>
 </div>
@@ -1171,6 +1160,7 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
 #write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TX-merged_v2.csv&quot;)</code></pre>
 </div>
 
+<p>Copyright &copy; 2020 Jaewon Royce Choi, Technology & Information Policy Institute (TIPI). All rights reserved.</p>
 
 
 
