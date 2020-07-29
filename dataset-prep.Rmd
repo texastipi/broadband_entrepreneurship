@@ -35,9 +35,9 @@ library(ggplot2)
 
 Microsoft dataset is available in its [GitHub repository](https://github.com/microsoft/USBroadbandUsagePercentages). Therefore, we will directly import its dataset from the URL.
 
-```{r Microsoft Import, echo=FALSE, results='hide', cache=TRUE}
+```{r Microsoft Import, echo=FALSE, results='hide'}
 ## Import the Dataset
-ms_broadband <- read.csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data.csv", header = T)
+ms_broadband <- read_csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data.csv", col_types = list(col_character(),col_integer(),col_character(),col_double(),col_double()))
 
 ## Inspect Structure
 str(ms_broadband)
@@ -48,8 +48,8 @@ Note that the percentage variables are imported as factors. We need them to be i
 ```{r Microsoft Data Manipulation, echo=TRUE, results='hide'}
 ## Create new variabes in numeric form
 ms_broadband <- ms_broadband %>% 
-  mutate(pct_broadband_FCC = as.numeric(levels(BROADBAND.AVAILABILITY.PER.FCC))[BROADBAND.AVAILABILITY.PER.FCC],
-         pct_broadband_MS = as.numeric(levels(BROADBAND.USAGE))[BROADBAND.USAGE])
+  rename(pct_broadband_FCC = `BROADBAND AVAILABILITY PER FCC`,
+         pct_broadband_MS = `BROADBAND USAGE`)
 
 ## Confirm the change
 str(ms_broadband)
@@ -253,7 +253,7 @@ str(rural_2000_tx)
 ## rural datasets#county              Character ("____ County")
 
 ## Create a character vector for ms_broadband_tx dataset to minimize potential error beforehand
-ms_broadband_tx <- ms_broadband_tx %>% mutate(county = as.character(COUNTY.NAME))
+ms_broadband_tx <- ms_broadband_tx %>% mutate(county = `COUNTY NAME`)
 str(ms_broadband_tx)
 
 ## Nested left_joins on IRR dataset
@@ -280,7 +280,7 @@ knitr::kable(head(tx_bb_entrepreneur_merged, 20))
 str(tx_bb_entrepreneur_merged)
 tx_bb_entrepreneur_merged <- tx_bb_entrepreneur_merged %>% 
   rename(FIPS = FIPS2000) %>% 
-  select(-c("FIPS2010","state.x","state.y","ST","COUNTY.ID","COUNTY.NAME","BROADBAND.AVAILABILITY.PER.FCC","BROADBAND.USAGE",
+  select(-c("FIPS2010","state.x","state.y","ST",`COUNTY ID`,`COUNTY NAME`,
             "cfips","state.sept","county_name.sept","state.oct","county_name.oct","state.nov","county_name.nov","state.dec",
             "county_name.dec"))
 
@@ -352,7 +352,7 @@ listCensusMetadata(name = "nonemp", vintage = 2018, type = "geography")
 
 In order to retrive the datasets from the Census database you use `getCensus` function with specific arguments. Generally, required arguments are `name`, `vintage`(i.e., year), `vars`(i.e., variables), and `region`. In the code below, I'll retrieve CBP and Nonemployer datasets from year 2017 and 2018 for all counties within three states of our interest.
 
-```{r Census Dataset Retrieval, cache=TRUE}
+```{r Census Dataset Retrieval}
 ## Retrieve CBP datasets for the three states in 2017 and 2018 ##
 cbp2012_txksme <- getCensus(name = "cbp",
                             vintage = 2012,
@@ -408,7 +408,7 @@ Some variables should be numerical instead of character. Also, I'll create few f
 * `pct_nonfarmneest_nemp_YEAR`: % of nonfarm nonemployer establishments over all nonemployer establishments in the county
 
 
-```{r Census Dataset Mod1, results='hide', cache=TRUE}
+```{r Census Dataset Mod1, results='hide'}
 ## Some modifications for CBP datasets ##
 cbp2012_txksme <- cbp2012_txksme %>% 
   mutate(county_FIPS = paste(state, county, sep = ""),
@@ -630,7 +630,7 @@ beaParamVals(beaKey = beaKey, 'Regional', 'TableName')
 beaParamVals(beaKey = beaKey, 'Regional', 'LineCode')
 ```
 
-```{r BEA Data Import, cache=TRUE, results='hide'}
+```{r BEA Data Import, results='hide'}
 library(bea.R)
 ### Finally, we will use the parameter and parameter values to retrieve data table
 ## In terms of LineCode, we are interested in:
@@ -705,7 +705,6 @@ bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20"
   select(GeoFips, DataValue_2012, DataValue_2018) %>% 
   rename(totalemp_bea_2012 = DataValue_2012,
          totalemp_bea_2018 = DataValue_2018)
-str(bea_10)
 ## BEA Wage and Salary Employment
 bea_20 <- bea_20 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
   select(GeoFips, DataValue_2012, DataValue_2018) %>% 
@@ -735,7 +734,7 @@ bea_nonfarmproprietor_txksme <- bea_nonfarmproprietor_txksme %>%
   mutate(pct_nonfarm_bea_2012 = nonfarmproprietors_bea_2012 / totalemp_bea_2012,
          pct_nonfarm_bea_2018 = nonfarmproprietors_bea_2018 / totalemp_bea_2018,
          pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)
-str(bea_nonfarmproprietor_txksme)
+
 
 # Finally filter for Texas state
 bea_nonfarmproprietor_tx <- bea_nonfarmproprietor_txksme %>% 
@@ -758,7 +757,7 @@ View(listCensusMetadata(name = "sbo", vintage = 2012, type = "geographies"))
 
 ```
 
-```{r ABS Data Retrieve, cache=TRUE}
+```{r ABS Data Retrieve}
 ## ABS Company Summary Datatable ##
 firmlevel_2017 <- getCensus(name = "abscs",
                         vintage = 2017,
@@ -825,7 +824,7 @@ firmlevel_tx <- left_join(firmlevel_2012, firmlevel_2017, by = "county_FIPS") %>
 
 The ACS broadband subscription measures currently available from the dataset provided by the Arizona State University research team represents people with **"any"** type of broadband _including cell phone subscription_. This not only could potentially inflate the subscription number, but also does not allow much comparability with other broadband variables. Therefore, I will **call the ACS data directly to retrieve fixed broadband subscription** excluding wireless options such as satellite and cell phone broadband.
 
-```{r See the ACS variable lists, results='hide'}
+```{r See the ACS variable lists, eval=FALSE, results='hide'}
 #### ACS Broadband Subscription Dataset ####
 View(listCensusMetadata(name = "acs/acs5", vintage = 2018, type = "variables"))
 View(listCensusMetadata(name = "acs/acs5/profile", vintage = 2018, type = "variables"))
@@ -833,15 +832,12 @@ View(listCensusMetadata(name = "acs/acs5/subject", vintage = 2018, type = "varia
 View(listCensusMetadata(name = "acs/acs5/subject", vintage = 2018, type = "geography"))
 ```
 
-```{r Retrieve ACS broadband subscription data, cache=TRUE}
+```{r Retrieve ACS broadband subscription data}
 ## Broadband Subscription Percentage from Subject Table ##
 acs_broadband_pct <- getCensus(name = "acs/acs5/subject", vintage = 2018,
                                vars = c("S2801_C02_017E","S2801_C02_019E","S2801_C02_016E","S2801_C02_018E"),
                                region = "county:*",
                                regionin = "state:20,23,48")
-
-str(acs_broadband_pct)
-table(acs_broadband_pct$state)
 
 # Rename variables #
 acs_broadband_pct <- acs_broadband_pct %>% 
@@ -851,8 +847,6 @@ acs_broadband_pct <- acs_broadband_pct %>%
          pct_nobroadband_acs_2018 = S2801_C02_019E) %>% 
   mutate(pct_anybroadband_acs_2018 = 100 - pct_nobroadband_acs_2018,
          county_FIPS = paste(state, county, sep = ""))
-
-str(acs_broadband_pct)
 
 acs_broadband_pct_tx <- acs_broadband_pct %>% 
   filter(state == "48")
@@ -870,7 +864,7 @@ Using the raw data, I will generate:
 * `prom_provider` : The most prominent ISP of the county
 * `prom_tech` : The most prominent broadband technology (i.e., infrastructure) of the county
 
-```{r FCC Data Update, eval=F}
+```{r FCC Data Update, eval=FALSE}
 install.packages("RSocrata")
 library(RSocrata)
 
@@ -902,7 +896,7 @@ fcc477_2019 <- fcc477_2019 %>%
   distinct(county_FIPS, .keep_all = T)
 ```
 
-```{r FCC Data in the background, echo=FALSE, results='hide', cache=TRUE}
+```{r FCC Data in the background, echo=FALSE, results='hide'}
 library(RSocrata)
 fcc477_2019 <- read.csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/FCC477_TX_June_2019.csv", sep = ";") %>% mutate(county_FIPS = as.character(county_FIPS))
 

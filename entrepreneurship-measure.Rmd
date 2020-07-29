@@ -31,6 +31,8 @@ library(ggplot2)
 library(sp)
 library(stargazer)
 library(gridExtra)
+library(gghighlight)
+library(data.table)
 
 #### Import the merged dataset V2 ####
 tx_bb_entrepreneur_merged_v2 <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv")
@@ -65,7 +67,7 @@ stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_50_est_cbp_2018","p
 <div style="margin-bottom:30px;">
 </div>
 
-```{r Distributions of Entrepreneurship Measures, echo=FALSE, cache=TRUE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
+```{r Distributions of Entrepreneurship Measures, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_50_est_cbp_2018)) + geom_histogram() +
     theme_minimal() + theme(axis.text = element_text(size = 11),
@@ -110,7 +112,7 @@ grid.arrange(
 <div style="margin-bottom:20px;">
 </div>
 
-```{r Correlation Traditional Entre Measures, echo=FALSE, cache=TRUE, message=FALSE, fig.retina=2, fig.dim=c(15,5)}
+```{r Correlation Traditional Entre Measures, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(15,5)}
 grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_10_est_cbp_2018, y = pct_nonfarmneest_nemp_2018)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
@@ -150,7 +152,7 @@ grid.arrange(
 <div style="margin-bottom:20px;">
 </div>
 
-```{r Correlation VD-Entre Measures, echo=FALSE, cache=TRUE, message=FALSE, fig.retina=2, fig.dim=c(15,5)}
+```{r Correlation VD-Entre Measures, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(15,5)}
 grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_10_est_cbp_2018, y = venturedensity_mean)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
@@ -190,7 +192,7 @@ grid.arrange(
 <div style="margin-bottom:30px;">
 </div>
 
-```{r Map Setup, echo=FALSE, results='hide', cache=TRUE}
+```{r Map Setup, echo=FALSE, results='hide'}
 ## Create continuous color palette function based on FCC broadband range (0~1) ##
 pal <- colorNumeric(palette = "YlOrRd", domain = c(0,1))
 pal2 <- colorNumeric(palette = "YlOrRd", domain = tx_bb_entrepreneur_merged_v2$venturedensity_mean)
@@ -215,7 +217,7 @@ map <- leaflet(tx_bb_entrepreneur_merged_v3)
 <div style="margin-bottom:30px;">
 </div>
 
-```{r 10 Establishment, echo=FALSE, cache=TRUE}
+```{r 10 Establishment, echo=FALSE}
 ## Establishment with less than 10 employees Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -234,7 +236,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:30px;">
 </div>
 
-```{r Nonfarm Nonemployer Share Map, echo=FALSE, cache=TRUE}
+```{r Nonfarm Nonemployer Share Map, echo=FALSE}
 ## Nonfarm Nonemployer Share Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -254,7 +256,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:30px;">
 </div>
 
-```{r Nonfarm Proprietor Share Map, echo=FALSE, cache=TRUE}
+```{r Nonfarm Proprietor Share Map, echo=FALSE}
 ## Nonfarm Proprietors Share Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -274,7 +276,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:30px;">
 </div>
 
-```{r Venture Density, echo=FALSE, cache=TRUE}
+```{r Venture Density, echo=FALSE}
 ## Venture Density Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
