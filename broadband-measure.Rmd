@@ -29,7 +29,7 @@ library(stargazer)
 library(gridExtra)
 
 #### Import the merged dataset V2 ####
-tx_bb_entrepreneur_merged_v2 <- read.csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Broadband-Entrepreneurship-TX-merged_v2.csv")
+tx_bb_entrepreneur_merged_v2 <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv")
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
   mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100)
 ## Set up spatial dataframe
@@ -184,6 +184,9 @@ map <- leaflet(tx_bb_entrepreneur_merged_v3)
 </div>
 
 ```{r FCC Broadband Map, echo=FALSE, cache=TRUE}
+#install.packages("mapview")
+#library(mapview)
+
 ## FCC Broadband Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -192,6 +195,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
   addLegend("bottomright", pal = pal, values = ~pct_broadband_FCC,
             title = "FCC Broadband (%)",
             labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
+
 ```
 
 <div style="margin-bottom:25px;">
