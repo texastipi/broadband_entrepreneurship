@@ -603,6 +603,87 @@ cbp_tx_2012_2018 <- cbp_2012_2018 %>%
   mutate(pct_50 = est_50 / est,
          pct_10 = est_10 / est)
 
+#### Non-farm Proprietors Statistics ####
+## Set up the BEA API ##
+beaKey <- "1C5D7A5A-D3C0-4919-8D47-820A118D7A56"
+
+## Get the dataset ##
+beaSpecs_10 <- list(
+  'UserID' = beaKey,
+  'Method' = 'GetData',
+  'datasetname' = 'Regional',
+  'TableName' = 'CAEMP25N',
+  'LineCode' = 10,
+  'GeoFips' = 'COUNTY',
+  'Year' = '2012,2013,2014,2015,2016,2017,2018'
+)
+
+bea_10 <- beaGet(beaSpecs_10, asWide = F)
+
+beaSpecs_40 <- list(
+  'UserID' = beaKey,
+  'Method' = 'GetData',
+  'datasetname' = 'Regional',
+  'TableName' = 'CAEMP25N',
+  'LineCode' = 40,
+  'GeoFips' = 'COUNTY',
+  'Year' = '2012,2013,2014,2015,2016,2017,2018'
+)
+
+bea_40 <- beaGet(beaSpecs_40, asWide = F)
+
+beaSpecs_60 <- list(
+  'UserID' = beaKey,
+  'Method' = 'GetData',
+  'datasetname' = 'Regional',
+  'TableName' = 'CAEMP25N',
+  'LineCode' = 60,
+  'GeoFips' = 'COUNTY',
+  'Year' = '2012,2013,2014,2015,2016,2017,2018'
+)
+
+bea_60 <- beaGet(beaSpecs_60, asWide = F)
+
+## Clean, adjust and merge ##
+
+bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48")) %>% 
+  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+  rename(totalemp = DataValue,
+         county = GeoName)
+bea_40 <- bea_40 %>% filter(str_detect(GeoFips, "^48")) %>% 
+  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+  rename(proprietors = DataValue,
+         county = GeoName)
+bea_60 <- bea_60 %>% filter(str_detect(GeoFips, "^48")) %>% 
+  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+  rename(nonfarm_proprietors = DataValue,
+         county = GeoName)
+
+bea_prop <- bea_10 %>% 
+  left_join(., select(bea_40, proprietors, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
+  left_join(., select(bea_60, nonfarm_proprietors, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
+  mutate(pct_prop_emp = proprietors / totalemp,
+         pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp) %>% 
+  rename(year = TimePeriod,
+         county_FIPS = GeoFips)
+
+bea_county_2012_2018 <- pivot_wider(data = bea_prop,
+                                    id_cols = county_FIPS,
+                                    names_from = year,
+                                    values_from = c("totalemp","proprietors","nonfarm_proprietors","pct_prop_emp","pct_nonfarm_prop_emp"))
+
+# Table for the entire state of Texas #
+bea_tx_prop <- bea_prop %>% 
+  group_by(year) %>% 
+  summarise(totalemp = sum(totalemp),
+            proprietors = sum(proprietors),
+            nonfarm_proprietors = sum(nonfarm_proprietors)) %>% 
+  mutate(pct_prop_emp = proprietors / totalemp,
+         pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp)
+
 #### Nonemployer Statistics ####
 ## Import data from API ##
 nonemp2012_tx_raw <- getCensus(name = "nonemp",
@@ -676,7 +757,9 @@ nonemp2012_tx <- nonemp2012_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2012")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2012) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2013_tx <- nonemp2013_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
@@ -687,7 +770,9 @@ nonemp2013_tx <- nonemp2013_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2013")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2013) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2014_tx <- nonemp2014_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
@@ -698,7 +783,9 @@ nonemp2014_tx <- nonemp2014_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2014")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2014) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2015_tx <- nonemp2015_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
@@ -709,7 +796,9 @@ nonemp2015_tx <- nonemp2015_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2015")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2015) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2016_tx <- nonemp2016_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
@@ -720,7 +809,9 @@ nonemp2016_tx <- nonemp2016_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2016")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2016) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2017_tx <- nonemp2017_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
@@ -731,7 +822,9 @@ nonemp2017_tx <- nonemp2017_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = levels(factor(.$YEAR))) %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2017")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2017) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 nonemp2018_tx <- nonemp2018_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
@@ -742,14 +835,15 @@ nonemp2018_tx <- nonemp2018_tx_raw %>%
   summarise(neest_nemp = sum(est_total, na.rm = T),
             nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
             year = "2018") %>% 
-  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  left_join(., bea_county_2012_2018[c("county_FIPS","totalemp_2018")], by = "county_FIPS") %>% 
+  rename(totalemp = totalemp_2018) %>% 
+  mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
 ## Bind all dataset ##
 
 ## Aggregate all the percentages by county over 2012 - 2018 ##
 
-nonemp_2012_2018 <- bind_rows(nonemp2012_tx, nonemp2013_tx, nonemp2014_tx, nonemp2015_tx, nonemp2016_tx,
-                              nonemp2017_tx, nonemp2018_tx)
+nonemp_2012_2018 <- bind_rows(nonemp2012_tx, nonemp2013_tx, nonemp2014_tx, nonemp2015_tx, nonemp2016_tx,nonemp2017_tx, nonemp2018_tx)
 nonemp_2012_2018 <- nonemp_2012_2018 %>% 
   mutate(pct_nonfarmneest_nemp = ifelse(is.na(pct_nonfarmneest_nemp) | is.infinite(pct_nonfarmneest_nemp),
                                         NA, pct_nonfarmneest_nemp),
@@ -761,91 +855,13 @@ nonemp_2012_2018 <- nonemp_2012_2018 %>%
 nonemp_county_2012_2018 <- pivot_wider(data = nonemp_2012_2018,
                                     id_cols = county_FIPS,
                                     names_from = year,
-                                    values_from = c("neest_nemp","nonfarmneest_nemp","pct_nonfarmneest_nemp"))
+                                    values_from = c("neest_nemp","nonfarmneest_nemp","pct_nonfarmneest_nemp","totalemp"))
 # Summary table for the whole state of Texas
 nonemp_tx_2012_2018 <- nonemp_2012_2018 %>% 
   group_by(year) %>% 
-  summarise(nonemp_est = sum(neest_nemp),
-            nonfarmnonemp_est = sum(nonfarmneest_nemp)) %>% 
-  mutate(pct_nonfarm_nonemp = nonfarmnonemp_est / nonemp_est)
-
-#### Non-farm Proprietors Statistics ####
-## Set up the BEA API ##
-beaKey <- "1C5D7A5A-D3C0-4919-8D47-820A118D7A56"
-
-## Get the dataset ##
-beaSpecs_10 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 10,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2013,2014,2015,2016,2017,2018'
-)
-
-bea_10 <- beaGet(beaSpecs_10, asWide = F)
-
-beaSpecs_40 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 40,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2013,2014,2015,2016,2017,2018'
-)
-
-bea_40 <- beaGet(beaSpecs_40, asWide = F)
-
-beaSpecs_60 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 60,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2013,2014,2015,2016,2017,2018'
-)
-
-bea_60 <- beaGet(beaSpecs_60, asWide = F)
-
-## Clean, adjust and merge ##
-
-bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48")) %>% 
-  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
-  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
-  rename(totalemp = DataValue,
-         county = GeoName)
-bea_40 <- bea_40 %>% filter(str_detect(GeoFips, "^48")) %>% 
-  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
-  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
-  rename(proprietors = DataValue,
-         county = GeoName)
-bea_60 <- bea_60 %>% filter(str_detect(GeoFips, "^48")) %>% 
-  select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
-  mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
-  rename(nonfarm_proprietors = DataValue,
-         county = GeoName)
-
-bea_prop <- bea_10 %>% 
-  left_join(., select(bea_40, proprietors, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
-  left_join(., select(bea_60, nonfarm_proprietors, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
-  mutate(pct_prop_emp = proprietors / totalemp,
-         pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp) %>% 
-  rename(year = TimePeriod,
-         county_FIPS = GeoFips)
-
-# Table for the entire state of Texas #
-bea_tx_prop <- bea_prop %>% 
-  group_by(year) %>% 
   summarise(totalemp = sum(totalemp),
-            proprietors = sum(proprietors),
-            nonfarm_proprietors = sum(nonfarm_proprietors)) %>% 
-  mutate(pct_prop_emp = proprietors / totalemp,
-         pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp)
-
-
+            nonfarmnonemp_est = sum(nonfarmneest_nemp)) %>% 
+  mutate(pct_nonfarm_nonemp = nonfarmnonemp_est / totalemp)
 ```
 
 <div style="margin-bottom:30px;">
@@ -952,7 +968,7 @@ ggplot(nonemp_tx_2012_2018, aes(x = year, y = pct_nonfarm_nonemp, group = 1)) +
   labs(title = "% of Non-farm Nonemployer Establishments in Texas (2012-2018)",
        subtitle = "Source: Nonemployer Statistics (Census Bureau)",
        x = "Year", y = "%") +
-  scale_y_continuous(limits = c(0.7,1),
+  scale_y_continuous(limits = c(0,0.6),
                      labels = scales::percent,
                      breaks = scales::breaks_pretty())
 
@@ -974,7 +990,7 @@ ggplot(nonemp_2012_2018, aes(x = year, y = pct_nonfarmneest_nemp,
               max_highlight = 7L,
               label_key = county,
               unhighlighted_params = list(size = 0.5, color = alpha("grey", 0.3))) +
-  scale_y_continuous(limits = c(0.1,1),
+  scale_y_continuous(limits = c(0,1),
                      labels = scales::percent,
                      breaks = scales::breaks_pretty()) + 
   scale_color_brewer(palette = "Set2")
