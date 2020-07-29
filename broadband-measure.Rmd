@@ -58,7 +58,7 @@ stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_broadband_FCC","pct
 <div style="margin-bottom:25px;">
 </div>
 
-```{r Distributions of Broadband Measures, echo=FALSE, cache=TRUE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
+```{r Distributions of Broadband Measures, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_broadband_FCC)) + 
     geom_histogram() + theme_minimal() + 
@@ -98,7 +98,7 @@ grid.arrange(
 <div style="margin-bottom:25px;">
 </div>
 
-```{r Correlations b/w Broadband Measures, echo=FALSE, cache=TRUE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
+```{r Correlations b/w Broadband Measures, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_broadband_FCC, y = pct_broadband_MS)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
@@ -161,7 +161,7 @@ grid.arrange(
 <div style="margin-bottom:25px;">
 </div>
 
-```{r Map Setup, echo=FALSE, results='hide', cache=TRUE}
+```{r Map Setup, echo=FALSE, results='hide'}
 ## Create continuous color palette function based on FCC broadband range (0~1) ##
 pal <- colorNumeric(palette = "YlOrRd", domain = tx_bb_entrepreneur_merged_v2$pct_broadband_FCC)
 ## Set a popup template ##
@@ -183,7 +183,7 @@ map <- leaflet(tx_bb_entrepreneur_merged_v3)
 <div style="margin-bottom:25px;">
 </div>
 
-```{r FCC Broadband Map, echo=FALSE, cache=TRUE}
+```{r FCC Broadband Map, echo=FALSE}
 #install.packages("mapview")
 #library(mapview)
 
@@ -206,7 +206,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:25px;">
 </div>
 
-```{r MS Broadband Usage, echo=FALSE, cache=TRUE}
+```{r MS Broadband Usage, echo=FALSE}
 ## MS Broadband Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -225,7 +225,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:25px;">
 </div>
 
-```{r ACS Broadband Subscription, echo=FALSE, cache=TRUE}
+```{r ACS Broadband Subscription, echo=FALSE}
 ## ACS Broadband Subscription Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
@@ -244,7 +244,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 <div style="margin-bottom:25px;">
 </div>
 
-```{r M-Lab Broadband Usage, echo=FALSE, cache=TRUE}
+```{r M-Lab Broadband Usage, echo=FALSE}
 ## M-Lab Broadband Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
