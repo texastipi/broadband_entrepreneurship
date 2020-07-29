@@ -302,7 +302,7 @@ After installing the package, set up your API key by copying and pasting the cod
 ```{r Censusapi API key setup example, eval=FALSE}
 # For general usage, use install.packages("censusapi") to install most stable version of the package.
 
-devtools::install_github("jwroycechoi/censusapi")     # A fork that fixes some issues regarding NAICS2017 and labels
+#devtools::install_github("jwroycechoi/censusapi")     # A fork that fixes some issues regarding NAICS2017 and labels
 library(censusapi)
 
 # Add key to .Renviron
@@ -520,8 +520,7 @@ cbp2017_tx_agg <- cbp2017_tx %>%
          pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
 
 cbp2018_tx_agg <- cbp2018_tx %>% 
-  filter(EMPSZES == "001"|
-           EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
+  filter(EMPSZES == "001"|EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
          emp_total = ifelse(EMPSZES == "001", EMP, 0),
          est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
@@ -932,6 +931,15 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
   left_join(., fcc477_2019, by = c("FIPS" = "county_FIPS")) %>% 
   select(-c(providername, dbaname, blockcode, techcode, maxaddown, maxadup, maxcirdown, maxcirup, broadband)) %>% rename(pct_broadband_FCC_2019 = broadband_pct)
+
+## Modify nonemployer percentage - Nonemployer share over total employment
+tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
+  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / totalemp_bea_2018,
+         pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / totalemp_bea_2012,
+         pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / total_employment_2017,
+         pct_nonfarmneest_nemp_2012 = ifelse(is.na(pct_nonfarmneest_nemp_2012) | is.infinite(pct_nonfarmneest_nemp_2012),NA, pct_nonfarmneest_nemp_2012),
+         pct_nonfarmneest_nemp_2017 = ifelse(is.na(pct_nonfarmneest_nemp_2017) | is.infinite(pct_nonfarmneest_nemp_2017),NA, pct_nonfarmneest_nemp_2017),
+         pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018))
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TX-merged_v2.csv")
