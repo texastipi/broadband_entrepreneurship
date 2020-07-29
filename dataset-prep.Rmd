@@ -936,6 +936,6 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018))
 
 ## Write CSV ##
-write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TX-merged_v2.csv")
+#write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TX-merged_v2.csv")
 
 ```
