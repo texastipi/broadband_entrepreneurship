@@ -13,6 +13,8 @@ navbar:
     menu:
       - text: "Broadband"
         href: broadband-measure.html
+      - text: "Entrepreneurship"
+        href: entrepreneurship-measure.html
 output:
   html_document:
     theme: cosmo
