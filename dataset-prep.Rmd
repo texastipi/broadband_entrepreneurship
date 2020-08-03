@@ -548,7 +548,7 @@ nonemp2012_tx_agg <- nonemp2012_tx %>%
   mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
 
 nonemp2017_tx_agg <- nonemp2017_tx %>% 
-  mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
+  mutate(est_total = ifelse(SECTOR == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
   group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
@@ -558,7 +558,7 @@ nonemp2017_tx_agg <- nonemp2017_tx %>%
   mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
 
 nonemp2018_tx_agg <- nonemp2018_tx %>% 
-  mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
+  mutate(est_total = ifelse(SECTOR == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
   group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 

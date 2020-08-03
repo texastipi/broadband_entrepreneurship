@@ -375,7 +375,7 @@ cbp2012_tx_raw <- cbp2012_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP))
-cbp2012_tx <- cbp2012_tx_raw %>% 
+cbp2012_tx_p <- cbp2012_tx_raw %>% 
   filter(EMPSZES == "001"|EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
          est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
@@ -406,7 +406,7 @@ cbp2013_tx_raw <- cbp2013_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP))
-cbp2013_tx <- cbp2013_tx_raw %>% 
+cbp2013_tx_p <- cbp2013_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -438,7 +438,7 @@ cbp2014_tx_raw <- cbp2014_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP))
-cbp2014_tx <- cbp2014_tx_raw %>% 
+cbp2014_tx_p <- cbp2014_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -470,7 +470,7 @@ cbp2015_tx_raw <- cbp2015_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP))
-cbp2015_tx <- cbp2015_tx_raw %>% 
+cbp2015_tx_p <- cbp2015_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -502,7 +502,7 @@ cbp2016_tx_raw <- cbp2016_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP)) 
-cbp2016_tx <- cbp2016_tx_raw %>% 
+cbp2016_tx_p <- cbp2016_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -534,7 +534,7 @@ cbp2017_tx_raw <- cbp2017_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP))
-cbp2017_tx <- cbp2017_tx_raw %>% 
+cbp2017_tx_p <- cbp2017_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -566,7 +566,7 @@ cbp2018_tx_raw <- cbp2018_tx_raw %>%
                          EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
                          EMP_F == "m" ~ 100000,
                          TRUE ~ EMP)) 
-cbp2018_tx <- cbp2018_tx_raw %>% 
+cbp2018_tx_p <- cbp2018_tx_raw %>% 
   filter(EMPSZES == "001"|
            EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
   mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
@@ -583,7 +583,7 @@ cbp2018_tx <- cbp2018_tx_raw %>%
 
 ## Aggregate all the percentages by county over 2012 - 2018 ##
 
-cbp_2012_2018 <- bind_rows(cbp2012_tx, cbp2013_tx, cbp2014_tx, cbp2015_tx, cbp2016_tx, cbp2017_tx, cbp2018_tx)
+cbp_2012_2018 <- bind_rows(cbp2012_tx_p, cbp2013_tx_p, cbp2014_tx_p, cbp2015_tx_p, cbp2016_tx_p, cbp2017_tx_p, cbp2018_tx_p)
 cbp_2012_2018 <- cbp_2012_2018 %>% 
   mutate(county_code = substr(county_FIPS, 3, 5)) %>% 
   left_join(., tigris::list_counties("Texas"), by = "county_code") %>% 
@@ -750,7 +750,7 @@ nonemp2018_tx_raw <- nonemp2018_tx_raw %>%
          NESTAB = as.numeric(NESTAB))
 
 #### Nonemployer Statistics Aggregation ####
-nonemp2012_tx <- nonemp2012_tx_raw %>% 
+nonemp2012_tx_p <- nonemp2012_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
@@ -763,7 +763,7 @@ nonemp2012_tx <- nonemp2012_tx_raw %>%
   rename(totalemp = totalemp_2012) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2013_tx <- nonemp2013_tx_raw %>% 
+nonemp2013_tx_p <- nonemp2013_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
@@ -776,7 +776,7 @@ nonemp2013_tx <- nonemp2013_tx_raw %>%
   rename(totalemp = totalemp_2013) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2014_tx <- nonemp2014_tx_raw %>% 
+nonemp2014_tx_p <- nonemp2014_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
@@ -789,7 +789,7 @@ nonemp2014_tx <- nonemp2014_tx_raw %>%
   rename(totalemp = totalemp_2014) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2015_tx <- nonemp2015_tx_raw %>% 
+nonemp2015_tx_p <- nonemp2015_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
@@ -802,7 +802,7 @@ nonemp2015_tx <- nonemp2015_tx_raw %>%
   rename(totalemp = totalemp_2015) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2016_tx <- nonemp2016_tx_raw %>% 
+nonemp2016_tx_p <- nonemp2016_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
@@ -815,8 +815,8 @@ nonemp2016_tx <- nonemp2016_tx_raw %>%
   rename(totalemp = totalemp_2016) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2017_tx <- nonemp2017_tx_raw %>% 
-  mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
+nonemp2017_tx_p <- nonemp2017_tx_raw %>% 
+  mutate(est_total = ifelse(SECTOR == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
   group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
@@ -828,10 +828,10 @@ nonemp2017_tx <- nonemp2017_tx_raw %>%
   rename(totalemp = totalemp_2017) %>% 
   mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / totalemp)
 
-nonemp2018_tx <- nonemp2018_tx_raw %>% 
+nonemp2018_tx_p <- nonemp2018_tx_raw %>% 
   mutate(est_total = ifelse(NAICS2017 == "00", NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
-         nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
+         nonfarm_est_total = ifelse(SECTOR == "00", 0, nonfarm_est_total)) %>% 
   group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
   group_by(county_FIPS) %>% 
   summarise(neest_nemp = sum(est_total, na.rm = T),
@@ -845,7 +845,7 @@ nonemp2018_tx <- nonemp2018_tx_raw %>%
 
 ## Aggregate all the percentages by county over 2012 - 2018 ##
 
-nonemp_2012_2018 <- bind_rows(nonemp2012_tx, nonemp2013_tx, nonemp2014_tx, nonemp2015_tx, nonemp2016_tx,nonemp2017_tx, nonemp2018_tx)
+nonemp_2012_2018 <- bind_rows(nonemp2012_tx_p, nonemp2013_tx_p, nonemp2014_tx_p, nonemp2015_tx_p, nonemp2016_tx_p,nonemp2017_tx_p, nonemp2018_tx_p)
 nonemp_2012_2018 <- nonemp_2012_2018 %>% 
   mutate(pct_nonfarmneest_nemp = ifelse(is.na(pct_nonfarmneest_nemp) | is.infinite(pct_nonfarmneest_nemp),
                                         NA, pct_nonfarmneest_nemp),

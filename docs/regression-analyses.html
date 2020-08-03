@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jaewon R. Choi" />
+
+
+<title>Linear Regression Analyses</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Broadband & Entrepreneurship</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="dataset-prep.html">Dataset Prep</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="ion ion-bar-chart-sharp"></span>
+     
+    Measurements
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="broadband-measure.html">Broadband</a>
+    </li>
+    <li>
+      <a href="entrepreneurship-measure.html">Entrepreneurship</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="regression-analyses.html">Regression Models</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Regression Analyses</h1>
+<h4 class="author">Jaewon R. Choi</h4>
+
+</div>
+
+
+<p>In this document, We will set up, run, and examine several multiple regression models. In general, the models aim to investigate the relationhips between <strong>broadband</strong> and <strong>entrepreneurship</strong>. Specifically, <strong>how broadband influences entrepreneurship</strong>. Furthermore, the models will explore how different measures of broadband, specifically measures of availability and adoption, explain entrepreneurial activities differently. Finally, I will explore how broadband as well as entrepreneurial factors contribute to the overall prosperity.</p>
+<pre class="r"><code>## Load packages
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+#install.packages(&quot;stargazer&quot;, dependencies = T)    # A package for better looking tables for results
+library(stargazer)
+#install.packages(&quot;sjPlot&quot;)
+library(sjPlot)
+
+## Read in dataset
+tx_bb_entrepreneur_merged_v2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv&quot;)
+
+tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
+  mutate(chg_pct_50_est_cbp_2012_2018 = pct_50_est_cbp_2018 - pct_50_est_cbp_2012,
+         chg_pct_10_est_cbp_2012_2018 = pct_10_est_cbp_2018 - pct_10_est_cbp_2012,
+         chgn_nonemp_2012_2018 = neest_nemp_2018 - neest_nemp_2012)</code></pre>
+<div id="broadband-and-entrepreneurship" class="section level2">
+<h2>Broadband and Entrepreneurship</h2>
+<p>First, let’s take another look at some of the key variables.</p>
+<blockquote>
+<p>Entrepreneurship</p>
+</blockquote>
+<ul>
+<li><code>IRR2010</code>: Rural index (larger = rural)</li>
+<li><strong>Entrepreneurship (2018)</strong>
+<ul>
+<li><code>pct_nonfarm_bea_2018</code>: % of nonfarm proprietors over total employment in 2018</li>
+<li><code>venturedensity_mean</code>: Average venture density in 2018 and 2019 (GoDaddy)</li>
+</ul></li>
+<li><strong>Change Factors (2012-2018)</strong>
+<ul>
+<li><code>pct_chg_bea_2012_2018</code>: Change in % of nonfarm proprietors b/w 2012 and 2018</li>
+</ul></li>
+</ul>
+<blockquote>
+<p>Broadband</p>
+</blockquote>
+<ul>
+<li><code>pct_broadband_FCC</code>: FCC broadband availability in % (2017)</li>
+<li><code>pct_broadband_MS</code>: MS broadband availability in % (2019)</li>
+<li><code>pct_fixed_acs_2018</code>: ACS broadband subscription in $ (2018)</li>
+<li><code>pct_broadband_mlab</code>: M-Lab broadband measure (2019)</li>
+</ul>
+<div id="broadbands-effect-on-entrepreneurial-outcome" class="section level3">
+<h3>Broadband’s Effect on Entrepreneurial Outcome</h3>
+<p>Here I investigate <strong>models that estimate broadband variables’ effect on the entrepreneurial outcome.</strong> Several different broadband measures are in the dataset. I will first model <strong>each measure’s relationship with the entrepreneurial outcome separately.</strong></p>
+<p>Entrepreneurial outcomes can be represented by several variables in this dataset. As the ASU research team’s white paper argued, the venture density provided by GoDaddy activities reflects actual entrepreneurial activities in the form of online domain creation. In the dataset, we also have Texas state’s sole proprietor statistics. These variables reflect small and medium sized businesses in each county.</p>
+<div id="control-variables" class="section level4">
+<h4>Control Variables</h4>
+<p>For control variables, various demographic measures derived from the ACS estimates are available in the dataset. Furthermore, the ruralithy of the counties are reflected in the IRR index. Number of population, and regional intustry characteristics will be also included as control variables.</p>
+</div>
+</div>
+</div>
+<div id="nonfarm-proprietors-share-2018" class="section level2">
+<h2>Nonfarm Proprietors Share (2018)</h2>
+<ul>
+<li>DV: Nonfarm Proprietor Share (2012-2018)</li>
+<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>Control: Rurality, Industry structure, Education, Age</li>
+</ul>
+<table style="text-align:center">
+<caption>
+<strong>Nonfarm Proprietors Share Regression Results</strong>
+</caption>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+Nonfarm Proprietors Share
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC Broadband Availability
+</td>
+<td>
+0.001
+</td>
+<td>
+-0.003
+</td>
+<td>
+-0.0002
+</td>
+<td>
+-0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.015)
+</td>
+<td>
+(0.015)
+</td>
+<td>
+(0.015)
+</td>
+<td>
+(0.016)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+MS Broadband
+</td>
+<td>
+</td>
+<td>
+0.033
+</td>
+<td>
+0.061
+</td>
+<td>
+0.042
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.052)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS Broadband Sub
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.0004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.0005)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+M-Lab Broadband
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.030
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.045)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Rurality Index (2010)
+</td>
+<td>
+-0.044
+</td>
+<td>
+-0.029
+</td>
+<td>
+-0.031
+</td>
+<td>
+-0.048
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.079)
+</td>
+<td>
+(0.081)
+</td>
+<td>
+(0.080)
+</td>
+<td>
+(0.082)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Agriculture
+</td>
+<td>
+0.003<sup>***</sup>
+</td>
+<td>
+0.003<sup>***</sup>
+</td>
+<td>
+0.003<sup>***</sup>
+</td>
+<td>
+0.003<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Construction
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wholesale
+</td>
+<td>
+0.008<sup>**</sup>
+</td>
+<td>
+0.008<sup>**</sup>
+</td>
+<td>
+0.008<sup>**</sup>
+</td>
+<td>
+0.008<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Retail
+</td>
+<td>
+0.003<sup>**</sup>
+</td>
+<td>
+0.003<sup>**</sup>
+</td>
+<td>
+0.003<sup>*</sup>
+</td>
+<td>
+0.003<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Transportation
+</td>
+<td>
+0.002
+</td>
+<td>
+0.003
+</td>
+<td>
+0.003<sup>*</sup>
+</td>
+<td>
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+IT
+</td>
+<td>
+0.009<sup>*</sup>
+</td>
+<td>
+0.008<sup>*</sup>
+</td>
+<td>
+0.008<sup>*</sup>
+</td>
+<td>
+0.010<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.005)
+</td>
+<td>
+(0.005)
+</td>
+<td>
+(0.005)
+</td>
+<td>
+(0.005)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Finance
+</td>
+<td>
+-0.002
+</td>
+<td>
+-0.003
+</td>
+<td>
+-0.002
+</td>
+<td>
+-0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Professional
+</td>
+<td>
+0.004<sup>*</sup>
+</td>
+<td>
+0.004<sup>*</sup>
+</td>
+<td>
+0.003
+</td>
+<td>
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Education
+</td>
+<td>
+0.002
+</td>
+<td>
+0.002<sup>*</sup>
+</td>
+<td>
+0.002<sup>*</sup>
+</td>
+<td>
+0.002<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Other occupation
+</td>
+<td>
+0.011<sup>***</sup>
+</td>
+<td>
+0.011<sup>***</sup>
+</td>
+<td>
+0.011<sup>***</sup>
+</td>
+<td>
+0.010<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Public
+</td>
+<td>
+0.002
+</td>
+<td>
+0.002
+</td>
+<td>
+0.002
+</td>
+<td>
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Highschool
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001<sup>*</sup>
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+College
+</td>
+<td>
+0.002<sup>***</sup>
+</td>
+<td>
+0.002<sup>**</sup>
+</td>
+<td>
+0.002<sup>***</sup>
+</td>
+<td>
+0.002<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millenials
+</td>
+<td>
+-0.003<sup>*</sup>
+</td>
+<td>
+-0.003<sup>*</sup>
+</td>
+<td>
+-0.003<sup>*</sup>
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GenX
+</td>
+<td>
+0.003<sup>*</sup>
+</td>
+<td>
+0.003<sup>*</sup>
+</td>
+<td>
+0.003
+</td>
+<td>
+0.004<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Babyboomer
+</td>
+<td>
+0.005<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.005<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-0.240<sup>**</sup>
+</td>
+<td>
+-0.254<sup>**</sup>
+</td>
+<td>
+-0.243<sup>**</sup>
+</td>
+<td>
+-0.283<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.110)
+</td>
+<td>
+(0.111)
+</td>
+<td>
+(0.111)
+</td>
+<td>
+(0.115)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+227
+</td>
+<td>
+227
+</td>
+<td>
+227
+</td>
+<td>
+219
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.532
+</td>
+<td>
+0.533
+</td>
+<td>
+0.539
+</td>
+<td>
+0.547
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.491
+</td>
+<td>
+0.491
+</td>
+<td>
+0.495
+</td>
+<td>
+0.499
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.050 (df = 208)
+</td>
+<td>
+0.050 (df = 207)
+</td>
+<td>
+0.049 (df = 206)
+</td>
+<td>
+0.049 (df = 197)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+13.128<sup>***</sup> (df = 18; 208)
+</td>
+<td>
+12.456<sup>***</sup> (df = 19; 207)
+</td>
+<td>
+12.059<sup>***</sup> (df = 20; 206)
+</td>
+<td>
+11.325<sup>***</sup> (df = 21; 197)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</div>
+<div id="change-in-nonfarm-proprietors-share-2012-2018" class="section level2">
+<h2>Change in Nonfarm Proprietors Share (2012-2018)</h2>
+<ul>
+<li>DV: Change in Nonfarm Proprietors Share (2012-2018)</li>
+<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>Control: Rurality, Industry structure, Education, Age</li>
+</ul>
+<table style="text-align:center">
+<caption>
+<strong>Change in Nonfarm Proprietors Share Regression Results</strong>
+</caption>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+Change in Nonfarm Proprietors Share
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC Broadband Availability
+</td>
+<td>
+-0.010
+</td>
+<td>
+-0.006
+</td>
+<td>
+-0.004
+</td>
+<td>
+-0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.008)
+</td>
+<td>
+(0.008)
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+MS Broadband
+</td>
+<td>
+</td>
+<td>
+-0.032<sup>*</sup>
+</td>
+<td>
+-0.018
+</td>
+<td>
+-0.009
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.019)
+</td>
+<td>
+(0.021)
+</td>
+<td>
+(0.024)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS Broadband Sub
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.0004<sup>*</sup>
+</td>
+<td>
+-0.001<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.0002)
+</td>
+<td>
+(0.0002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+M-Lab Broadband
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.023
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.021)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Rurality Index (2010)
+</td>
+<td>
+-0.049
+</td>
+<td>
+-0.063
+</td>
+<td>
+-0.064
+</td>
+<td>
+-0.090<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.040)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Agriculture
+</td>
+<td>
+0.0002
+</td>
+<td>
+0.0002
+</td>
+<td>
+0.0004
+</td>
+<td>
+0.0002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Construction
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wholesale
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Retail
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Transportation
+</td>
+<td>
+-0.001<sup>*</sup>
+</td>
+<td>
+-0.002<sup>*</sup>
+</td>
+<td>
+-0.001<sup>*</sup>
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+IT
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+0.0001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Finance
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Professional
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Education
+</td>
+<td>
+-0.0002
+</td>
+<td>
+-0.0003
+</td>
+<td>
+-0.0002
+</td>
+<td>
+-0.0005
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0005)
+</td>
+<td>
+(0.0005)
+</td>
+<td>
+(0.0005)
+</td>
+<td>
+(0.0005)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Other occupation
+</td>
+<td>
+0.00004
+</td>
+<td>
+0.0001
+</td>
+<td>
+0.0002
+</td>
+<td>
+0.0002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Public
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001<sup>*</sup>
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Highschool
+</td>
+<td>
+0.0003
+</td>
+<td>
+0.0003
+</td>
+<td>
+0.0005
+</td>
+<td>
+0.0003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0003)
+</td>
+<td>
+(0.0003)
+</td>
+<td>
+(0.0003)
+</td>
+<td>
+(0.0003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+College
+</td>
+<td>
+0.0002
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001<sup>*</sup>
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millenials
+</td>
+<td>
+-0.0003
+</td>
+<td>
+-0.0004
+</td>
+<td>
+-0.0004
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GenX
+</td>
+<td>
+0.002<sup>*</sup>
+</td>
+<td>
+0.002<sup>*</sup>
+</td>
+<td>
+0.001
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Babyboomer
+</td>
+<td>
+0.0001
+</td>
+<td>
+-0.0003
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.0003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.007
+</td>
+<td>
+0.021
+</td>
+<td>
+0.027
+</td>
+<td>
+0.067
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.054)
+</td>
+<td>
+(0.055)
+</td>
+<td>
+(0.054)
+</td>
+<td>
+(0.054)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+227
+</td>
+<td>
+227
+</td>
+<td>
+227
+</td>
+<td>
+219
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.107
+</td>
+<td>
+0.119
+</td>
+<td>
+0.132
+</td>
+<td>
+0.135
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.030
+</td>
+<td>
+0.039
+</td>
+<td>
+0.047
+</td>
+<td>
+0.043
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.025 (df = 208)
+</td>
+<td>
+0.024 (df = 207)
+</td>
+<td>
+0.024 (df = 206)
+</td>
+<td>
+0.023 (df = 197)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+1.388 (df = 18; 208)
+</td>
+<td>
+1.477<sup>*</sup> (df = 19; 207)
+</td>
+<td>
+1.561<sup>*</sup> (df = 20; 206)
+</td>
+<td>
+1.461<sup>*</sup> (df = 21; 197)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</div>
+<div id="venture-density" class="section level2">
+<h2>Venture Density</h2>
+<ul>
+<li>DV: Venture Density</li>
+<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>Control: Rurality, Industry structure, Education, Age</li>
+</ul>
+<table style="text-align:center">
+<caption>
+<strong>Venture Density Regression Results</strong>
+</caption>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+Venture Density
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC Broadband Availability
+</td>
+<td>
+0.169
+</td>
+<td>
+-0.054
+</td>
+<td>
+-0.071
+</td>
+<td>
+-0.098
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.356)
+</td>
+<td>
+(0.374)
+</td>
+<td>
+(0.377)
+</td>
+<td>
+(0.379)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+MS Broadband
+</td>
+<td>
+</td>
+<td>
+1.765<sup>*</sup>
+</td>
+<td>
+1.597
+</td>
+<td>
+2.222<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.949)
+</td>
+<td>
+(1.042)
+</td>
+<td>
+(1.249)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS Broadband Sub
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.005
+</td>
+<td>
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.012)
+</td>
+<td>
+(0.012)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+M-Lab Broadband
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.955
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(1.075)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Rurality Index (2010)
+</td>
+<td>
+-0.897
+</td>
+<td>
+-0.114
+</td>
+<td>
+-0.096
+</td>
+<td>
+-0.035
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.926)
+</td>
+<td>
+(1.961)
+</td>
+<td>
+(1.965)
+</td>
+<td>
+(1.973)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Agriculture
+</td>
+<td>
+-0.001
+</td>
+<td>
+0.001
+</td>
+<td>
+-0.002
+</td>
+<td>
+-0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.020)
+</td>
+<td>
+(0.020)
+</td>
+<td>
+(0.021)
+</td>
+<td>
+(0.021)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Construction
+</td>
+<td>
+0.063<sup>*</sup>
+</td>
+<td>
+0.062
+</td>
+<td>
+0.061
+</td>
+<td>
+0.090<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.039)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wholesale
+</td>
+<td>
+-0.010
+</td>
+<td>
+-0.013
+</td>
+<td>
+-0.014
+</td>
+<td>
+0.033
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.084)
+</td>
+<td>
+(0.083)
+</td>
+<td>
+(0.083)
+</td>
+<td>
+(0.084)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Retail
+</td>
+<td>
+0.068<sup>*</sup>
+</td>
+<td>
+0.066<sup>*</sup>
+</td>
+<td>
+0.066<sup>*</sup>
+</td>
+<td>
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Transportation
+</td>
+<td>
+0.030
+</td>
+<td>
+0.034
+</td>
+<td>
+0.032
+</td>
+<td>
+0.021
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.041)
+</td>
+<td>
+(0.040)
+</td>
+<td>
+(0.041)
+</td>
+<td>
+(0.041)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+IT
+</td>
+<td>
+0.142
+</td>
+<td>
+0.133
+</td>
+<td>
+0.134
+</td>
+<td>
+0.216<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.113)
+</td>
+<td>
+(0.113)
+</td>
+<td>
+(0.113)
+</td>
+<td>
+(0.123)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Finance
+</td>
+<td>
+0.077
+</td>
+<td>
+0.060
+</td>
+<td>
+0.057
+</td>
+<td>
+-0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.059)
+</td>
+<td>
+(0.072)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Professional
+</td>
+<td>
+0.120<sup>**</sup>
+</td>
+<td>
+0.098<sup>*</sup>
+</td>
+<td>
+0.100<sup>*</sup>
+</td>
+<td>
+0.103<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.051)
+</td>
+<td>
+(0.052)
+</td>
+<td>
+(0.053)
+</td>
+<td>
+(0.053)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Education
+</td>
+<td>
+-0.039
+</td>
+<td>
+-0.035
+</td>
+<td>
+-0.035
+</td>
+<td>
+-0.030
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.024)
+</td>
+<td>
+(0.024)
+</td>
+<td>
+(0.024)
+</td>
+<td>
+(0.024)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Other occupation
+</td>
+<td>
+-0.030
+</td>
+<td>
+-0.030
+</td>
+<td>
+-0.031
+</td>
+<td>
+-0.022
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.056)
+</td>
+<td>
+(0.055)
+</td>
+<td>
+(0.056)
+</td>
+<td>
+(0.055)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Public
+</td>
+<td>
+-0.007
+</td>
+<td>
+-0.014
+</td>
+<td>
+-0.015
+</td>
+<td>
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.036)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Highschool
+</td>
+<td>
+-0.031<sup>*</sup>
+</td>
+<td>
+-0.031<sup>*</sup>
+</td>
+<td>
+-0.033<sup>**</sup>
+</td>
+<td>
+-0.025
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.017)
+</td>
+<td>
+(0.017)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+College
+</td>
+<td>
+0.158<sup>***</sup>
+</td>
+<td>
+0.143<sup>***</sup>
+</td>
+<td>
+0.140<sup>***</sup>
+</td>
+<td>
+0.144<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.018)
+</td>
+<td>
+(0.020)
+</td>
+<td>
+(0.021)
+</td>
+<td>
+(0.021)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millenials
+</td>
+<td>
+0.028
+</td>
+<td>
+0.034
+</td>
+<td>
+0.035
+</td>
+<td>
+0.019
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.035)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GenX
+</td>
+<td>
+0.162<sup>***</sup>
+</td>
+<td>
+0.166<sup>***</sup>
+</td>
+<td>
+0.167<sup>***</sup>
+</td>
+<td>
+0.158<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.043)
+</td>
+<td>
+(0.043)
+</td>
+<td>
+(0.043)
+</td>
+<td>
+(0.048)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Babyboomer
+</td>
+<td>
+0.101<sup>**</sup>
+</td>
+<td>
+0.120<sup>***</sup>
+</td>
+<td>
+0.124<sup>***</sup>
+</td>
+<td>
+0.104<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.040)
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.042)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-5.927<sup>**</sup>
+</td>
+<td>
+-6.745<sup>**</sup>
+</td>
+<td>
+-6.814<sup>**</sup>
+</td>
+<td>
+-6.514<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.673)
+</td>
+<td>
+(2.693)
+</td>
+<td>
+(2.704)
+</td>
+<td>
+(2.731)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+225
+</td>
+<td>
+225
+</td>
+<td>
+225
+</td>
+<td>
+217
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.662
+</td>
+<td>
+0.668
+</td>
+<td>
+0.668
+</td>
+<td>
+0.695
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.632
+</td>
+<td>
+0.637
+</td>
+<td>
+0.635
+</td>
+<td>
+0.662
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.209 (df = 206)
+</td>
+<td>
+1.202 (df = 205)
+</td>
+<td>
+1.205 (df = 204)
+</td>
+<td>
+1.169 (df = 195)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+22.408<sup>***</sup> (df = 18; 206)
+</td>
+<td>
+21.664<sup>***</sup> (df = 19; 205)
+</td>
+<td>
+20.504<sup>***</sup> (df = 20; 204)
+</td>
+<td>
+21.165<sup>***</sup> (df = 21; 195)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+<div id="models-with-proprietornonemp-as-iv" class="section level3">
+<h3>Models with Proprietor/Nonemp as IV</h3>
+<p>Below, I explore regression models that consider <strong>proprietors share as independent variables</strong> representing overall industry characteristics of the county. Dependent variables are <strong>venture density</strong> measures as representations of entrepreneurial activities online.</p>
+<ul>
+<li>DV: Venture Density</li>
+<li>IV: Nonfarm Proprietor Share, FCC Broadband availability, MS, ACS, M-Lab</li>
+<li>Control: Rurality, Education, Age</li>
+</ul>
+<table style="text-align:center">
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4">
+Venture Density
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Nonfarm Proprietor (%)
+</td>
+<td>
+2.043
+</td>
+<td>
+2.043
+</td>
+<td>
+2.150
+</td>
+<td>
+2.939<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.673)
+</td>
+<td>
+(1.673)
+</td>
+<td>
+(1.692)
+</td>
+<td>
+(1.696)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC Broadband Availability
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.046
+</td>
+<td>
+-0.085
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.373)
+</td>
+<td>
+(0.377)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+MS Broadband
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+1.684<sup>*</sup>
+</td>
+<td>
+2.063<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.950)
+</td>
+<td>
+(1.246)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS Broadband Subs
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.012)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+M-Lab Broadband Use
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-1.016
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(1.070)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Rurality Index (2010)
+</td>
+<td>
+-1.261
+</td>
+<td>
+-1.261
+</td>
+<td>
+-0.074
+</td>
+<td>
+0.083
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.858)
+</td>
+<td>
+(1.858)
+</td>
+<td>
+(1.958)
+</td>
+<td>
+(1.964)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Agriculture
+</td>
+<td>
+-0.007
+</td>
+<td>
+-0.007
+</td>
+<td>
+-0.005
+</td>
+<td>
+-0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.019)
+</td>
+<td>
+(0.019)
+</td>
+<td>
+(0.020)
+</td>
+<td>
+(0.021)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Construction
+</td>
+<td>
+0.052
+</td>
+<td>
+0.052
+</td>
+<td>
+0.050
+</td>
+<td>
+0.073<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.037)
+</td>
+<td>
+(0.037)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.040)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wholesale
+</td>
+<td>
+-0.039
+</td>
+<td>
+-0.039
+</td>
+<td>
+-0.031
+</td>
+<td>
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.082)
+</td>
+<td>
+(0.082)
+</td>
+<td>
+(0.084)
+</td>
+<td>
+(0.085)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Retail
+</td>
+<td>
+0.052
+</td>
+<td>
+0.052
+</td>
+<td>
+0.059
+</td>
+<td>
+0.044
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Transportation
+</td>
+<td>
+0.014
+</td>
+<td>
+0.014
+</td>
+<td>
+0.027
+</td>
+<td>
+0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.040)
+</td>
+<td>
+(0.040)
+</td>
+<td>
+(0.041)
+</td>
+<td>
+(0.041)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+IT
+</td>
+<td>
+0.132
+</td>
+<td>
+0.132
+</td>
+<td>
+0.113
+</td>
+<td>
+0.185
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.112)
+</td>
+<td>
+(0.112)
+</td>
+<td>
+(0.114)
+</td>
+<td>
+(0.124)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Finance
+</td>
+<td>
+0.084
+</td>
+<td>
+0.084
+</td>
+<td>
+0.067
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.057)
+</td>
+<td>
+(0.057)
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.072)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Professional
+</td>
+<td>
+0.105<sup>**</sup>
+</td>
+<td>
+0.105<sup>**</sup>
+</td>
+<td>
+0.090<sup>*</sup>
+</td>
+<td>
+0.093<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.050)
+</td>
+<td>
+(0.050)
+</td>
+<td>
+(0.053)
+</td>
+<td>
+(0.053)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Education
+</td>
+<td>
+-0.043<sup>*</sup>
+</td>
+<td>
+-0.043<sup>*</sup>
+</td>
+<td>
+-0.038
+</td>
+<td>
+-0.036
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.023)
+</td>
+<td>
+(0.023)
+</td>
+<td>
+(0.024)
+</td>
+<td>
+(0.025)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Other occupation
+</td>
+<td>
+-0.045
+</td>
+<td>
+-0.045
+</td>
+<td>
+-0.054
+</td>
+<td>
+-0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.059)
+</td>
+<td>
+(0.058)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Public
+</td>
+<td>
+-0.013
+</td>
+<td>
+-0.013
+</td>
+<td>
+-0.018
+</td>
+<td>
+-0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.036)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Highschool
+</td>
+<td>
+-0.029<sup>*</sup>
+</td>
+<td>
+-0.029<sup>*</sup>
+</td>
+<td>
+-0.033<sup>**</sup>
+</td>
+<td>
+-0.027
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.017)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+College
+</td>
+<td>
+0.150<sup>***</sup>
+</td>
+<td>
+0.150<sup>***</sup>
+</td>
+<td>
+0.139<sup>***</sup>
+</td>
+<td>
+0.138<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.018)
+</td>
+<td>
+(0.018)
+</td>
+<td>
+(0.020)
+</td>
+<td>
+(0.021)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millenials
+</td>
+<td>
+0.032
+</td>
+<td>
+0.032
+</td>
+<td>
+0.039
+</td>
+<td>
+0.025
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.035)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GenX
+</td>
+<td>
+0.147<sup>***</sup>
+</td>
+<td>
+0.147<sup>***</sup>
+</td>
+<td>
+0.159<sup>***</sup>
+</td>
+<td>
+0.146<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.043)
+</td>
+<td>
+(0.048)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Babyboomer
+</td>
+<td>
+0.085<sup>**</sup>
+</td>
+<td>
+0.085<sup>**</sup>
+</td>
+<td>
+0.107<sup>**</sup>
+</td>
+<td>
+0.085<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.043)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-4.750<sup>*</sup>
+</td>
+<td>
+-4.750<sup>*</sup>
+</td>
+<td>
+-6.177<sup>**</sup>
+</td>
+<td>
+-5.667<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.557)
+</td>
+<td>
+(2.557)
+</td>
+<td>
+(2.726)
+</td>
+<td>
+(2.760)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+230
+</td>
+<td>
+230
+</td>
+<td>
+225
+</td>
+<td>
+217
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.661
+</td>
+<td>
+0.661
+</td>
+<td>
+0.670
+</td>
+<td>
+0.700
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.632
+</td>
+<td>
+0.632
+</td>
+<td>
+0.638
+</td>
+<td>
+0.666
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.201 (df = 211)
+</td>
+<td>
+1.201 (df = 211)
+</td>
+<td>
+1.200 (df = 204)
+</td>
+<td>
+1.163 (df = 194)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+22.830<sup>***</sup> (df = 18; 211)
+</td>
+<td>
+22.830<sup>***</sup> (df = 18; 211)
+</td>
+<td>
+20.723<sup>***</sup> (df = 20; 204)
+</td>
+<td>
+20.547<sup>***</sup> (df = 22; 194)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+<p>Copyright &copy; 2020 Jaewon Royce Choi, Technology & Information Policy Institute (TIPI). All rights reserved.</p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
