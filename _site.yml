@@ -15,6 +15,10 @@ navbar:
         href: broadband-measure.html
       - text: "Entrepreneurship"
         href: entrepreneurship-measure.html
+  - text: "Analysis"
+    menu:
+      - text: "Regression Models"
+        href: regression-analyses.html
 output:
   html_document:
     theme: cosmo

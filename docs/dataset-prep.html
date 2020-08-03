@@ -302,6 +302,18 @@ $(document).ready(function () {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="regression-analyses.html">Regression Models</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -796,7 +808,7 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
 
 nonemp2017_tx_agg &lt;- nonemp2017_tx %&gt;% 
-  mutate(est_total = ifelse(NAICS2017 == &quot;00&quot;, NESTAB, 0),
+  mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
   group_by(SECTOR, county_FIPS) %&gt;% slice(1) %&gt;% ungroup() %&gt;% 
@@ -806,7 +818,7 @@ nonemp2017_tx_agg &lt;- nonemp2017_tx %&gt;%
   mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
 
 nonemp2018_tx_agg &lt;- nonemp2018_tx %&gt;% 
-  mutate(est_total = ifelse(NAICS2017 == &quot;00&quot;, NESTAB, 0),
+  mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
   group_by(SECTOR, county_FIPS) %&gt;% slice(1) %&gt;% ungroup() %&gt;% 
