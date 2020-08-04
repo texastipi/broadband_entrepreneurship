@@ -341,12 +341,26 @@ library(gridExtra)
 #install.packages(&quot;stargazer&quot;, dependencies = T)    # A package for better looking tables for results
 library(stargazer)
 #install.packages(&quot;sjPlot&quot;)
-library(sjPlot)
-
-## Read in dataset
-tx_bb_entrepreneur_merged_v2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv&quot;)
-
-tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
+library(sjPlot)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;lme4&#39;:
+##   method                          from
+##   cooks.distance.influence.merMod car 
+##   influence.merMod                car 
+##   dfbeta.influence.merMod         car 
+##   dfbetas.influence.merMod        car</code></pre>
+<pre class="r"><code>## Read in dataset
+tx_bb_entrepreneur_merged_v2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   county = col_character(),
+##   state = col_character(),
+##   pct_broadband_FCC_2019 = col_character(),
+##   medianup = col_number(),
+##   prom_provider = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
   mutate(chg_pct_50_est_cbp_2012_2018 = pct_50_est_cbp_2018 - pct_50_est_cbp_2012,
          chg_pct_10_est_cbp_2012_2018 = pct_10_est_cbp_2018 - pct_10_est_cbp_2012,
          chgn_nonemp_2012_2018 = neest_nemp_2018 - neest_nemp_2012)</code></pre>
@@ -383,7 +397,7 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
 <p>Entrepreneurial outcomes can be represented by several variables in this dataset. As the ASU research team’s white paper argued, the venture density provided by GoDaddy activities reflects actual entrepreneurial activities in the form of online domain creation. In the dataset, we also have Texas state’s sole proprietor statistics. These variables reflect small and medium sized businesses in each county.</p>
 <div id="control-variables" class="section level4">
 <h4>Control Variables</h4>
-<p>For control variables, various demographic measures derived from the ACS estimates are available in the dataset. Furthermore, the ruralithy of the counties are reflected in the IRR index. Number of population, and regional intustry characteristics will be also included as control variables.</p>
+<p>For control variables, various demographic measures derived from the ACS estimates are available in the dataset. Furthermore, the rurality of the counties are reflected in the IRR index. Number of population, and regional industry characteristics will be also included as control variables.</p>
 </div>
 </div>
 </div>
@@ -444,7 +458,7 @@ Nonfarm Proprietors Share
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability
+FCC Broadband Availability (%, 2017)
 </td>
 <td>
 0.001
@@ -477,7 +491,7 @@ FCC Broadband Availability
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband
+MS Broadband (%, 2019)
 </td>
 <td>
 </td>
@@ -508,7 +522,7 @@ MS Broadband
 </tr>
 <tr>
 <td style="text-align:left">
-ACS Broadband Sub
+ACS Broadband Subscription (% of people with fixed broadband subscription)
 </td>
 <td>
 </td>
@@ -537,7 +551,7 @@ ACS Broadband Sub
 </tr>
 <tr>
 <td style="text-align:left">
-M-Lab Broadband
+M-Lab Broadband (% of testers with 25/3 Mbps speed)
 </td>
 <td>
 </td>
@@ -597,7 +611,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-Agriculture
+Agriculture (% of workers)
 </td>
 <td>
 0.003<sup>***</sup>
@@ -630,7 +644,7 @@ Agriculture
 </tr>
 <tr>
 <td style="text-align:left">
-Construction
+Construction (% of workers)
 </td>
 <td>
 0.006<sup>***</sup>
@@ -663,7 +677,7 @@ Construction
 </tr>
 <tr>
 <td style="text-align:left">
-Wholesale
+Wholesale (% of workers)
 </td>
 <td>
 0.008<sup>**</sup>
@@ -696,7 +710,7 @@ Wholesale
 </tr>
 <tr>
 <td style="text-align:left">
-Retail
+Retail (% of workers)
 </td>
 <td>
 0.003<sup>**</sup>
@@ -729,7 +743,7 @@ Retail
 </tr>
 <tr>
 <td style="text-align:left">
-Transportation
+Transportation (% of workers)
 </td>
 <td>
 0.002
@@ -762,7 +776,7 @@ Transportation
 </tr>
 <tr>
 <td style="text-align:left">
-IT
+IT (% of workers)
 </td>
 <td>
 0.009<sup>*</sup>
@@ -795,7 +809,7 @@ IT
 </tr>
 <tr>
 <td style="text-align:left">
-Finance
+Finance (% of workers)
 </td>
 <td>
 -0.002
@@ -828,7 +842,7 @@ Finance
 </tr>
 <tr>
 <td style="text-align:left">
-Professional
+Professional (% of workers)
 </td>
 <td>
 0.004<sup>*</sup>
@@ -861,7 +875,7 @@ Professional
 </tr>
 <tr>
 <td style="text-align:left">
-Education
+Education (% of workers)
 </td>
 <td>
 0.002
@@ -894,7 +908,7 @@ Education
 </tr>
 <tr>
 <td style="text-align:left">
-Other occupation
+Other occupation (% of workers)
 </td>
 <td>
 0.011<sup>***</sup>
@@ -927,7 +941,7 @@ Other occupation
 </tr>
 <tr>
 <td style="text-align:left">
-Public
+Public (% of workers)
 </td>
 <td>
 0.002
@@ -960,7 +974,7 @@ Public
 </tr>
 <tr>
 <td style="text-align:left">
-Highschool
+Highschool Level Education
 </td>
 <td>
 0.001
@@ -993,7 +1007,7 @@ Highschool
 </tr>
 <tr>
 <td style="text-align:left">
-College
+College Level Education
 </td>
 <td>
 0.002<sup>***</sup>
@@ -1316,7 +1330,7 @@ Change in Nonfarm Proprietors Share
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability
+FCC Broadband Availability (%, 2017)
 </td>
 <td>
 -0.010
@@ -1349,7 +1363,7 @@ FCC Broadband Availability
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband
+MS Broadband (%, 2019)
 </td>
 <td>
 </td>
@@ -1380,7 +1394,7 @@ MS Broadband
 </tr>
 <tr>
 <td style="text-align:left">
-ACS Broadband Sub
+ACS Broadband Subscription (% of people with fixed broadband subscription)
 </td>
 <td>
 </td>
@@ -1409,7 +1423,7 @@ ACS Broadband Sub
 </tr>
 <tr>
 <td style="text-align:left">
-M-Lab Broadband
+M-Lab Broadband (% of testers with 25/3 Mbps speed)
 </td>
 <td>
 </td>
@@ -1469,7 +1483,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-Agriculture
+Agriculture (% of workers)
 </td>
 <td>
 0.0002
@@ -1502,7 +1516,7 @@ Agriculture
 </tr>
 <tr>
 <td style="text-align:left">
-Construction
+Construction (% of workers)
 </td>
 <td>
 0.001
@@ -1535,7 +1549,7 @@ Construction
 </tr>
 <tr>
 <td style="text-align:left">
-Wholesale
+Wholesale (% of workers)
 </td>
 <td>
 -0.001
@@ -1568,7 +1582,7 @@ Wholesale
 </tr>
 <tr>
 <td style="text-align:left">
-Retail
+Retail (% of workers)
 </td>
 <td>
 -0.001
@@ -1601,7 +1615,7 @@ Retail
 </tr>
 <tr>
 <td style="text-align:left">
-Transportation
+Transportation (% of workers)
 </td>
 <td>
 -0.001<sup>*</sup>
@@ -1634,7 +1648,7 @@ Transportation
 </tr>
 <tr>
 <td style="text-align:left">
-IT
+IT (% of workers)
 </td>
 <td>
 -0.001
@@ -1667,7 +1681,7 @@ IT
 </tr>
 <tr>
 <td style="text-align:left">
-Finance
+Finance (% of workers)
 </td>
 <td>
 -0.001
@@ -1700,7 +1714,7 @@ Finance
 </tr>
 <tr>
 <td style="text-align:left">
-Professional
+Professional (% of workers)
 </td>
 <td>
 -0.001
@@ -1733,7 +1747,7 @@ Professional
 </tr>
 <tr>
 <td style="text-align:left">
-Education
+Education (% of workers)
 </td>
 <td>
 -0.0002
@@ -1766,7 +1780,7 @@ Education
 </tr>
 <tr>
 <td style="text-align:left">
-Other occupation
+Other occupation (% of workers)
 </td>
 <td>
 0.00004
@@ -1799,7 +1813,7 @@ Other occupation
 </tr>
 <tr>
 <td style="text-align:left">
-Public
+Public (% of workers)
 </td>
 <td>
 0.001
@@ -1832,7 +1846,7 @@ Public
 </tr>
 <tr>
 <td style="text-align:left">
-Highschool
+Highschool Level Education
 </td>
 <td>
 0.0003
@@ -1865,7 +1879,7 @@ Highschool
 </tr>
 <tr>
 <td style="text-align:left">
-College
+College Level Education
 </td>
 <td>
 0.0002
@@ -2188,7 +2202,7 @@ Venture Density
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability
+FCC Broadband Availability (%, 2017)
 </td>
 <td>
 0.169
@@ -2221,7 +2235,7 @@ FCC Broadband Availability
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband
+MS Broadband (%, 2019)
 </td>
 <td>
 </td>
@@ -2252,7 +2266,7 @@ MS Broadband
 </tr>
 <tr>
 <td style="text-align:left">
-ACS Broadband Sub
+ACS Broadband Subscription (% of people with fixed broadband subscription)
 </td>
 <td>
 </td>
@@ -2281,7 +2295,7 @@ ACS Broadband Sub
 </tr>
 <tr>
 <td style="text-align:left">
-M-Lab Broadband
+M-Lab Broadband (% of testers with 25/3 Mbps speed)
 </td>
 <td>
 </td>
@@ -2341,7 +2355,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-Agriculture
+Agriculture (% of workers)
 </td>
 <td>
 -0.001
@@ -2374,7 +2388,7 @@ Agriculture
 </tr>
 <tr>
 <td style="text-align:left">
-Construction
+Construction (% of workers)
 </td>
 <td>
 0.063<sup>*</sup>
@@ -2407,7 +2421,7 @@ Construction
 </tr>
 <tr>
 <td style="text-align:left">
-Wholesale
+Wholesale (% of workers)
 </td>
 <td>
 -0.010
@@ -2440,7 +2454,7 @@ Wholesale
 </tr>
 <tr>
 <td style="text-align:left">
-Retail
+Retail (% of workers)
 </td>
 <td>
 0.068<sup>*</sup>
@@ -2473,7 +2487,7 @@ Retail
 </tr>
 <tr>
 <td style="text-align:left">
-Transportation
+Transportation (% of workers)
 </td>
 <td>
 0.030
@@ -2506,7 +2520,7 @@ Transportation
 </tr>
 <tr>
 <td style="text-align:left">
-IT
+IT (% of workers)
 </td>
 <td>
 0.142
@@ -2539,7 +2553,7 @@ IT
 </tr>
 <tr>
 <td style="text-align:left">
-Finance
+Finance (% of workers)
 </td>
 <td>
 0.077
@@ -2572,7 +2586,7 @@ Finance
 </tr>
 <tr>
 <td style="text-align:left">
-Professional
+Professional (% of workers)
 </td>
 <td>
 0.120<sup>**</sup>
@@ -2605,7 +2619,7 @@ Professional
 </tr>
 <tr>
 <td style="text-align:left">
-Education
+Education (% of workers)
 </td>
 <td>
 -0.039
@@ -2638,7 +2652,7 @@ Education
 </tr>
 <tr>
 <td style="text-align:left">
-Other occupation
+Other occupation (% of workers)
 </td>
 <td>
 -0.030
@@ -2671,7 +2685,7 @@ Other occupation
 </tr>
 <tr>
 <td style="text-align:left">
-Public
+Public (% of workers)
 </td>
 <td>
 -0.007
@@ -2704,7 +2718,7 @@ Public
 </tr>
 <tr>
 <td style="text-align:left">
-Highschool
+Highschool Level Education
 </td>
 <td>
 -0.031<sup>*</sup>
@@ -2737,7 +2751,7 @@ Highschool
 </tr>
 <tr>
 <td style="text-align:left">
-College
+College Level Education
 </td>
 <td>
 0.158<sup>***</sup>
@@ -3090,7 +3104,7 @@ Nonfarm Proprietor (%)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability
+FCC Broadband Availability (%, 2017)
 </td>
 <td>
 </td>
@@ -3119,7 +3133,7 @@ FCC Broadband Availability
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband
+MS Broadband (%, 2019)
 </td>
 <td>
 </td>
@@ -3148,7 +3162,7 @@ MS Broadband
 </tr>
 <tr>
 <td style="text-align:left">
-ACS Broadband Subs
+ACS Broadband Subscription (% of people with fixed broadband subscription)
 </td>
 <td>
 </td>
@@ -3175,7 +3189,7 @@ ACS Broadband Subs
 </tr>
 <tr>
 <td style="text-align:left">
-M-Lab Broadband Use
+M-Lab Broadband Use (% of testers with 25/3 Mbps speed)
 </td>
 <td>
 </td>
@@ -3235,7 +3249,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-Agriculture
+Agriculture (% of workers)
 </td>
 <td>
 -0.007
@@ -3268,7 +3282,7 @@ Agriculture
 </tr>
 <tr>
 <td style="text-align:left">
-Construction
+Construction (% of workers)
 </td>
 <td>
 0.052
@@ -3301,7 +3315,7 @@ Construction
 </tr>
 <tr>
 <td style="text-align:left">
-Wholesale
+Wholesale (% of workers)
 </td>
 <td>
 -0.039
@@ -3334,7 +3348,7 @@ Wholesale
 </tr>
 <tr>
 <td style="text-align:left">
-Retail
+Retail (% of workers)
 </td>
 <td>
 0.052
@@ -3367,7 +3381,7 @@ Retail
 </tr>
 <tr>
 <td style="text-align:left">
-Transportation
+Transportation (% of workers)
 </td>
 <td>
 0.014
@@ -3400,7 +3414,7 @@ Transportation
 </tr>
 <tr>
 <td style="text-align:left">
-IT
+IT (% of workers)
 </td>
 <td>
 0.132
@@ -3433,7 +3447,7 @@ IT
 </tr>
 <tr>
 <td style="text-align:left">
-Finance
+Finance (% of workers)
 </td>
 <td>
 0.084
@@ -3466,7 +3480,7 @@ Finance
 </tr>
 <tr>
 <td style="text-align:left">
-Professional
+Professional (% of workers)
 </td>
 <td>
 0.105<sup>**</sup>
@@ -3499,7 +3513,7 @@ Professional
 </tr>
 <tr>
 <td style="text-align:left">
-Education
+Education (% of workers)
 </td>
 <td>
 -0.043<sup>*</sup>
@@ -3532,7 +3546,7 @@ Education
 </tr>
 <tr>
 <td style="text-align:left">
-Other occupation
+Other occupation (% of workers)
 </td>
 <td>
 -0.045
@@ -3565,7 +3579,7 @@ Other occupation
 </tr>
 <tr>
 <td style="text-align:left">
-Public
+Public (% of workers)
 </td>
 <td>
 -0.013
@@ -3598,7 +3612,7 @@ Public
 </tr>
 <tr>
 <td style="text-align:left">
-Highschool
+Highschool Level Education
 </td>
 <td>
 -0.029<sup>*</sup>
@@ -3631,7 +3645,7 @@ Highschool
 </tr>
 <tr>
 <td style="text-align:left">
-College
+College Level Education
 </td>
 <td>
 0.150<sup>***</sup>
