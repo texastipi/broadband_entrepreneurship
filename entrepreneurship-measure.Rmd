@@ -20,7 +20,7 @@ Throughout this page, I will explore descriptive statistics of these measures, d
 <div style="margin-bottom:30px;">
 </div>
 
-## Descriptive Statistics of Broadband Measures
+## Descriptive Statistics of Entrepreneurship Measures
 
 ```{r Impoart Libraries, results='hide', echo=FALSE}
 library(leaflet)
@@ -283,7 +283,7 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
               color = ~pal2(venturedensity_mean),
               popup = ~popup_tx) %>% 
   addLegend("bottomright", pal = pal2, values = ~venturedensity_mean,
-            title = "Venture Density", opacity = 1)
+            title = "Venture Density (2018-2019)", opacity = 1)
 ```
 
 <div style="margin-bottom:30px;">
