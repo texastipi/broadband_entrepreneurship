@@ -185,7 +185,7 @@ This dataset contains information of IRR index at the county level. The index ca
 
 There are two datasets that contains data from 2000 and 2010. I will import these datasets, filter for Texas and set up for a final merge of all datasets we have.
 
-```{r IRR Rural Index Import and Clean, results='hide', cache=TRUE}
+```{r IRR Rural Index Import and Clean, results='hide'}
 ## Import the Dataset
 rural_2000 <- read_csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv")
 rural_2010 <- read_csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv")
@@ -208,6 +208,19 @@ rural_2010_tx <- rural_2010 %>%
 ## Inspect Structure
 str(rural_2000_tx)
 str(rural_2010_tx)
+
+```
+
+## Rural-Urban Continuum Codes
+
+In addition to the IRR index, I also import the [Rural-Urban Continuum Codes](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx) (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.
+
+```{r RUCC Import, results='hide'}
+rucc2013 <- read_csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv")
+
+rucc2013 <- rucc2013 %>% 
+  mutate(Description = str_extract(Description, "^.*?(?= -)")) %>% 
+  rename(metro_desc = Description)
 
 ```
 
@@ -912,7 +925,8 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged %>%
   left_join(., nonemp_tx, by = c("FIPS" = "county_FIPS")) %>% 
   left_join(., acs_broadband_pct_tx, by = c("FIPS" = "county_FIPS")) %>% 
   left_join(., bea_nonfarmproprietor_tx, by = c("FIPS" = "GeoFips")) %>% 
-  left_join(., firmlevel_tx, by = c("FIPS" = "county_FIPS"))
+  left_join(., firmlevel_tx, by = c("FIPS" = "county_FIPS")) %>% 
+  left_join(., select(rucc2013, c("FIPS","RUCC_2013","metro_desc")), by = "FIPS")
 
 ## Generate average GoDaddy & M-lab broadband measures and clean unnecessary variables ##
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
@@ -936,6 +950,6 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018))
 
 ## Write CSV ##
-#write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TX-merged_v2.csv")
+write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TX-merged_v2.csv")
 
 ```
