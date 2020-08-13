@@ -4,6 +4,7 @@
 
 install.packages("car")
 install.packages("psych")
+install.packages(c("jtools","interactions","sandwich"), dependencies = T)
 
 library(tidyverse)
 library(ggplot2)
