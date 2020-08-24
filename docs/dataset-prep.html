@@ -331,7 +331,7 @@ $(document).ready(function () {
 </div>
 
 
-<p>This document lays out the data handling process of multiple databases related to broadband availability, speed, and entrepreneurship of Texas. Databases used here are as follows:</p>
+<p>This document lays out the data handling process of multiple databases related to broadband availability, speed, and entrepreneurship of Texas, Maine, and Kansas. Databases used here are as follows:</p>
 <ul>
 <li>Microsoft Broadband Availability Dataset</li>
 <li>Measurement Lab (M-Lab) Datasets Exported via Google BigQuery</li>
@@ -362,11 +362,11 @@ ms_broadband &lt;- ms_broadband %&gt;%
 str(ms_broadband)</code></pre>
 <p>Next step is to filter out information on the states other than Texas</p>
 <pre class="r"><code>## Filtering TX
-ms_broadband_tx &lt;- ms_broadband %&gt;% 
-  filter(ST == &quot;TX&quot;) %&gt;% droplevels() # Deletes unused levels in factor variables in a dataset
+ms_broadband_txksme &lt;- ms_broadband %&gt;% 
+  filter(ST == &quot;TX&quot; | ST == &quot;KS&quot; | ST == &quot;ME&quot;) %&gt;% droplevels() # Deletes unused levels in factor variables in a dataset
 
 ## Inspect the result
-str(ms_broadband_tx)</code></pre>
+str(ms_broadband_txksme)</code></pre>
 </div>
 <div id="godaddy-dataset" class="section level2">
 <h2>GoDaddy Dataset</h2>
@@ -383,14 +383,15 @@ str(godaddy_county)</code></pre>
 <pre class="r"><code>## Filtering Texas using FIPS code
 str(godaddy_county)
 
-godaddy_county_tx &lt;- godaddy_county %&gt;% 
-  filter(startsWith(as.character(cfips), &quot;48&quot;)) %&gt;% # Filter Texas
+godaddy_county_txksme &lt;- godaddy_county %&gt;% 
+  filter(startsWith(as.character(cfips), &quot;48&quot;) | startsWith(as.character(cfips), &quot;23&quot;) |
+           startsWith(as.character(cfips), &quot;20&quot;)) %&gt;% # Filter Texas, Kansas, Maine
   mutate(population = as.numeric(gsub(&quot;,&quot;,&quot;&quot;,as.character(population)))) %&gt;% # Convert population from factor to numeric
   separate(county, into = c(&quot;county&quot;, &quot;state&quot;), sep = &quot;, &quot;, remove = T) %&gt;% # Separate county variable which had state and county data at the same time
   droplevels()  # Drop unused levels from factor variables
 
 ## Inspect Structure
-str(godaddy_county_tx)</code></pre>
+str(godaddy_county_txksme)</code></pre>
 </div>
 <div id="m-lab-datasets" class="section level2">
 <h2>M-Lab Datasets</h2>
@@ -416,58 +417,60 @@ str(mlab_nov)
 str(mlab_dec)
 
 #### Cleaning and Filtering the Dataset ####
+county_db &lt;- tidycensus::fips_codes
+county_tx &lt;- county_db[which(county_db$state == &quot;TX&quot;), ]
+county_ks &lt;- county_db[which(county_db$state == &quot;KS&quot;), ]
 ## September 2019 ##
-mlab_sept_tx &lt;- mlab_sept %&gt;% 
-  filter(state == &quot;TX&quot;) %&gt;% 
+mlab_sept_txksme &lt;- mlab_sept %&gt;% 
+  filter(state == &quot;TX&quot; | state == &quot;KS&quot; | state == &quot;ME&quot;) %&gt;% 
   select(-c(&quot;BB_state&quot;,&quot;BB_county_name&quot;,&quot;DLmed_state&quot;,&quot;DLmed_county_name&quot;,&quot;ULmed_state&quot;,&quot;ULmed_county_name&quot;,&quot;ul_sample_state&quot;,&quot;ul_sample_county_name&quot;,&quot;dl_sample_state&quot;,&quot;dl_sample_county_name&quot;)) %&gt;% 
   mutate(county = paste(as.character(county_name), &quot;County&quot;, sep = &quot; &quot;),
          frac_over_25DL = 1 - frac_under_25mbpsDL) %&gt;% 
-  droplevels()
+  droplevels() %&gt;% 
+  left_join(., county_db, by = c(&quot;state&quot; = &quot;state&quot;, &quot;county&quot; = &quot;county&quot;)) %&gt;% 
+  mutate(county_FIPS = paste0(state_code, county_code)) %&gt;% 
+  select(-c(&quot;state_name&quot;,&quot;county_name&quot;))
 
 ## October 2019 ##
-mlab_oct_tx &lt;- mlab_oct %&gt;% 
-  filter(state == &quot;TX&quot;) %&gt;% 
+mlab_oct_txksme &lt;- mlab_oct %&gt;% 
+  filter(state == &quot;TX&quot; | state == &quot;KS&quot; | state == &quot;ME&quot;) %&gt;% 
   select(-c(&quot;BB_state&quot;,&quot;BB_county_name&quot;,&quot;DLmed_state&quot;,&quot;DLmed_county_name&quot;,&quot;ULmed_state&quot;,&quot;ULmed_county_name&quot;,&quot;ul_sample_state&quot;,&quot;ul_sample_county_name&quot;,&quot;dl_sample_state&quot;,&quot;dl_sample_county_name&quot;)) %&gt;% 
   mutate(county = paste(as.character(county_name), &quot;County&quot;, sep = &quot; &quot;),
          frac_over_25DL = 1 - frac_under_25mbpsDL) %&gt;% 
-  droplevels()
+  droplevels() %&gt;% 
+  left_join(., county_db, by = c(&quot;state&quot; = &quot;state&quot;, &quot;county&quot; = &quot;county&quot;)) %&gt;% 
+  mutate(county_FIPS = paste0(state_code, county_code)) %&gt;% 
+  select(-c(&quot;state_name&quot;,&quot;county_name&quot;))
 
 ## November 2019 ##
-mlab_nov_tx &lt;- mlab_nov %&gt;% 
-  filter(state == &quot;TX&quot;) %&gt;% 
+mlab_nov_txksme &lt;- mlab_nov %&gt;% 
+  filter(state == &quot;TX&quot; | state == &quot;KS&quot; | state == &quot;ME&quot;) %&gt;% 
   select(-c(&quot;BB_state&quot;,&quot;BB_county_name&quot;,&quot;DLmed_state&quot;,&quot;DLmed_county_name&quot;,&quot;ULmed_state&quot;,&quot;ULmed_county_name&quot;,&quot;ul_sample_state&quot;,&quot;ul_sample_county_name&quot;,&quot;dl_sample_state&quot;,&quot;dl_sample_county_name&quot;)) %&gt;% 
   mutate(county = paste(as.character(county_name), &quot;County&quot;, sep = &quot; &quot;),
          frac_over_25DL = 1 - frac_under_25mbpsDL) %&gt;% 
-  droplevels()
+  droplevels() %&gt;% 
+  left_join(., county_db, by = c(&quot;state&quot; = &quot;state&quot;, &quot;county&quot; = &quot;county&quot;)) %&gt;% 
+  mutate(county_FIPS = paste0(state_code, county_code)) %&gt;% 
+  select(-c(&quot;state_name&quot;,&quot;county_name&quot;))
 
 ## December 2019 ##
-mlab_dec_tx &lt;- mlab_dec %&gt;% 
-  filter(state == &quot;TX&quot;) %&gt;% 
+mlab_dec_txksme &lt;- mlab_dec %&gt;% 
+  filter(state == &quot;TX&quot; | state == &quot;KS&quot; | state == &quot;ME&quot;) %&gt;% 
   select(-c(&quot;BB_state&quot;,&quot;BB_county_name&quot;,&quot;DLmed_state&quot;,&quot;DLmed_county_name&quot;,&quot;ULmed_state&quot;,&quot;ULmed_county_name&quot;,&quot;ul_sample_state&quot;,&quot;ul_sample_county_name&quot;,&quot;dl_sample_state&quot;,&quot;dl_sample_county_name&quot;)) %&gt;% 
   mutate(county = paste(as.character(county_name), &quot;County&quot;, sep = &quot; &quot;),
          frac_over_25DL = 1 - frac_under_25mbpsDL) %&gt;% 
-  droplevels()</code></pre>
+  droplevels() %&gt;% 
+  left_join(., county_db, by = c(&quot;state&quot; = &quot;state&quot;, &quot;county&quot; = &quot;county&quot;)) %&gt;% 
+  mutate(county_FIPS = paste0(state_code, county_code)) %&gt;% 
+  select(-c(&quot;state_name&quot;,&quot;county_name&quot;))</code></pre>
 </div>
 <div id="texas-sole-proprietors-dataset" class="section level2">
 <h2>Texas Sole Proprietors Dataset</h2>
 <p>This dataset contains information of sole proprietors number provided by the Bureau of Business Research at <span class="math inline">\(IC^{2}\)</span> Institute. The information is presented at the county level.</p>
 <pre class="r"><code>## Import the Dataset
-tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   county = col_character(),
-##   pct_change_proprietors_2000_2017 = col_double(),
-##   proprietors_2000 = col_double(),
-##   proprietors_2017 = col_double(),
-##   pct_proprietors_employment_2000 = col_double(),
-##   pct_proprietors_employment_2010 = col_double(),
-##   pct_proprietors_employment_2017 = col_double(),
-##   total_employment_2017 = col_double(),
-##   wage_salary_jobs_2017 = col_double(),
-##   pct_change_pro_emp_2000_2017 = col_double(),
-##   pct_change_pro_emp_2010_2017 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect the Structure
+tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)
+
+## Inspect the Structure
 str(tx_proprietor)</code></pre>
 <p>This dataset’s variables are straighforward as it was pre-cleaned on Excel spreadsheet.</p>
 </div>
@@ -476,54 +479,54 @@ str(tx_proprietor)</code></pre>
 <p>This dataset contains information of IRR index at the county level. The index calculates the extent to which a certain county could be considered as <em>‘rural’</em>. Smaller the value of the index, more rural the county is considered to be.</p>
 <p>There are two datasets that contains data from 2000 and 2010. I will import these datasets, filter for Texas and set up for a final merge of all datasets we have.</p>
 <pre class="r"><code>## Import the Dataset
-rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2000 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2000 = col_double()
-## )</code></pre>
-<pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2010 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2010 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect Structure
+rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)
+rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)
+
+## Inspect Structure
 str(rural_2000)
 str(rural_2010)
 
 #### Clean the Datasets ####
 ## Filter Texas counties using FIPS code ##
 
-rural_2000_tx &lt;- rural_2000 %&gt;% 
-  filter(startsWith(as.character(FIPS2000), &quot;48&quot;)) %&gt;% 
+rural_2000_txksme &lt;- rural_2000 %&gt;% 
+  filter(startsWith(as.character(FIPS2000), &quot;48&quot;)| startsWith(as.character(FIPS2000), &quot;23&quot;) |
+           startsWith(as.character(FIPS2000), &quot;20&quot;)) %&gt;% 
   separate(`County Name`, into = c(&quot;county&quot;, &quot;state&quot;), sep = &quot;, &quot;, remove = T)
 
-rural_2010_tx &lt;- rural_2010 %&gt;% 
-  filter(startsWith(as.character(FIPS2010), &quot;48&quot;)) %&gt;% 
+rural_2010_txksme &lt;- rural_2010 %&gt;% 
+  filter(startsWith(as.character(FIPS2010), &quot;48&quot;)| startsWith(as.character(FIPS2010), &quot;23&quot;) |
+           startsWith(as.character(FIPS2010), &quot;20&quot;)) %&gt;% 
   separate(`County Name`, into = c(&quot;county&quot;, &quot;state&quot;), sep = &quot;, &quot;, remove = T)
 
 ## Inspect Structure
-str(rural_2000_tx)
-str(rural_2010_tx)</code></pre>
+str(rural_2000_txksme)
+str(rural_2010_txksme)</code></pre>
+</div>
+<div id="rural-urban-continuum-codes" class="section level2">
+<h2>Rural-Urban Continuum Codes</h2>
+<p>In addition to the IRR index, I also import the <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">Rural-Urban Continuum Codes</a> (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.</p>
+<pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)
+
+rucc2013 &lt;- rucc2013 %&gt;% 
+  mutate(Description = str_extract(Description, &quot;^.*?(?= -)&quot;)) %&gt;% 
+  rename(metro_desc = Description)</code></pre>
 </div>
 <div id="merge-into-single-dataset-at-the-county-level" class="section level2">
 <h2>Merge into Single Dataset at the County Level</h2>
 <p>In this section, I will join all the datasets I have cleand and processed above into a single dataset containing all the information at the county level rows. The names of the datasets created from the process above are as follows</p>
 <ul>
-<li><code>ms_broadband_tx</code></li>
-<li><code>godaddy_county_tx</code></li>
-<li><code>mlab_sept_tx</code>; <code>mlab_oct_tx</code>; <code>mlab_nov_tx</code>; <code>mlab_dec_tx</code></li>
+<li><code>ms_broadband_txksme</code></li>
+<li><code>godaddy_county_txksme</code></li>
+<li><code>mlab_sept_txksme</code>; <code>mlab_oct_txksme</code>; <code>mlab_nov_txksme</code>; <code>mlab_dec_txksme</code></li>
 <li><code>tx_proprietor</code></li>
-<li><code>rural_2000_tx</code>; <code>rural_2010_tx</code></li>
+<li><code>rural_2000_txksme</code>; <code>rural_2010_txksme</code></li>
 </ul>
 <p>I will first inspect the datasets quickly to see if row counts of all datasets are matched since it is possible some of them (especially M-Lab datasets) have less/missing observations. Afterwards, I’ll join the datasets into one.</p>
 <pre class="r"><code>#### Inspect the Number of Observations ####
-knitr::kable(tibble(MS = count(ms_broadband_tx)$n, godaddy = count(godaddy_county_tx)$n,
-       mlabsept = count(mlab_sept_tx)$n, mlaboct = count(mlab_oct_tx)$n, mlabnov = count(mlab_nov_tx)$n, mlabdec = count(mlab_dec_tx)$n,
-       txprop = count(tx_proprietor)$n, irr2000 = count(rural_2000_tx)$n, irr2010 = count(rural_2010_tx)$n))</code></pre>
+knitr::kable(tibble(MS = count(ms_broadband_txksme)$n, godaddy = count(godaddy_county_txksme)$n,
+       mlabsept = count(mlab_sept_txksme)$n, mlaboct = count(mlab_oct_txksme)$n, mlabnov = count(mlab_nov_txksme)$n, mlabdec = count(mlab_dec_txksme)$n,
+       txprop = count(tx_proprietor)$n, irr2000 = count(rural_2000_txksme)$n, irr2010 = count(rural_2010_txksme)$n))</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -540,26 +543,26 @@ knitr::kable(tibble(MS = count(ms_broadband_tx)$n, godaddy = count(godaddy_count
 </thead>
 <tbody>
 <tr class="odd">
+<td align="right">375</td>
+<td align="right">374</td>
+<td align="right">367</td>
+<td align="right">369</td>
+<td align="right">368</td>
+<td align="right">370</td>
 <td align="right">254</td>
-<td align="right">253</td>
-<td align="right">245</td>
-<td align="right">247</td>
-<td align="right">247</td>
-<td align="right">249</td>
-<td align="right">254</td>
-<td align="right">254</td>
-<td align="right">254</td>
+<td align="right">383</td>
+<td align="right">383</td>
 </tr>
 </tbody>
 </table>
 <p>Several missing observation from M-Lab datasets and one missing from GoDaddy dataset here. Therefore, it is critical that these datasets are not used as a reference dataset for joining. Folloiwng code chunk will use <code>join</code> functions of <code>dplyr</code>.</p>
 <pre class="r"><code>#### Join the Datasets ####
 
-str(ms_broadband_tx)
-str(godaddy_county_tx)
-str(mlab_dec_tx)
+str(ms_broadband_txksme)
+str(godaddy_county_txksme)
+str(mlab_dec_txksme)
 str(tx_proprietor)
-str(rural_2000_tx)
+str(rural_2000_txksme)
 
 ## The variables to match from each datasets are
 ## ms_broadband_tx$COUNTY.ID          Integer
@@ -571,23 +574,36 @@ str(rural_2000_tx)
 ## rural datasets#county              Character (&quot;____ County&quot;)
 
 ## Create a character vector for ms_broadband_tx dataset to minimize potential error beforehand
-ms_broadband_tx &lt;- ms_broadband_tx %&gt;% mutate(county = `COUNTY NAME`)
-str(ms_broadband_tx)
+ms_broadband_txksme &lt;- ms_broadband_txksme %&gt;% mutate(county = `COUNTY NAME`,
+                                                      county_FIPS = as.character(`COUNTY ID`)) %&gt;% 
+  select(-c(&quot;COUNTY NAME&quot;,&quot;COUNTY ID&quot;))
+str(ms_broadband_txksme)
 
 ## Nested left_joins on IRR dataset
-names(mlab_sept_tx) &lt;- paste(names(mlab_sept_tx), &quot;.sept&quot;, sep = &quot;&quot;)
-names(mlab_oct_tx) &lt;- paste(names(mlab_oct_tx), &quot;.oct&quot;, sep = &quot;&quot;)
-names(mlab_nov_tx) &lt;- paste(names(mlab_nov_tx), &quot;.nov&quot;, sep = &quot;&quot;)
-names(mlab_dec_tx) &lt;- paste(names(mlab_dec_tx), &quot;.dec&quot;, sep = &quot;&quot;)
+names(mlab_sept_txksme) &lt;- paste(names(mlab_sept_txksme), &quot;.sept&quot;, sep = &quot;&quot;)
+names(mlab_oct_txksme) &lt;- paste(names(mlab_oct_txksme), &quot;.oct&quot;, sep = &quot;&quot;)
+names(mlab_nov_txksme) &lt;- paste(names(mlab_nov_txksme), &quot;.nov&quot;, sep = &quot;&quot;)
+names(mlab_dec_txksme) &lt;- paste(names(mlab_dec_txksme), &quot;.dec&quot;, sep = &quot;&quot;)
 
-tx_bb_entrepreneur_merged &lt;- left_join(rural_2000_tx, rural_2010_tx, by = &quot;county&quot;) %&gt;% 
-  left_join(., tx_proprietor, by = &quot;county&quot;) %&gt;% 
-  left_join(., ms_broadband_tx, by = &quot;county&quot;) %&gt;% 
-  left_join(., godaddy_county_tx, by = &quot;county&quot;) %&gt;% 
-  left_join(., mlab_sept_tx, by = c(&quot;county&quot; = &quot;county.sept&quot;)) %&gt;% 
-  left_join(., mlab_oct_tx, by = c(&quot;county&quot; = &quot;county.oct&quot;)) %&gt;% 
-  left_join(., mlab_nov_tx, by = c(&quot;county&quot; = &quot;county.nov&quot;)) %&gt;% 
-  left_join(., mlab_dec_tx, by = c(&quot;county&quot; = &quot;county.dec&quot;))
+rural_2010_txksme &lt;- rural_2010_txksme %&gt;% mutate(FIPS2010 = as.character(FIPS2010))
+godaddy_county_txksme &lt;- godaddy_county_txksme %&gt;% mutate(cfips = as.character(cfips))
+
+tx_bb_entrepreneur_merged &lt;- left_join(ms_broadband_txksme, rural_2010_txksme, by = c(&quot;county_FIPS&quot; = &quot;FIPS2010&quot;)) %&gt;% 
+  left_join(., select(godaddy_county_txksme, c(&quot;cfips&quot;,&quot;county&quot;,&quot;state&quot;,
+                                           &quot;venturedensitymay18&quot;,&quot;venturedensitynov18&quot;,
+                                           &quot;venturedensityfeb19&quot;,&quot;venturedensitysep19&quot;,
+                                           &quot;venturedensityoct19&quot;,&quot;venturedensitynov19&quot;,
+                                           &quot;venturedensitydec19&quot;,
+                                           &quot;highlyactive_vdmay18&quot;,&quot;highlyactive_vdnov18&quot;,
+                                           &quot;highlyactive_vdfeb19&quot;,&quot;highlyactive_vdsep19&quot;,
+                                           &quot;highlyactive_vdoct19&quot;,&quot;highlyactive_vdnov19&quot;,
+                                           &quot;highlyactive_vddec19&quot;,
+                                           &quot;prosperityindex2016&quot;,&quot;prosperity2007&quot;,
+                                           &quot;change_prosperity&quot;)), by = c(&quot;county_FIPS&quot; = &quot;cfips&quot;)) %&gt;% 
+  left_join(., mlab_sept_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS.sept&quot;)) %&gt;% 
+  left_join(., mlab_oct_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS.oct&quot;)) %&gt;% 
+  left_join(., mlab_nov_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS.nov&quot;)) %&gt;% 
+  left_join(., mlab_dec_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS.dec&quot;))
 
 str(tx_bb_entrepreneur_merged)
 
@@ -596,16 +612,11 @@ knitr::kable(head(tx_bb_entrepreneur_merged, 20))
 ## Drop columns with duplicate information
 
 str(tx_bb_entrepreneur_merged)
-tx_bb_entrepreneur_merged &lt;- tx_bb_entrepreneur_merged %&gt;% 
-  rename(FIPS = FIPS2000) %&gt;% 
-  select(-c(&quot;FIPS2010&quot;,&quot;state.x&quot;,&quot;state.y&quot;,&quot;ST&quot;,`COUNTY ID`,`COUNTY NAME`,
-            &quot;cfips&quot;,&quot;state.sept&quot;,&quot;county_name.sept&quot;,&quot;state.oct&quot;,&quot;county_name.oct&quot;,&quot;state.nov&quot;,&quot;county_name.nov&quot;,&quot;state.dec&quot;,
-            &quot;county_name.dec&quot;))
-
-tx_bb_entrepreneur_merged &lt;- tx_bb_entrepreneur_merged %&gt;%  # Converting ASU percentage numbers into fraction
-  mutate(pctbbfrac_ASU = pctbroadband/100,
-         pctbbfrac_poor_ASU = pctbroadband_poorpeople/100,
-         FIPS = as.character(FIPS))</code></pre>
+tx_bb_entrepreneur_merged &lt;- tx_bb_entrepreneur_merged %&gt;%  
+  select(-starts_with(&quot;state.&quot;)) %&gt;% 
+  select(-starts_with(&quot;county.&quot;)) %&gt;% 
+  select(-starts_with(&quot;county_cod&quot;)) %&gt;% 
+  select(-starts_with(&quot;state_&quot;))</code></pre>
 </div>
 <div id="county-business-patterns-nonemployer-statistics-dataset-from-the-census-bureau" class="section level2">
 <h2>County Business Patterns &amp; Nonemployer Statistics Dataset from the Census Bureau</h2>
@@ -775,7 +786,7 @@ nonemp2012_tx &lt;- nonemp2012 %&gt;% filter(state == &quot;48&quot;)
 nonemp2017_tx &lt;- nonemp2017 %&gt;% filter(state == &quot;48&quot;)
 nonemp2018_tx &lt;- nonemp2018 %&gt;% filter(state == &quot;48&quot;)</code></pre>
 <pre class="r"><code>#### CBP Dataset Aggregation ####
-cbp2012_tx_agg &lt;- cbp2012_tx %&gt;% 
+cbp2012_txksme_agg &lt;- cbp2012_txksme %&gt;% 
   filter(EMPSZES == &quot;001&quot;|EMPSZES == &quot;210&quot;|EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
          emp_total = ifelse(EMPSZES == &quot;001&quot;, EMP, 0),
@@ -787,9 +798,9 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2012 = sum(est_50, na.rm = T),
             est_10_cbp_2012 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2012 = est_50_cbp_2012 / est_cbp_2012,
-         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2017_tx_agg &lt;- cbp2017_tx %&gt;% 
+         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)
+
+cbp2017_txksme_agg &lt;- cbp2017_txksme %&gt;% 
   filter(EMPSZES == &quot;001&quot;|EMPSZES == &quot;210&quot;|EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
          emp_total = ifelse(EMPSZES == &quot;001&quot;, EMP, 0),
@@ -801,9 +812,9 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2017 = sum(est_50, na.rm = T),
             est_10_cbp_2017 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2017 = est_50_cbp_2017 / est_cbp_2017,
-         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2018_tx_agg &lt;- cbp2018_tx %&gt;% 
+         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
+
+cbp2018_txksme_agg &lt;- cbp2018_txksme %&gt;% 
   filter(EMPSZES == &quot;001&quot;|EMPSZES == &quot;210&quot;|EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
          emp_total = ifelse(EMPSZES == &quot;001&quot;, EMP, 0),
@@ -815,13 +826,13 @@ cbp2012_tx_agg &lt;- cbp2012_tx %&gt;%
             est_50_cbp_2018 = sum(est_50, na.rm = T),
             est_10_cbp_2018 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2018 = est_50_cbp_2018 / est_cbp_2018,
-         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
-cbp_tx &lt;- left_join(cbp2012_tx_agg, cbp2017_tx_agg, by = &quot;county_FIPS&quot;) %&gt;% left_join(., cbp2018_tx_agg, by = &quot;county_FIPS&quot;)
+         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)
+
+## Merge three years datasets ##
+cbp_txksme &lt;- left_join(cbp2012_txksme_agg, cbp2017_txksme_agg, by = &quot;county_FIPS&quot;) %&gt;% left_join(., cbp2018_txksme_agg, by = &quot;county_FIPS&quot;)
 
 #### Nonemployer Dataset Aggregation ####
-nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;% 
+nonemp2012_txksme_agg &lt;- nonemp2012 %&gt;% 
   mutate(est_total = ifelse(NAICS2012 == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2012, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2012 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -829,9 +840,9 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2012 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2012 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2017_tx_agg &lt;- nonemp2017_tx %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
+
+nonemp2017_txksme_agg &lt;- nonemp2017 %&gt;% 
   mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -839,9 +850,9 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2017 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2017 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2018_tx_agg &lt;- nonemp2018_tx %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
+
+nonemp2018_txksme_agg &lt;- nonemp2018 %&gt;% 
   mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -849,10 +860,10 @@ nonemp2012_tx_agg &lt;- nonemp2012_tx %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2018 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2018 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
-nonemp_tx &lt;- left_join(nonemp2012_tx_agg, nonemp2017_tx_agg, by= &quot;county_FIPS&quot;) %&gt;% left_join(., nonemp2018_tx_agg, by = &quot;county_FIPS&quot;) %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)
+
+## Merge three years datasets ##
+nonemp_txksme &lt;- left_join(nonemp2012_txksme_agg, nonemp2017_txksme_agg, by= &quot;county_FIPS&quot;) %&gt;% left_join(., nonemp2018_txksme_agg, by = &quot;county_FIPS&quot;) %&gt;% 
   mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)</code></pre>
 </div>
 <div id="other-economic-statistics" class="section level2">
@@ -1079,16 +1090,18 @@ firmlevel_2017 &lt;- firmlevel_2017 %&gt;%
   select(-c(&quot;EMP_F&quot;,&quot;FIRMPDEMP_F&quot;,&quot;state&quot;,&quot;county&quot;))
 
 ## Join the two years, filter Texas, and calculate change variable ##
-firmlevel_tx &lt;- left_join(firmlevel_2012, firmlevel_2017, by = &quot;county_FIPS&quot;) %&gt;% filter(str_detect(county_FIPS, &quot;^48&quot;)) %&gt;% 
+firmlevel_txksme &lt;- left_join(firmlevel_2012, firmlevel_2017, by = &quot;county_FIPS&quot;) %&gt;% filter(str_detect(county_FIPS, &quot;^48&quot;)|str_detect(county_FIPS, &quot;^20&quot;)|str_detect(county_FIPS, &quot;^23&quot;)) %&gt;% 
   mutate(chg_firm_2012_2017 = firm_2017 - firm_2012)</code></pre>
 </div>
 </div>
-<div id="acs-broadband-measures" class="section level2">
-<h2>ACS Broadband Measures</h2>
+<div id="acs-broadband-measures-and-demographics" class="section level2">
+<h2>ACS Broadband Measures and Demographics</h2>
 <p>The ACS broadband subscription measures currently available from the dataset provided by the Arizona State University research team represents people with <strong>“any”</strong> type of broadband <em>including cell phone subscription</em>. This not only could potentially inflate the subscription number, but also does not allow much comparability with other broadband variables. Therefore, I will <strong>call the ACS data directly to retrieve fixed broadband subscription</strong> excluding wireless options such as satellite and cell phone broadband.</p>
+<p>Furthermore, I will update the demographic information using direct and most up-to-date data from the API.</p>
 <pre class="r"><code>#### ACS Broadband Subscription Dataset ####
 View(listCensusMetadata(name = &quot;acs/acs5&quot;, vintage = 2018, type = &quot;variables&quot;))
 View(listCensusMetadata(name = &quot;acs/acs5/profile&quot;, vintage = 2018, type = &quot;variables&quot;))
+View(listCensusMetadata(name = &quot;pep/charagegroups&quot;, vintage = 2019, type = &quot;variables&quot;))
 View(listCensusMetadata(name = &quot;acs/acs5/subject&quot;, vintage = 2018, type = &quot;variables&quot;))
 View(listCensusMetadata(name = &quot;acs/acs5/subject&quot;, vintage = 2018, type = &quot;geography&quot;))</code></pre>
 <pre class="r"><code>## Broadband Subscription Percentage from Subject Table ##
@@ -1108,6 +1121,52 @@ acs_broadband_pct &lt;- acs_broadband_pct %&gt;%
 
 acs_broadband_pct_tx &lt;- acs_broadband_pct %&gt;% 
   filter(state == &quot;48&quot;)</code></pre>
+<pre class="r"><code>## Educational Attainment and Industry Profile, Self-employment from the ACS 2018 ##
+acs_demo &lt;- getCensus(name = &quot;acs/acs5/profile&quot;, vintage = 2018,
+                      vars = c(&quot;DP02_0066PE&quot;,&quot;DP02_0064PE&quot;,&quot;DP02_0065PE&quot;, # Educational attainment
+                               &quot;DP03_0033PE&quot;,&quot;DP03_0034PE&quot;,&quot;DP03_0035PE&quot;,&quot;DP03_0036PE&quot;,&quot;DP03_0037PE&quot;,
+                               &quot;DP03_0038PE&quot;,&quot;DP03_0039PE&quot;,&quot;DP03_0040PE&quot;,&quot;DP03_0041PE&quot;,&quot;DP03_0042PE&quot;,
+                               &quot;DP03_0043PE&quot;,&quot;DP03_0044PE&quot;,&quot;DP03_0045PE&quot;, # Industry profile
+                               &quot;DP03_0049PE&quot;),
+                      region = &quot;county:*&quot;,
+                      regionin = &quot;state:20,23,48&quot;)
+
+# Rename variables #
+acs_demo &lt;- acs_demo %&gt;% 
+  mutate(DP02_0066PE = 100 - DP02_0066PE) %&gt;% # Substract from 100 to get % of ppl less than highschool
+  rename(pctlessthanhigh_2019 = DP02_0066PE,
+         pctbachelors_2019 = DP02_0064PE,
+         pctgraduate_2019 = DP02_0065PE,
+         pctagriculture_2019 = DP03_0033PE, pctconstruction_2019 = DP03_0034PE, pctmanufacture_2019 = DP03_0035PE,
+         pctwholesale_2019 = DP03_0036PE, pctretail_2019 = DP03_0037PE, pcttransportation_2019 = DP03_0038PE,
+         pctinformation_2019 = DP03_0039PE, pctfinance_2019 = DP03_0040PE, pctprofessional_2019 = DP03_0041PE,
+         pctedu_healthcare_social_2019 = DP03_0042PE, pctarts_ent_2019 = DP03_0043PE,
+         pctpublic_admin_2019 = DP03_0045PE, pctother_occupation_2019 = DP03_0044PE,
+         pct_self_employed_2019 = DP03_0049PE) %&gt;% 
+  mutate(county_FIPS = paste0(state, county)) %&gt;% 
+  select(-c(state, county))
+
+## Age Group of 2019 from the Population Estimates ##
+pep_agegroup &lt;- getCensus(name = &quot;pep/charagegroups&quot;,
+                          vintage = 2019,
+                          vars = c(&quot;POP&quot;,&quot;AGEGROUP&quot;),
+                          region = &quot;county:*&quot;,
+                          regionin = &quot;state:20,23,48&quot;)
+
+pep_agegroup &lt;- pep_agegroup %&gt;% 
+  mutate(county_FIPS = paste0(state, county)) %&gt;% 
+  spread(AGEGROUP, POP) %&gt;% 
+  set_names(paste0(&quot;x_&quot;, names(.))) %&gt;% 
+  rename(county_FIPS = x_county_FIPS) %&gt;% 
+  mutate_at(vars(starts_with(&quot;x_&quot;)), funs(as.numeric)) %&gt;% 
+  mutate(pctboomers_2019 = (x_12 + x_13 + x_14 + x_15) / x_0,
+         pctgenx_2019 = (x_8 + x_9 + x_10 + x_11) / x_0,
+         pctmilennial_2019 = (x_5 + x_6 + x_7 + x_8) / x_0,
+         population_2019 = x_0) %&gt;%  
+  select(county_FIPS, pctboomers_2019, pctgenx_2019, pctmilennial_2019, population_2019)
+
+## Merge Demographic Control Variables ##
+demo_cont &lt;- left_join(pep_agegroup, acs_demo, by = &quot;county_FIPS&quot;)</code></pre>
 </div>
 <div id="fcc-broadband-data-update-for-year-2019" class="section level2">
 <h2>FCC Broadband Data Update for Year 2019</h2>
@@ -1152,35 +1211,48 @@ fcc477_2019 &lt;- fcc477_2019 %&gt;%
 <p>Now we will merge these datasets by county FIPS numbers altogether</p>
 <pre class="r"><code>## Create a V2 merged dataset ##
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged %&gt;%  
-  left_join(., cbp_tx, by = c(&quot;FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
-  left_join(., nonemp_tx, by = c(&quot;FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
-  left_join(., acs_broadband_pct_tx, by = c(&quot;FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
-  left_join(., bea_nonfarmproprietor_tx, by = c(&quot;FIPS&quot; = &quot;GeoFips&quot;)) %&gt;% 
-  left_join(., firmlevel_tx, by = c(&quot;FIPS&quot; = &quot;county_FIPS&quot;))
+  left_join(., cbp_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
+  left_join(., nonemp_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
+  left_join(., acs_broadband_pct, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
+  left_join(., bea_nonfarmproprietor_txksme, by = c(&quot;county_FIPS&quot; = &quot;GeoFips&quot;)) %&gt;% 
+  left_join(., firmlevel_txksme, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
+  left_join(., select(rucc2013, c(&quot;FIPS&quot;,&quot;RUCC_2013&quot;,&quot;metro_desc&quot;)), by = c(&quot;county_FIPS&quot; = &quot;FIPS&quot;)) %&gt;% 
+  left_join(., demo_cont, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;))
 
 ## Generate average GoDaddy &amp; M-lab broadband measures and clean unnecessary variables ##
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
-  mutate(venturedensity_mean = (venturedensitymay18 + venturedensitynov18 + venturedensityfeb19 + venturedensitysep19 + venturedensityoct19 + venturedensitynov19 + venturedensitydec19) / 7,
-         highlyactive_vd_mean = (highlyactive_vdmay18 + highlyactive_vdnov18 + highlyactive_vdfeb19 + highlyactive_vdsep19 + highlyactive_vdoct19 + highlyactive_vdnov19 + highlyactive_vddec19) / 7,
-         pct_broadband_mlab = (frac_BB.sept + frac_BB.oct + frac_BB.nov + frac_BB.dec) / 4) %&gt;% 
-  select(-c(starts_with(&quot;frac_under_&quot;), starts_with(&quot;frac_over&quot;), starts_with(&quot;samples.&quot;), starts_with(&quot;BB_samples&quot;), pctbbfrac_poor_ASU, state.y, county.y, starts_with(&quot;DL&quot;), starts_with(&quot;UL&quot;), starts_with(&quot;dl_sample&quot;), starts_with(&quot;ul_sample&quot;))) %&gt;% 
-  rename(state = state.x, county = county.x)
+  mutate(venturedensity_mean = rowMeans(select(., c(venturedensitymay18, venturedensitynov18, venturedensityfeb19, venturedensitysep19, venturedensityoct19, venturedensitynov19, venturedensitydec19)), na.rm = T),
+         highlyactive_vd_mean = rowMeans(select(., c(highlyactive_vdmay18, highlyactive_vdnov18, highlyactive_vdfeb19, highlyactive_vdsep19, highlyactive_vdoct19, highlyactive_vdnov19, highlyactive_vddec19)), na.rm = T),
+         pct_broadband_mlab = rowMeans(select(., c(frac_BB.sept, frac_BB.oct, frac_BB.nov, frac_BB.dec)), na.rm = T)) %&gt;% 
+  select(-c(starts_with(&quot;frac_under_&quot;), starts_with(&quot;frac_over&quot;), starts_with(&quot;samples.&quot;), starts_with(&quot;BB_samples&quot;), state, county.y, starts_with(&quot;DL&quot;), starts_with(&quot;UL&quot;), starts_with(&quot;dl_sample&quot;), starts_with(&quot;ul_sample&quot;)))
 
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
-  left_join(., fcc477_2019, by = c(&quot;FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
+  left_join(., fcc477_2019, by = c(&quot;county_FIPS&quot; = &quot;county_FIPS&quot;)) %&gt;% 
   select(-c(providername, dbaname, blockcode, techcode, maxaddown, maxadup, maxcirdown, maxcirup, broadband)) %&gt;% rename(pct_broadband_FCC_2019 = broadband_pct)
 
 ## Modify nonemployer percentage - Nonemployer share over total employment
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
   mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / totalemp_bea_2018,
          pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / totalemp_bea_2012,
-         pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / total_employment_2017,
          pct_nonfarmneest_nemp_2012 = ifelse(is.na(pct_nonfarmneest_nemp_2012) | is.infinite(pct_nonfarmneest_nemp_2012),NA, pct_nonfarmneest_nemp_2012),
-         pct_nonfarmneest_nemp_2017 = ifelse(is.na(pct_nonfarmneest_nemp_2017) | is.infinite(pct_nonfarmneest_nemp_2017),NA, pct_nonfarmneest_nemp_2017),
-         pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018))
+         pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018),
+         metro_f = as.factor(metro_desc),
+         pctagriculture_2019 = pctagriculture_2019/100,
+         pctconstruction_2019 = pctconstruction_2019/100,
+         pctwholesale_2019 = pctwholesale_2019/100,
+         pctretail_2019 = pctretail_2019/100,
+         pcttransportation_2019 = pcttransportation_2019/100,
+         pctinformation_2019 = pctinformation_2019/100,
+         pctfinance_2019 = pctfinance_2019/100,
+         pctprofessional_2019 = pctprofessional_2019/100,
+         pctedu_healthcare_social_2019 = pctedu_healthcare_social_2019/100,
+         pctother_occupation_2019 = pctother_occupation_2019/100,
+         pctpublic_admin_2019 = pctpublic_admin_2019/100,
+         pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
+         pctgraduate_2019 = pctgraduate_2019/100) 
 
 ## Write CSV ##
-#write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TX-merged_v2.csv&quot;)</code></pre>
+write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>
 </div>
 
 <p>Copyright &copy; 2020 Jaewon Royce Choi, Technology & Information Policy Institute (TIPI). All rights reserved.</p>
