@@ -29,13 +29,14 @@ library(stargazer)
 library(gridExtra)
 
 #### Import the merged dataset V2 ####
-tx_bb_entrepreneur_merged_v2 <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv")
+tx_bb_entrepreneur_merged_v2 <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
+  filter(ST == "TX") %>% 
   mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100)
 ## Set up spatial dataframe
 tx_county <- counties("Texas")
 tx_bb_entrepreneur_merged_v3 <- sp::merge(tx_county, tx_bb_entrepreneur_merged_v2,
-                                          by.x = "GEOID", by.y = "FIPS")
+                                          by.x = "GEOID", by.y = "county_FIPS")
 ```
 
 <div style="margin-bottom:30px;">
