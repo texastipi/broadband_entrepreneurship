@@ -325,7 +325,7 @@ str(tx_bb_entrepreneur_merged)
 tx_bb_entrepreneur_merged <- tx_bb_entrepreneur_merged %>%  
   select(-starts_with("state.")) %>% 
   select(-starts_with("county.")) %>% 
-  select(-starts_with("county_")) %>% 
+  select(-starts_with("county_cod")) %>% 
   select(-starts_with("state_"))
 
 
@@ -1014,21 +1014,32 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
   mutate(venturedensity_mean = rowMeans(select(., c(venturedensitymay18, venturedensitynov18, venturedensityfeb19, venturedensitysep19, venturedensityoct19, venturedensitynov19, venturedensitydec19)), na.rm = T),
          highlyactive_vd_mean = rowMeans(select(., c(highlyactive_vdmay18, highlyactive_vdnov18, highlyactive_vdfeb19, highlyactive_vdsep19, highlyactive_vdoct19, highlyactive_vdnov19, highlyactive_vddec19)), na.rm = T),
          pct_broadband_mlab = rowMeans(select(., c(frac_BB.sept, frac_BB.oct, frac_BB.nov, frac_BB.dec)), na.rm = T)) %>% 
-  select(-c(starts_with("frac_under_"), starts_with("frac_over"), starts_with("samples."), starts_with("BB_samples"), state.y, county.y, starts_with("DL"), starts_with("UL"), starts_with("dl_sample"), starts_with("ul_sample"))) %>% 
-  rename(state = state.x, county = county.x)
+  select(-c(starts_with("frac_under_"), starts_with("frac_over"), starts_with("samples."), starts_with("BB_samples"), state, county.y, starts_with("DL"), starts_with("UL"), starts_with("dl_sample"), starts_with("ul_sample")))
 
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
-  left_join(., fcc477_2019, by = c("FIPS" = "county_FIPS")) %>% 
+  left_join(., fcc477_2019, by = c("county_FIPS" = "county_FIPS")) %>% 
   select(-c(providername, dbaname, blockcode, techcode, maxaddown, maxadup, maxcirdown, maxcirup, broadband)) %>% rename(pct_broadband_FCC_2019 = broadband_pct)
 
 ## Modify nonemployer percentage - Nonemployer share over total employment
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
   mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / totalemp_bea_2018,
          pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / totalemp_bea_2012,
-         pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / total_employment_2017,
          pct_nonfarmneest_nemp_2012 = ifelse(is.na(pct_nonfarmneest_nemp_2012) | is.infinite(pct_nonfarmneest_nemp_2012),NA, pct_nonfarmneest_nemp_2012),
-         pct_nonfarmneest_nemp_2017 = ifelse(is.na(pct_nonfarmneest_nemp_2017) | is.infinite(pct_nonfarmneest_nemp_2017),NA, pct_nonfarmneest_nemp_2017),
-         pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018))
+         pct_nonfarmneest_nemp_2018 = ifelse(is.na(pct_nonfarmneest_nemp_2018) | is.infinite(pct_nonfarmneest_nemp_2018),NA, pct_nonfarmneest_nemp_2018),
+         metro_f = as.factor(metro_desc),
+         pctagriculture_2019 = pctagriculture_2019/100,
+         pctconstruction_2019 = pctconstruction_2019/100,
+         pctwholesale_2019 = pctwholesale_2019/100,
+         pctretail_2019 = pctretail_2019/100,
+         pcttransportation_2019 = pcttransportation_2019/100,
+         pctinformation_2019 = pctinformation_2019/100,
+         pctfinance_2019 = pctfinance_2019/100,
+         pctprofessional_2019 = pctprofessional_2019/100,
+         pctedu_healthcare_social_2019 = pctedu_healthcare_social_2019/100,
+         pctother_occupation_2019 = pctother_occupation_2019/100,
+         pctpublic_admin_2019 = pctpublic_admin_2019/100,
+         pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
+         pctgraduate_2019 = pctgraduate_2019/100) 
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")

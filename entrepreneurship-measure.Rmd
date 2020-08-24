@@ -35,7 +35,9 @@ library(gghighlight)
 library(data.table)
 
 #### Import the merged dataset V2 ####
-tx_bb_entrepreneur_merged_v2 <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TX-merged_v2.csv")
+tx_bb_entrepreneur_merged_v2 <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
+
+tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% filter(ST == "TX")
 
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
   mutate(chg_pct_50_est_cbp_2012_2018 = pct_50_est_cbp_2018 - pct_50_est_cbp_2012,
@@ -44,7 +46,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 ## Set up spatial dataframe
 tx_county <- counties("Texas")
 tx_bb_entrepreneur_merged_v3 <- sp::merge(tx_county, tx_bb_entrepreneur_merged_v2,
-                                          by.x = "GEOID", by.y = "FIPS")
+                                          by.x = "GEOID", by.y = "county_FIPS")
 ```
 
 ```{r Descriptive Statistics, results='asis', echo=FALSE}
@@ -56,6 +58,21 @@ stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_50_est_cbp_2018","p
                                "% of Nonfarm Proprietors",
                                "Average Venture Density"), type = "html",
           align = TRUE, font.size = "Huge", column.sep.width = "2pt")
+
+```
+
+```{r Contextual Table, echo=FALSE}
+#### Contextual Table of Various Entrepreneurship Measures ####
+cont_table <- tx_bb_entrepreneur_merged_v2 %>% 
+  summarise(`Number of Nonfarm Nonemployer` = sum(nonfarmneest_nemp_2018, na.rm = T),
+            `Number of Nonfarm Proprietors` = sum(nonfarmproprietors_bea_2018, na.rm = T),
+            `Number of Establishments (<10 Employees)` = sum(est_10_cbp_2018, na.rm = T),
+            `Total Business Establishments` = sum(est_cbp_2018, na.rm = T),
+            `Total Employment` = sum(totalemp_bea_2018, na.rm = T))
+
+cont_table <- as.data.frame(t(cont_table)) %>% rename(Total = V1)
+
+cont_table
 
 ```
 
