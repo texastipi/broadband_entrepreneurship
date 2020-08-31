@@ -1,0 +1,16 @@
+---
+title: "Comparing Metro & Non-Metro Areas"
+author: "Jaewon R. Choi"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, mmessage = FALSE, error = FALSE)
+```
+
+In this document, we will dive deeper in examining potential difference between metro and non-metro area in the state of Texas when it comes to broadband's influence in entrepreneurship. In order to conduct such analyses, we use the [Rural-Urban Continuum Codes](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx) (RUCC, 2013) and its [distinction](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes/documentation/) of metro and non-metro areas.
+
+Overall, we will take the following strategies in constructing models for analyses
+
+* **Include the metro/non-metro variable as a categorical predictor**
+  + Investigate the cetegorical predictor's interaction with broadband variables in their effects on entrepreneurship variables
+* **Filter the dataset based on the metro/non-metro categorical variable and conduct separate regression analyses**
