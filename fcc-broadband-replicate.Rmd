@@ -3,7 +3,7 @@ title: "FCC Broadband Availability"
 author: "Jaewon R. Choi"
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, results='hide'}
 knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', warning = FALSE, message = FALSE)
 library(tidyverse)
 library(ggplot2)
@@ -243,7 +243,7 @@ fcc477_txksme_county_2017 <- fcc477_txksme_county_2017 %>%
 
 Comparing frequency plots of our FCC availability calculation and Microsoft's FCC availability calculation, we can see that **the distribution of the frequencies resemble each other considerably.**
 
-```{r frequency plot comparison, echo=FALSE}
+```{r frequency plot comparison, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,5), fig.align='center'}
 ## Import MS Dataset ##
 ms_broadband <- read_csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data.csv", col_types = list(col_character(),col_integer(),col_character(),col_double(),col_double()))
 ## Create new variabes in numeric form
@@ -276,7 +276,7 @@ grid.arrange(
 
 Here we will examine how FCC broadband availaiblity looks like for three different states: Texas, Kansas, and Maine. The following frequency charts are based on the **FCC 477 data as of Jun 2019 (v1)**. In addition to the 25/3 Mbps threshold speed, we will also compare the availability of faster broadband service at the level of 50/5 Mbps, 100/19 Mbps, and 250/25 Mbps.
 
-```{r fcc477 frequency plots for three states, echo=FALSE}
+```{r fcc477 frequency plots for three states, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,3), fig.align='center'}
 
 ## Generate frequency plots ##
 # 25/3 Broadband #
@@ -285,19 +285,19 @@ grid.arrange(
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Kansas Broadband Availability (25/3Mbps, %)") + ylab("Frequency") +
+    xlab("Kansas Broadband Availability\n(25/3Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "23"), aes(x = pct_bb_fcc_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Maine Broadband Availability (25/3Mbps, %)") + ylab("Frequency") +
+    xlab("Maine Broadband Availability\n(25/3Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "48"), aes(x = pct_bb_fcc_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Texas Broadband Availability (25/3Mbps, %)") + ylab("Frequency") +
+    xlab("Texas Broadband Availability\n(25/3Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   nrow = 1, ncol = 3, top = grid::textGrob("FCC Broadband Availability (25/3Mbps)", gp = grid::gpar(fontface="bold",fontsize=14))
 )
@@ -305,7 +305,7 @@ grid.arrange(
 
 ```
 
-```{r fcc477 frequency 50/5, echo=FALSE}
+```{r fcc477 frequency 50/5, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,3), fig.align='center'}
 
 # 50/5 Broadband #
 grid.arrange(
@@ -313,26 +313,26 @@ grid.arrange(
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Kansas Broadband Availability (50/5Mbps, %)") + ylab("Frequency") +
+    xlab("Kansas Broadband Availability\n(50/5Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "23"), aes(x = pct_bb_fcc_50_5_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Maine Broadband Availability (50/5Mbps, %)") + ylab("Frequency") +
+    xlab("Maine Broadband Availability\n(50/5Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "48"), aes(x = pct_bb_fcc_50_5_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Texas Broadband Availability (50/5Mbps, %)") + ylab("Frequency") +
+    xlab("Texas Broadband Availability\n(50/5Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   nrow = 1, ncol = 3, top = grid::textGrob("FCC Broadband Availability (50/5Mbps)", gp = grid::gpar(fontface="bold",fontsize=14))
 )
 
 ```
 
-```{r fcc477 frequency 100/10, echo=FALSE}
+```{r fcc477 frequency 100/10, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,3), fig.align='center'}
 
 
 # 100/10 Broadband #
@@ -341,26 +341,26 @@ grid.arrange(
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Kansas Broadband Availability (100/10Mbps, %)") + ylab("Frequency") +
+    xlab("Kansas Broadband Availability\n(100/10Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "23"), aes(x = pct_bb_fcc_100_10_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Maine Broadband Availability (100/10Mbps, %)") + ylab("Frequency") +
+    xlab("Maine Broadband Availability\n(100/10Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "48"), aes(x = pct_bb_fcc_100_10_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Texas Broadband Availability (100/10Mbps, %)") + ylab("Frequency") +
+    xlab("Texas Broadband Availability\n(100/10Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   nrow = 1, ncol = 3, top = grid::textGrob("FCC Broadband Availability (100/10Mbps)", gp = grid::gpar(fontface="bold",fontsize=14))
 )
 
 ```
 
-```{r fcc477 frequency 250/25, echo=FALSE}
+```{r fcc477 frequency 250/25, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,3), fig.align='center'}
 
 # 250/25 Broadband #
 grid.arrange(
@@ -368,19 +368,19 @@ grid.arrange(
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Kansas Broadband Availability (250/25Mbps, %)") + ylab("Frequency") +
+    xlab("Kansas Broadband Availability\n(250/25Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "23"), aes(x = pct_bb_fcc_250_25_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Maine Broadband Availability (250/25Mbps, %)") + ylab("Frequency") +
+    xlab("Maine Broadband Availability\n(250/25Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(filter(fcc477_txksme_county_2019, state_fips == "48"), aes(x = pct_bb_fcc_250_25_2019)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
-    xlab("Texas Broadband Availability (250/25Mbps, %)") + ylab("Frequency") +
+    xlab("Texas Broadband Availability\n(250/25Mbps, %)") + ylab("Frequency") +
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   nrow = 1, ncol = 3, top = grid::textGrob("FCC Broadband Availability (250/25Mbps)", gp = grid::gpar(fontface="bold",fontsize=14))
 )

@@ -4,7 +4,7 @@ author: "Jaewon R. Choi"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, mmessage = FALSE, error = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, error = FALSE)
 ```
 
 In this document, we will dive deeper in examining potential difference between metro and non-metro area in the state of Texas when it comes to broadband's influence in entrepreneurship. In order to conduct such analyses, we use the [Rural-Urban Continuum Codes](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx) (RUCC, 2013) and its [distinction](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes/documentation/) of metro and non-metro areas.
@@ -64,7 +64,7 @@ tx_bb_subset <- bb_entrepreneur %>%
 
 Using boxplots, we will inspect the relationships between the metro/non-metro factor and our major dependent and independent variables.
 
-```{r boxplot inspection, echo=FALSE}
+```{r boxplot inspection, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7), fig.align='center'}
 gridExtra::grid.arrange(
   ggplot(tx_bb_subset, aes(x = metro_f, y = pct_bb_fcc_2019)) + geom_boxplot(notch = T) + 
     theme_minimal() + theme(axis.title = element_text(size = 11)) + 
@@ -263,7 +263,7 @@ The results indicate quite significant main effects of Microsoft's broadband usa
 
 #### Interaction Effect of MS Broadband Usage and Rurality on Venture Density
 
-```{r interaction plot ms-metro}
+```{r interaction plot ms-metro, message=FALSE, fig.retina=2, fig.dim=c(10,7), fig.align='center'}
 ## Generate Plot ##
 plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_MS","metro_f"),
            title = "Interaction Effects of MS Broadband & Metro/Non-Metro on Venture Density",
@@ -272,7 +272,7 @@ plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_MS","metro_f"),
 
 ```
 
-```{r interaction plot mlab-metro}
+```{r interaction plot mlab-metro, message=FALSE, fig.retina=2, fig.dim=c(10,7), fig.align='center'}
 ## Generate Plot ##
 plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_mlab","metro_f"),
            title = "Interaction Effects of M-Lab Broadband & Metro/Non-Metro on Venture Density",
@@ -316,7 +316,7 @@ model_nonfarm_nonmetro <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_broadb
 ## Generate stargazer table ##
 stargazer(model_nonfarm_metro, model_nonfarm_nonmetro, title = "Nonfarm Proprietors Share",
           type = "html", align = T, dep.var.labels = c("Nonfarm Proprietors Share"),
-          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
@@ -363,7 +363,7 @@ model_nonfarmchg_nonmetro <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_br
 ## Generate stargazer table ##
 stargazer(model_nonfarmchg_metro, model_nonfarmchg_nonmetro, title = "Change in Nonfarm Proprietors Share",
           type = "html", align = T, dep.var.labels = c("Change in Nonfarm Proprietors Share"),
-          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
@@ -410,7 +410,7 @@ model_vd_nonmetro <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_broadband_MS
 ## Generate stargazer table ##
 stargazer(model_vd_metro, model_vd_nonmetro, title = "Venture Density",
           type = "html", align = T, dep.var.labels = c("Venture Density"),
-          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
