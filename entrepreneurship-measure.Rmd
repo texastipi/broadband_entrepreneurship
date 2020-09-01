@@ -931,7 +931,7 @@ ggplot(cbp_2012_2018, aes(year, pct_50_est_cbp, group = county_FIPS, color = cou
   gghighlight(max(max(pct_50_est_cbp, na.rm = T) - min(pct_50_est_cbp, na.rm = T)),
               max_highlight = 7L,
               label_key = county,
-              unhighlighted_params = list(size = 0.5, color = alpha("grey", 0.3))) +
+              unhighlighted_params = list(size = 0.5, color = scales::alpha("grey", 0.3))) +
   scale_y_continuous(limits = c(0,1),
                      labels = scales::percent,
                      breaks = scales::breaks_pretty()) +
@@ -958,7 +958,7 @@ ggplot(cbp_2012_2018, aes(year, pct_10_est_cbp, group = county_FIPS, color = cou
   gghighlight(max(max(pct_10_est_cbp, na.rm = T) - min(pct_10_est_cbp, na.rm = T)),
               max_highlight = 7L,
               label_key = county,
-              unhighlighted_params = list(size = 0.5, color = alpha("grey", 0.3))) +
+              unhighlighted_params = list(size = 0.5, color = scales::alpha("grey", 0.3))) +
   labs(title = "% of Establishments with <10 Employees (2012-2018)", subtitle = "Source: County Business Patterns (Census Bureau)",
        x = "Year", y = "%") + 
   scale_y_continuous(limits = c(0,1),
@@ -1008,7 +1008,7 @@ ggplot(nonemp_2012_2018, aes(x = year, y = pct_nonfarmneest_nemp,
   gghighlight(max(max(pct_nonfarmneest_nemp, na.rm = T) - min(pct_nonfarmneest_nemp, na.rm = T)),
               max_highlight = 7L,
               label_key = county,
-              unhighlighted_params = list(size = 0.5, color = alpha("grey", 0.3))) +
+              unhighlighted_params = list(size = 0.5, color = scales::alpha("grey", 0.3))) +
   scale_y_continuous(limits = c(0,1),
                      labels = scales::percent,
                      breaks = scales::breaks_pretty()) + 
@@ -1056,7 +1056,7 @@ ggplot(bea_prop, aes(x = year, y = pct_nonfarm_prop_emp,
   gghighlight(max(max(pct_nonfarm_prop_emp, na.rm = T) - min(pct_nonfarm_prop_emp, na.rm = T)),
               max_highlight = 7L,
               label_key = county,
-              unhighlighted_params = list(size = 0.5, color = alpha("grey", 0.3))) +
+              unhighlighted_params = list(size = 0.5, color = scales::alpha("grey", 0.3))) +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::breaks_pretty()) + 
   scale_color_brewer(palette = "Set2")

@@ -301,6 +301,9 @@ $(document).ready(function () {
     <li>
       <a href="entrepreneurship-measure.html">Entrepreneurship</a>
     </li>
+    <li>
+      <a href="fcc-broadband-replicate.html">FCC Broadband Availability</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -312,6 +315,9 @@ $(document).ready(function () {
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="regression-analyses.html">Regression Models</a>
+    </li>
+    <li>
+      <a href="metro_non-metro-comparison.html">Metro/Non-Metro Comparison</a>
     </li>
   </ul>
 </li>
@@ -344,9 +350,17 @@ library(stargazer)
 library(sjPlot)
 
 ## Read in dataset
-tx_bb_entrepreneur_merged_v2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv&quot;)
-
-tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
+tx_bb_entrepreneur_merged_v2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   ST = col_character(),
+##   county.x = col_character(),
+##   metro_desc = col_character(),
+##   metro_f = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
   mutate(chg_pct_50_est_cbp_2012_2018 = pct_50_est_cbp_2018 - pct_50_est_cbp_2012,
          chg_pct_10_est_cbp_2012_2018 = pct_10_est_cbp_2018 - pct_10_est_cbp_2012,
          chgn_nonemp_2012_2018 = neest_nemp_2018 - neest_nemp_2012) %&gt;% 

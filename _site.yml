@@ -15,10 +15,14 @@ navbar:
         href: broadband-measure.html
       - text: "Entrepreneurship"
         href: entrepreneurship-measure.html
+      - text: "FCC Broadband Availability"
+        href: fcc-broadband-replicate.html
   - text: "Analysis"
     menu:
       - text: "Regression Models"
         href: regression-analyses.html
+      - text: "Metro/Non-Metro Comparison"
+        href: metro_non-metro-comparison.html
 output:
   html_document:
     theme: cosmo
