@@ -14,3 +14,425 @@ Overall, we will take the following strategies in constructing models for analys
 * **Include the metro/non-metro variable as a categorical predictor**
   + Investigate the cetegorical predictor's interaction with broadband variables in their effects on entrepreneurship variables
 * **Filter the dataset based on the metro/non-metro categorical variable and conduct separate regression analyses**
+  + Examine how the models differ from each other
+
+We will first import packages and dataset.
+  
+```{r import dataset and libraries, results='hide'}
+####################################
+### Metro & Non-metro Comparison ###
+####################################
+
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(car)
+library(psych)
+library(jtools)
+library(interactions)
+library(sandwich)
+library(sjPlot)
+library(sjmisc)
+library(stargazer)
+
+## Import dataset ##
+bb_entrepreneur <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
+bb_entrepreneur <- bb_entrepreneur %>% 
+  mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100,
+         pct_self_employed_2019 = pct_self_employed_2019/100,
+         metro_f = as.factor(metro_f))   # Change to percentage
+
+```
+
+## Subset and Inspect Variables
+
+Here we will subset the dataset to include only Texas counties. Also we will only select the variables that will be included in the following regression analyses. The variables that will be included in the analyses are outlined in the [regression models page](https://texastipi.github.io/broadband_entrepreneurship/regression-analyses.html) in detail.
+
+```{r subset dataset}
+## Inspecting variables of interest ##
+tx_bb_subset <- bb_entrepreneur %>% 
+  filter(ST == "TX") %>% 
+  select(pct_bb_fcc_2019, pct_broadband_MS, pct_broadband_mlab, pct_fixed_acs_2018, # Broadband
+         IRR2010, RUCC_2013, metro_desc, metro_f, # Metro-nonmetro
+         pct_nonfarm_bea_2018, venturedensity_mean, pct_chg_bea_2012_2018, # Entrepreneurship
+         pctagriculture_2019, pctconstruction_2019, pctwholesale_2019, pctretail_2019, pcttransportation_2019, pctinformation_2019, # Control
+         pctfinance_2019, pctprofessional_2019, pctedu_healthcare_social_2019, pctother_occupation_2019, pctpublic_admin_2019, pct_self_employed_2019, pctlessthanhigh_2019, pctbachelors_2019,
+         pctgraduate_2019, pctmilennial_2019, pctgenx_2019, pctboomers_2019)
+
+
+```
+
+Using boxplots, we will inspect the relationships between the metro/non-metro factor and our major dependent and independent variables.
+
+```{r boxplot inspection, echo=FALSE}
+gridExtra::grid.arrange(
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_bb_fcc_2019)) + geom_boxplot(notch = T) + 
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("FCC Broadband Availability (2019,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_broadband_MS)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("MS Broadband Usage (2019,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_broadband_mlab)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("M-Lab Broadband Usage (2018-9,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_fixed_acs_2018)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("ACS Fixed Broadband Subscription (2018,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  nrow = 2, ncol = 2, top = "Broadband & Metro/Non-Metro"
+)
+
+gridExtra::grid.arrange(
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_nonfarm_bea_2018)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("Nonfarm Proprietors Share (2018,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  ggplot(tx_bb_subset, aes(x = metro_f, y = pct_chg_bea_2012_2018)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("Change in Nonfarm Proprietors Share (2012-2018,%)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
+  ggplot(tx_bb_subset, aes(x = metro_f, y = venturedensity_mean)) + geom_boxplot(notch = T) +
+    theme_minimal() + theme(axis.title = element_text(size = 11)) + 
+    ylab("Average Venture Density (2018-9)") + xlab("Metro/Non-Metro") +
+    scale_y_continuous(breaks = scales::breaks_pretty()),
+  nrow = 1, ncol = 3, top = "Entrepreneurship & Metro/Non-Metro"
+)
+```
+
+
+## Metro/Non-Metro as a Categorical Predictor
+
+In this section, we will analyze the effect of metro and non-metro area distinction to the relationship between broadband and entreprneurship. In other words, **how do the relationship between broadband and entrepreneurship influenced by whether certain county is considered metro or non-metro area?** First, we address this question by including such distinction as a predictor variable in the models analyzing the relationships between broadband and entrepreneurship.
+
+Furthermore, results of extended models investigating the interaction effect between broadband measures and metro/non-metro factor will be reported as well. These interaction terms will allow us to better understand how potential broadband's influence in entrepreneurship vary according to the county's rurality.
+
+### Nonfarm Proprietors Share
+
+* **DV**: Nonfarm Proprietors Share (2018, %)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+  + Metro/Non-Metro
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r nonfarm proprietors share model, results='asis', echo=FALSE}
+## Nonfarm Proprietors Share Model ##
+model_nonfarm <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Nonfarm Proprietros Share Interaction Model ##
+model_nonfarm_int <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 * metro_f + pct_broadband_MS * metro_f + pct_fixed_acs_2018 * metro_f + pct_broadband_mlab * metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Generate stargazer table ##
+stargazer(model_nonfarm, model_nonfarm_int, title = "Nonfarm Proprietors Share",
+          type = "html", align = T, dep.var.labels = c("Nonfarm Proprietors Share"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Metro/Non-Metro (Reference: Metro)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials",
+                               "FCC x Metro","MS x Metro","ACS x Metro","M-Lab x Metro"), no.space = T)
+
+```
+
+### Change in Nonfarm Proprietors Share from 2012 to 2018
+
+* **DV**: Change in Nonfarm Proprietors Share (2012-2018, %)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+  + Metro/Non-Metro
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r nonfarm proprietors share change model, results='asis', echo=FALSE}
+## Change in Nonfarm Proprietors Share Model ##
+model_nonfarmchg <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Change in Nonfarm Proprietros Share Interaction Model ##
+model_nonfarmchg_int <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 * metro_f + pct_broadband_MS * metro_f + pct_fixed_acs_2018 * metro_f + pct_broadband_mlab * metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Generate stargazer table ##
+stargazer(model_nonfarmchg, model_nonfarmchg_int, title = "Change in Nonfarm Proprietors Share",
+          type = "html", align = T, dep.var.labels = c("Change in Nonfarm Proprietors Share (2012-2018)"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Metro/Non-Metro (Reference: Metro)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials",
+                               "FCC x Metro","MS x Metro","ACS x Metro","M-Lab x Metro"), no.space = T)
+
+```
+
+### Venture Density
+
+* **DV**: Venture Density (Average of 2018-9)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+  + Metro/Non-Metro
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r venture density, results='asis', echo=FALSE}
+## Venture Density Model ##
+model_vd <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Venture Density Interaction Model ##
+model_vd_int <- lm(venturedensity_mean ~ pct_bb_fcc_2019 * metro_f + pct_broadband_MS * metro_f + pct_fixed_acs_2018 * metro_f + pct_broadband_mlab * metro_f + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = tx_bb_subset)
+
+## Generate stargazer table ##
+stargazer(model_vd, model_vd_int, title = "Venture Density",
+          type = "html", align = T, dep.var.labels = c("Venture Density"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Metro/Non-Metro (Reference: Metro)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials",
+                               "FCC x Metro","MS x Metro","ACS x Metro","M-Lab x Metro"), no.space = T)
+
+```
+
+
+### Interaction Charts
+
+The results indicate quite significant main effects of Microsoft's broadband usage and M-Lab's broadband usage data as well as their interaction effects with rurality of counties reflected by metro/non-metro distinction. Below we will generate charts for each interaction effects to better make sense of their influences.
+
+#### Interaction Effect of MS Broadband Usage and Rurality on Venture Density
+
+```{r interaction plot ms-metro}
+## Generate Plot ##
+plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_MS","metro_f"),
+           title = "Interaction Effects of MS Broadband & Metro/Non-Metro on Venture Density",
+           axis.title = c("MS Broadband Usage (%)","Venture Density"),
+           legend.title = "Metro/Non-Metro")
+
+```
+
+```{r interaction plot mlab-metro}
+## Generate Plot ##
+plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_mlab","metro_f"),
+           title = "Interaction Effects of M-Lab Broadband & Metro/Non-Metro on Venture Density",
+           axis.title = c("M-Lab Broadband Usage (%)","Venture Density"),
+           legend.title = "Metro/Non-Metro")
+
+```
+
+
+## Separate Models for Metro & Non-metro Counties
+
+In this section, we will investigate how the variables analyzed throughout the regression models play different roles for metro and non-metro counties separately. We will filter the dataset by the metro/non-metro category, and run the regression models and compare.
+
+```{r filter metro-nonmetro}
+## Filter metro/non-metro ##
+metro_tx <- tx_bb_subset %>% filter(metro_f == "Metro")
+nonmetro_tx <- tx_bb_subset %>% filter(metro_f == "Nonmetro")
+
+```
+
+### Nonfarm Proprietors Share
+
+* **DV**: Nonfarm Proprietors Share (2018, %)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r nonfarm proprietors share model-metro, results='asis', echo=FALSE}
+## Nonfarm Proprietors Share Model (Metro) ##
+model_nonfarm_metro <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = metro_tx)
+
+## Nonfarm Proprietors Share Model (Non-Metro) ##
+model_nonfarm_nonmetro <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = nonmetro_tx)
+
+## Generate stargazer table ##
+stargazer(model_nonfarm_metro, model_nonfarm_nonmetro, title = "Nonfarm Proprietors Share",
+          type = "html", align = T, dep.var.labels = c("Nonfarm Proprietors Share"),
+          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials"), no.space = T)
+
+```
+
+### Change in Nonfarm Proprietors Share
+
+* **DV**: Change in Nonfarm Proprietors Share (2018, %)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r change in nonfarm proprietors share model-metro, results='asis', echo=FALSE}
+## Change in Nonfarm Proprietors Share Model (Metro) ##
+model_nonfarmchg_metro <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = metro_tx)
+
+## Change in Nonfarm Proprietors Share Model (Non-Metro) ##
+model_nonfarmchg_nonmetro <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = nonmetro_tx)
+
+## Generate stargazer table ##
+stargazer(model_nonfarmchg_metro, model_nonfarmchg_nonmetro, title = "Change in Nonfarm Proprietors Share",
+          type = "html", align = T, dep.var.labels = c("Change in Nonfarm Proprietors Share"),
+          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials"), no.space = T)
+
+```
+
+### Venture Density
+
+* **DV**: Venture Density (Average of 2018-9)
+* **Independent Variables**
+  + FCC Broadband Availability (2019, %)
+  + Microsoft Broadband Usage (2019, %)
+  + ACS Fixed Broadband Subscription (2018, %)
+  + M-Lab Broadband Usage (2018-9, %)
+* **Control Variables**
+  + Industry Structure
+  + Education
+  + Age groups
+
+```{r venture density model metro, results='asis', echo=FALSE}
+## Change in Nonfarm Proprietors Share Model (Metro) ##
+model_vd_metro <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = metro_tx)
+
+## Change in Nonfarm Proprietors Share Model (Non-Metro) ##
+model_vd_nonmetro <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_broadband_MS + pct_fixed_acs_2018 + pct_broadband_mlab + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pct_self_employed_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctboomers_2019 + pctgenx_2019 + pctmilennial_2019, data = nonmetro_tx)
+
+## Generate stargazer table ##
+stargazer(model_vd_metro, model_vd_nonmetro, title = "Venture Density",
+          type = "html", align = T, dep.var.labels = c("Venture Density"),
+          dep.var.caption = c("Metro Counties","Non-Metro Counties"),
+          covariate.labels = c("FCC Broadband Availability (%,2019)",
+                               "MS Broadband Usage (%,2019)",
+                               "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "Agriculture (% of workers)",
+                               "Construction (% of workers)",
+                               "Wholesale (% of workers)",
+                               "Retail (% of workers)",
+                               "Transportation (% of workers)",
+                               "IT (% of workers)",
+                               "Finance (% of workers)",
+                               "Professional (% of workers)",
+                               "Education, healthcare, social (% of workers)",
+                               "Other occupation (% of workers)",
+                               "Public sector (% of workers)",
+                               "Self-employed (%)",
+                               "Education Less than Highschool (%)",
+                               "Bachelors Degree (%)",
+                               "Graduate Degree (%)",
+                               "Babyboomer","GenX","Millenials"), no.space = T)
+
+```
+
+
+
