@@ -1139,6 +1139,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          metro_f = as.factor(metro_desc),
          pctagriculture_2019 = pctagriculture_2019/100,
          pctconstruction_2019 = pctconstruction_2019/100,
+         pctmanufacture_2019 = pctmanufacture_2019/100,
          pctwholesale_2019 = pctwholesale_2019/100,
          pctretail_2019 = pctretail_2019/100,
          pcttransportation_2019 = pcttransportation_2019/100,
@@ -1150,6 +1151,16 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          pctpublic_admin_2019 = pctpublic_admin_2019/100,
          pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
          pctgraduate_2019 = pctgraduate_2019/100) 
+
+## Create industry diversity index following equations used by Alesina et al. (1999) and Gallardo et al. (2020)
+## The equation is Industry = 1 - sum(ind_share^2)
+
+tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
+  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + pctmanufacture_2019^2 +
+                                    pctwholesale_2019^2 + pctretail_2019^2 + pcttransportation_2019^2 +
+                                    pctinformation_2019^2 + pctfinance_2019^2 + pctprofessional_2019^2 +
+                                    pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
+                                    pctpublic_admin_2019^2))
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")
