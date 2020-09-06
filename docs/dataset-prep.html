@@ -352,8 +352,16 @@ $(document).ready(function () {
 
 #install.packages(&quot;tidyverse&quot;)
 #install.packages(&quot;ggplot2&quot;)
-library(tidyverse)
-library(ggplot2)</code></pre>
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.1
+## ✓ tidyr   1.1.1     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
 <hr />
 <div id="microsoft-broadband-availability-dataset" class="section level2">
 <h2>Microsoft Broadband Availability Dataset</h2>
@@ -672,6 +680,11 @@ Sys.setenv(CENSUS_KEY=&quot;YOUR KEY GOES HERE&quot;)
 readRenviron(&quot;~/.Renviron&quot;)
 # Check to see that the expected key is output in your R console
 Sys.getenv(&quot;CENSUS_KEY&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;censusapi&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:methods&#39;:
+## 
+##     getFunction</code></pre>
 <p>You can take a look at available APIs and other important metadata related to specific APIs using the following functions. Refer to specific documentations of the functions as well as the specific API that you want to investigate.</p>
 <ul>
 <li><code>listCensusApis()</code>: Retrieve all available API handles provided by the Census Bureau.</li>
@@ -951,8 +964,19 @@ beaParams(beaKey = beaKey, &#39;Regional&#39;)
 ## Further, you can see what values are available for specific parameter using code below
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;TableName&#39;)
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;LineCode&#39;)</code></pre>
-<pre class="r"><code>library(bea.R)
-### Finally, we will use the parameter and parameter values to retrieve data table
+<pre class="r"><code>library(bea.R)</code></pre>
+<pre><code>## Loading required package: data.table</code></pre>
+<pre><code>## 
+## Attaching package: &#39;data.table&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     between, first, last</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     transpose</code></pre>
+<pre><code>## Creating a generic function for &#39;toJSON&#39; from package &#39;jsonlite&#39; in package &#39;googleVis&#39;</code></pre>
+<pre><code>## Note: As of February 2018, beaGet() requires &#39;TableName&#39; for NIPA and NIUnderlyingDetail data instead of &#39;TableID.&#39; See https://github.us-bea/bea.R for details.</code></pre>
+<pre class="r"><code>### Finally, we will use the parameter and parameter values to retrieve data table
 ## In terms of LineCode, we are interested in:
 ## 10: Total employment
 ## 20: Wage and salary employment
@@ -1390,6 +1414,7 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
          metro_f = as.factor(metro_desc),
          pctagriculture_2019 = pctagriculture_2019/100,
          pctconstruction_2019 = pctconstruction_2019/100,
+         pctmanufacture_2019 = pctmanufacture_2019/100,
          pctwholesale_2019 = pctwholesale_2019/100,
          pctretail_2019 = pctretail_2019/100,
          pcttransportation_2019 = pcttransportation_2019/100,
@@ -1401,6 +1426,16 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
          pctpublic_admin_2019 = pctpublic_admin_2019/100,
          pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
          pctgraduate_2019 = pctgraduate_2019/100) 
+
+## Create industry diversity index following equations used by Alesina et al. (1999) and Gallardo et al. (2020)
+## The equation is Industry = 1 - sum(ind_share^2)
+
+tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
+  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + pctmanufacture_2019^2 +
+                                    pctwholesale_2019^2 + pctretail_2019^2 + pcttransportation_2019^2 +
+                                    pctinformation_2019^2 + pctfinance_2019^2 + pctprofessional_2019^2 +
+                                    pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
+                                    pctpublic_admin_2019^2))
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>
