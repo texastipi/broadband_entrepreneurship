@@ -352,16 +352,8 @@ $(document).ready(function () {
 
 #install.packages(&quot;tidyverse&quot;)
 #install.packages(&quot;ggplot2&quot;)
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.1
-## ✓ tidyr   1.1.1     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(ggplot2)</code></pre>
+library(tidyverse)
+library(ggplot2)</code></pre>
 <hr />
 <div id="microsoft-broadband-availability-dataset" class="section level2">
 <h2>Microsoft Broadband Availability Dataset</h2>
@@ -482,22 +474,9 @@ mlab_dec_txksme &lt;- mlab_dec %&gt;%
 <h2>Texas Sole Proprietors Dataset</h2>
 <p>This dataset contains information of sole proprietors number provided by the Bureau of Business Research at <span class="math inline">\(IC^{2}\)</span> Institute. The information is presented at the county level.</p>
 <pre class="r"><code>## Import the Dataset
-tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   county = col_character(),
-##   pct_change_proprietors_2000_2017 = col_double(),
-##   proprietors_2000 = col_double(),
-##   proprietors_2017 = col_double(),
-##   pct_proprietors_employment_2000 = col_double(),
-##   pct_proprietors_employment_2010 = col_double(),
-##   pct_proprietors_employment_2017 = col_double(),
-##   total_employment_2017 = col_double(),
-##   wage_salary_jobs_2017 = col_double(),
-##   pct_change_pro_emp_2000_2017 = col_double(),
-##   pct_change_pro_emp_2010_2017 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect the Structure
+tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)
+
+## Inspect the Structure
 str(tx_proprietor)</code></pre>
 <p>This dataset’s variables are straighforward as it was pre-cleaned on Excel spreadsheet.</p>
 </div>
@@ -506,21 +485,10 @@ str(tx_proprietor)</code></pre>
 <p>This dataset contains information of IRR index at the county level. The index calculates the extent to which a certain county could be considered as <em>‘rural’</em>. Smaller the value of the index, more rural the county is considered to be.</p>
 <p>There are two datasets that contains data from 2000 and 2010. I will import these datasets, filter for Texas and set up for a final merge of all datasets we have.</p>
 <pre class="r"><code>## Import the Dataset
-rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2000 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2000 = col_double()
-## )</code></pre>
-<pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS2010 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2010 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect Structure
+rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)
+rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)
+
+## Inspect Structure
 str(rural_2000)
 str(rural_2010)
 
@@ -544,17 +512,9 @@ str(rural_2010_txksme)</code></pre>
 <div id="rural-urban-continuum-codes" class="section level2">
 <h2>Rural-Urban Continuum Codes</h2>
 <p>In addition to the IRR index, I also import the <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">Rural-Urban Continuum Codes</a> (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.</p>
-<pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   FIPS = col_character(),
-##   State = col_character(),
-##   County_Name = col_character(),
-##   Population_2010 = col_number(),
-##   RUCC_2013 = col_double(),
-##   Description = col_character()
-## )</code></pre>
-<pre class="r"><code>rucc2013 &lt;- rucc2013 %&gt;% 
+<pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)
+
+rucc2013 &lt;- rucc2013 %&gt;% 
   mutate(Description = str_extract(Description, &quot;^.*?(?= -)&quot;)) %&gt;% 
   rename(metro_desc = Description)</code></pre>
 </div>
@@ -680,11 +640,6 @@ Sys.setenv(CENSUS_KEY=&quot;YOUR KEY GOES HERE&quot;)
 readRenviron(&quot;~/.Renviron&quot;)
 # Check to see that the expected key is output in your R console
 Sys.getenv(&quot;CENSUS_KEY&quot;)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;censusapi&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:methods&#39;:
-## 
-##     getFunction</code></pre>
 <p>You can take a look at available APIs and other important metadata related to specific APIs using the following functions. Refer to specific documentations of the functions as well as the specific API that you want to investigate.</p>
 <ul>
 <li><code>listCensusApis()</code>: Retrieve all available API handles provided by the Census Bureau.</li>
@@ -849,9 +804,9 @@ cbp2012_txksme_agg &lt;- cbp2012_txksme %&gt;%
             est_50_cbp_2012 = sum(est_50, na.rm = T),
             est_10_cbp_2012 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2012 = est_50_cbp_2012 / est_cbp_2012,
-         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2017_txksme_agg &lt;- cbp2017_txksme %&gt;% 
+         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)
+
+cbp2017_txksme_agg &lt;- cbp2017_txksme %&gt;% 
   filter(EMPSZES == &quot;001&quot;|EMPSZES == &quot;210&quot;|EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
          emp_total = ifelse(EMPSZES == &quot;001&quot;, EMP, 0),
@@ -863,9 +818,9 @@ cbp2012_txksme_agg &lt;- cbp2012_txksme %&gt;%
             est_50_cbp_2017 = sum(est_50, na.rm = T),
             est_10_cbp_2017 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2017 = est_50_cbp_2017 / est_cbp_2017,
-         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>cbp2018_txksme_agg &lt;- cbp2018_txksme %&gt;% 
+         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
+
+cbp2018_txksme_agg &lt;- cbp2018_txksme %&gt;% 
   filter(EMPSZES == &quot;001&quot;|EMPSZES == &quot;210&quot;|EMPSZES == &quot;212&quot;|EMPSZES == &quot;220&quot;|EMPSZES == &quot;230&quot;|EMPSZES == &quot;241&quot;) %&gt;% # Filter for employment size
   mutate(est_total = ifelse(EMPSZES == &quot;001&quot;, ESTAB, 0),
          emp_total = ifelse(EMPSZES == &quot;001&quot;, EMP, 0),
@@ -877,9 +832,9 @@ cbp2012_txksme_agg &lt;- cbp2012_txksme %&gt;%
             est_50_cbp_2018 = sum(est_50, na.rm = T),
             est_10_cbp_2018 = sum(est_10, na.rm = T)) %&gt;% 
   mutate(pct_50_est_cbp_2018 = est_50_cbp_2018 / est_cbp_2018,
-         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
+         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)
+
+## Merge three years datasets ##
 cbp_txksme &lt;- left_join(cbp2012_txksme_agg, cbp2017_txksme_agg, by = &quot;county_FIPS&quot;) %&gt;% left_join(., cbp2018_txksme_agg, by = &quot;county_FIPS&quot;)
 
 #### Nonemployer Dataset Aggregation ####
@@ -891,9 +846,9 @@ nonemp2012_txksme_agg &lt;- nonemp2012 %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2012 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2012 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2017_txksme_agg &lt;- nonemp2017 %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
+
+nonemp2017_txksme_agg &lt;- nonemp2017 %&gt;% 
   mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -901,9 +856,9 @@ nonemp2012_txksme_agg &lt;- nonemp2012 %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2017 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2017 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>nonemp2018_txksme_agg &lt;- nonemp2018 %&gt;% 
+  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
+
+nonemp2018_txksme_agg &lt;- nonemp2018 %&gt;% 
   mutate(est_total = ifelse(SECTOR == &quot;00&quot;, NESTAB, 0),
          nonfarm_est_total = ifelse(str_detect(NAICS2017, &quot;^11&quot;, negate = TRUE), NESTAB, 0),
          nonfarm_est_total = ifelse(NAICS2017 == &quot;00&quot;, 0, nonfarm_est_total)) %&gt;% 
@@ -911,9 +866,9 @@ nonemp2012_txksme_agg &lt;- nonemp2012 %&gt;%
   group_by(county_FIPS) %&gt;% 
   summarise(neest_nemp_2018 = sum(est_total, na.rm = T),
             nonfarmneest_nemp_2018 = sum(nonfarm_est_total, na.rm = T)) %&gt;% 
-  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Merge three years datasets ##
+  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)
+
+## Merge three years datasets ##
 nonemp_txksme &lt;- left_join(nonemp2012_txksme_agg, nonemp2017_txksme_agg, by= &quot;county_FIPS&quot;) %&gt;% left_join(., nonemp2018_txksme_agg, by = &quot;county_FIPS&quot;) %&gt;% 
   mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)</code></pre>
 </div>
@@ -964,19 +919,8 @@ beaParams(beaKey = beaKey, &#39;Regional&#39;)
 ## Further, you can see what values are available for specific parameter using code below
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;TableName&#39;)
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;LineCode&#39;)</code></pre>
-<pre class="r"><code>library(bea.R)</code></pre>
-<pre><code>## Loading required package: data.table</code></pre>
-<pre><code>## 
-## Attaching package: &#39;data.table&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     between, first, last</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     transpose</code></pre>
-<pre><code>## Creating a generic function for &#39;toJSON&#39; from package &#39;jsonlite&#39; in package &#39;googleVis&#39;</code></pre>
-<pre><code>## Note: As of February 2018, beaGet() requires &#39;TableName&#39; for NIPA and NIUnderlyingDetail data instead of &#39;TableID.&#39; See https://github.us-bea/bea.R for details.</code></pre>
-<pre class="r"><code>### Finally, we will use the parameter and parameter values to retrieve data table
+<pre class="r"><code>library(bea.R)
+### Finally, we will use the parameter and parameter values to retrieve data table
 ## In terms of LineCode, we are interested in:
 ## 10: Total employment
 ## 20: Wage and salary employment
@@ -1347,21 +1291,18 @@ fcc477_txksme_block_4 &lt;- fcc477_Jun2019_txksme %&gt;%
 # Aggregate at the county level and merge with FCC staff estimates
 fcc477_txksme_county_1 &lt;- fcc477_txksme_block_1 %&gt;% 
   group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_2 &lt;- fcc477_txksme_block_2 %&gt;% 
+  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))
+fcc477_txksme_county_2 &lt;- fcc477_txksme_block_2 %&gt;% 
   group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_3 &lt;- fcc477_txksme_block_3 %&gt;% 
+  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))
+fcc477_txksme_county_3 &lt;- fcc477_txksme_block_3 %&gt;% 
   group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_4 &lt;- fcc477_txksme_block_4 %&gt;% 
+  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))
+fcc477_txksme_county_4 &lt;- fcc477_txksme_block_4 %&gt;% 
   group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>#### Calculating FCC Deployment Percentages ####
+  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))
+
+#### Calculating FCC Deployment Percentages ####
 ## 477 Data as of June 2019 &amp; Staff Estimates as of 2018 ##
 # Calculate broadband percentage by dividing census block population with broadband by total county
 # population
@@ -1431,11 +1372,16 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
 ## The equation is Industry = 1 - sum(ind_share^2)
 
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
-  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + pctmanufacture_2019^2 +
-                                    pctwholesale_2019^2 + pctretail_2019^2 + pcttransportation_2019^2 +
-                                    pctinformation_2019^2 + pctfinance_2019^2 + pctprofessional_2019^2 +
+  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + 
+                                    pctmanufacture_2019^2 + pctwholesale_2019^2 + pctretail_2019^2 +
+                                    pcttransportation_2019^2 + pctinformation_2019^2 +
+                                    pctfinance_2019^2 + pctprofessional_2019^2 +
                                     pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
-                                    pctpublic_admin_2019^2))
+                                    pctpublic_admin_2019^2)) %&gt;% 
+  mutate(pct_bb_fcc_2019 = case_when(is.na(pct_bb_fcc_2019) ~ 0, TRUE ~ pct_bb_fcc_2019),
+         pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
+         pct_fixed_acs_2018 = case_when(is.na(pct_fixed_acs_2018) ~ 0, TRUE ~ pct_fixed_acs_2018),
+         pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab))
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>

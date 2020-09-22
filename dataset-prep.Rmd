@@ -1156,11 +1156,16 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 ## The equation is Industry = 1 - sum(ind_share^2)
 
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
-  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + pctmanufacture_2019^2 +
-                                    pctwholesale_2019^2 + pctretail_2019^2 + pcttransportation_2019^2 +
-                                    pctinformation_2019^2 + pctfinance_2019^2 + pctprofessional_2019^2 +
+  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + 
+                                    pctmanufacture_2019^2 + pctwholesale_2019^2 + pctretail_2019^2 +
+                                    pcttransportation_2019^2 + pctinformation_2019^2 +
+                                    pctfinance_2019^2 + pctprofessional_2019^2 +
                                     pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
-                                    pctpublic_admin_2019^2))
+                                    pctpublic_admin_2019^2)) %>% 
+  mutate(pct_bb_fcc_2019 = case_when(is.na(pct_bb_fcc_2019) ~ 0, TRUE ~ pct_bb_fcc_2019),
+         pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
+         pct_fixed_acs_2018 = case_when(is.na(pct_fixed_acs_2018) ~ 0, TRUE ~ pct_fixed_acs_2018),
+         pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab))
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")
