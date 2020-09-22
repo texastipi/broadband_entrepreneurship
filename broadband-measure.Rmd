@@ -110,8 +110,7 @@ grid.arrange(
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
     xlab("FCC Broadband") + ylab("Frequency") +
-    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(),
-                       limits = c(0,1)),
+    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_broadband_MS)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
@@ -147,8 +146,7 @@ grid.arrange(
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
     xlab("FCC Broadband") + ylab("Frequency") +
-    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(),
-                       limits = c(0,1)),
+    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct_broadband_MS)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
@@ -184,8 +182,7 @@ grid.arrange(
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
     xlab("FCC Broadband") + ylab("Frequency") +
-    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(),
-                       limits = c(0,1)),
+    scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()),
   ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct_broadband_MS)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
