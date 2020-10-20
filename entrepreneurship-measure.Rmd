@@ -341,37 +341,37 @@ cbp2012_tx_raw <- getCensus(name = "cbp",
                             vintage = 2012,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
-                            regionin = "state:48")
+                            regionin = "state:48,23,20")
 cbp2013_tx_raw <- getCensus(name = "cbp",
                         vintage = 2013,
                         vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                         region = "county:*",
-                        regionin = "state:48")
+                        regionin = "state:48,23,20")
 cbp2014_tx_raw <- getCensus(name = "cbp",
                         vintage = 2014,
                         vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                         region = "county:*",
-                        regionin = "state:48")
+                        regionin = "state:48,23,20")
 cbp2015_tx_raw <- getCensus(name = "cbp",
                         vintage = 2015,
                         vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                         region = "county:*",
-                        regionin = "state:48")
+                        regionin = "state:48,23,20")
 cbp2016_tx_raw <- getCensus(name = "cbp",
                         vintage = 2016,
                         vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                         region = "county:*",
-                        regionin = "state:48")
+                        regionin = "state:48,23,20")
 cbp2017_tx_raw <- getCensus(name = "cbp",
                             vintage = 2017,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
-                            regionin = "state:48")
+                            regionin = "state:48,23,20")
 cbp2018_tx_raw <- getCensus(name = "cbp",
                             vintage = 2018,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
-                            regionin = "state:48")
+                            regionin = "state:48,23,20")
 
 ## Make modifications and aggregate the datasets ##
 
@@ -665,17 +665,17 @@ bea_60 <- beaGet(beaSpecs_60, asWide = F)
 
 ## Clean, adjust and merge ##
 
-bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48")) %>% 
+bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48|^23|^20")) %>% 
   select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
   mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
   rename(totalemp = DataValue,
          county = GeoName)
-bea_40 <- bea_40 %>% filter(str_detect(GeoFips, "^48")) %>% 
+bea_40 <- bea_40 %>% filter(str_detect(GeoFips, "^48|^23|20")) %>% 
   select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
   mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
   rename(proprietors = DataValue,
          county = GeoName)
-bea_60 <- bea_60 %>% filter(str_detect(GeoFips, "^48")) %>% 
+bea_60 <- bea_60 %>% filter(str_detect(GeoFips, "^48|^23|20")) %>% 
   select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
   mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
   rename(nonfarm_proprietors = DataValue,
