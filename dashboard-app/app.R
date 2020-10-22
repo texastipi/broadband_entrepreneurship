@@ -33,8 +33,8 @@ allstate_import_geo <- sp::merge(txksme_counties, allstate_import, by.x = "GEOID
 allstate_import_geo_sf <- sf::st_as_sf(allstate_import_geo)
 
 # Census data import
-cbp_2012_2018 <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/cbp-2014-2018.csv")
-bea_prop <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/bea-2014-2018.csv")
+cbp_2012_2018 <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/cbp-2014-2018-v2.csv")
+bea_prop <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/bea-2014-2018-v2.csv")
 
 
 ## Build an app showing broadband histogram and map ##
@@ -227,7 +227,7 @@ server <- function(input, output) {
   })
   
   pal <- colorNumeric(palette = "YlOrRd", domain = c(0,1))
-  pal2 <- colorNumeric(palette = "YlOrRd", domain = c(min(st_reactive()[,"venturedensity_mean"]),max(st_reactive()[,"venturedensity_mean"])))
+  pal2 <- colorNumeric(palette = "YlOrRd", domain = c(0,12))
   
   # Reactive label for BB
   currentbb_label <- reactive({
@@ -238,7 +238,7 @@ server <- function(input, output) {
   })
   # Reactive label for Entrepreneurship
   currentent_label <- reactive({
-    if (req(input$entmeasure) == "pct_est_10_cbp_2018"){"% of Establishments (<10 employee, 2018)"}
+    if (req(input$entmeasure) == "pct_10_est_cbp_2018"){"% of Establishments (<10 employee, 2018)"}
     else if (req(input$entmeasure) == "pct_nonfarm_bea_2018"){"% of Nonfarm Proprietors (2018)"}
     else if (req(input$entmeasure) == "venturedensity_mean"){"Average Venture Density (2018-2019)"}
   })
@@ -324,14 +324,23 @@ server <- function(input, output) {
     })
   
   output$hist_entrepreneurship <- renderPlotly({
-    ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
-      geom_histogram(fill = "orangered3") + theme_minimal() + 
-      theme(axis.text = element_text(face = "bold"),
-            axis.title = element_text(face = "bold")) + 
-      xlab(currentent_label()) + ylab("Number of Counties") +
-      scale_y_continuous(breaks = scales::breaks_pretty()) +
-      {if (req(input$entmeasure) == "venturedensity_mean") {scale_x_continuous(breaks = scales::breaks_pretty())}
-        else {scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(), limits = c(0,1.1))}}
+    if (input$entmeasure != "venturedensity_mean") {
+      ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
+        geom_histogram(fill = "orangered3") + theme_minimal() + 
+        theme(axis.text = element_text(face = "bold"),
+              axis.title = element_text(face = "bold")) + 
+        xlab(currentent_label()) + ylab("Number of Counties") +
+        scale_y_continuous(breaks = scales::breaks_pretty()) +
+        scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(), limits = c(0,1.1))
+    } else if (input$entmeasure == "venturedensity_mean") {
+      ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
+        geom_histogram(fill = "orangered3") + theme_minimal() + 
+        theme(axis.text = element_text(face = "bold"),
+              axis.title = element_text(face = "bold")) + 
+        xlab(currentent_label()) + ylab("Number of Counties") +
+        scale_y_continuous(breaks = scales::breaks_pretty()) +
+        scale_x_continuous(breaks = scales::breaks_pretty())
+    }
   })
   
   # Line graphs for entrepreneurship
@@ -432,7 +441,7 @@ server <- function(input, output) {
   # Entrepreneurship Observe
   observe({
     proxy <- leafletProxy("map2", data = st_reactive())
-    if (input$entmeasure == "pct_est_10_cbp_2018") {
+    if (input$entmeasure == "pct_10_est_cbp_2018") {
       proxy %>% clearControls() %>% 
         addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
                     color = ~pal(pct_10_est_cbp_2018)) %>% 
@@ -456,7 +465,7 @@ server <- function(input, output) {
                     color = ~pal2(venturedensity_mean)) %>% 
         setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
         addLegend("bottomright", pal = pal2, values = ~venturedensity_mean,
-                  title = "Venture Density (2018-2019)", opacity = 1, labFormat = labelFormat(na.label = "N/A"))
+                  title = "Venture Density<br>(2018-2019)", opacity = 1)
     }
   })
   
