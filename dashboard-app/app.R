@@ -24,7 +24,7 @@ txksme_counties <- counties(state = c("TX","ME","KS"))
 # FCC county population estimates
 fcc_staff_est_county2018 <- read.csv("https://www.fcc.gov/file/17821/download", header = T)
 fcc_staff_est_county2018 <- fcc_staff_est_county2018 %>% 
-  select(Id, Id2, Geography, ends_with("2018")) %>% 
+  select(Id2, Geography, ends_with("2018")) %>% 
   rename(hu2018 = `Housing.Unit.Estimate..as.of.July.1....2018`,
          pop2018 = `Population.Estimate..as.of.July.1....2018`)
 allstate_import <- allstate_import %>% 
@@ -37,32 +37,37 @@ allstate_import_geo_sf <- sf::st_as_sf(allstate_import_geo)
 
 #### Census Import ####
 # Add key to .Renviron
-Sys.setenv(CENSUS_KEY="9001b546c2d77876a089119664dc25a4235eea37")
+censuskey <- "9001b546c2d77876a089119664dc25a4235eea37"
 
 ## Get CBP variables from year 2012 to 2018 ##
 
 cbp2014_tx_raw <- getCensus(name = "cbp",
                             vintage = 2014,
+                            key = censuskey,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
                             regionin = "state:48,23,20")
 cbp2015_tx_raw <- getCensus(name = "cbp",
                             vintage = 2015,
+                            key = censuskey,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
                             regionin = "state:48,23,20")
 cbp2016_tx_raw <- getCensus(name = "cbp",
                             vintage = 2016,
+                            key = censuskey,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
                             regionin = "state:48,23,20")
 cbp2017_tx_raw <- getCensus(name = "cbp",
                             vintage = 2017,
+                            key = censuskey,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
                             regionin = "state:48,23,20")
 cbp2018_tx_raw <- getCensus(name = "cbp",
                             vintage = 2018,
+                            key = censuskey,
                             vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F","YEAR"),
                             region = "county:*",
                             regionin = "state:48,23,20")
@@ -237,9 +242,9 @@ cbp_2012_2018 <- cbp_2012_2018 %>%
   left_join(., tigris::list_counties("Maine"), by = "county_code") %>% 
   left_join(., tigris::list_counties("Kansas"), by = "county_code") %>% 
   filter(county_code != "999") %>% 
-  mutate(ST = case_when(county_FIPS == "^48" ~ "TX",
-                        county_FIPS == "^20" ~ "KS",
-                        county_FIPS == "^23" ~ "ME")) %>% 
+  mutate(ST = case_when(str_detect(county_FIPS, "^48") ~ "TX",
+                        str_detect(county_FIPS, "^20") ~ "KS",
+                        str_detect(county_FIPS, "^23") ~ "ME")) %>% 
   select(-county_code)
 
 # We can also pivot this dataset into wider form by using pivot_wider()
@@ -324,9 +329,9 @@ bea_prop <- bea_10 %>%
          pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp) %>% 
   rename(year = TimePeriod,
          county_FIPS = GeoFips) %>% 
-  mutate(ST = case_when(county_FIPS == "^48" ~ "TX",
-                        county_FIPS == "^20" ~ "KS",
-                        county_FIPS == "^23" ~ "ME"))
+  mutate(ST = case_when(str_detect(county_FIPS, "^48") ~ "TX",
+                        str_detect(county_FIPS, "^20") ~ "KS",
+                        str_detect(county_FIPS, "^23") ~ "ME"))
 
 bea_county_2012_2018 <- pivot_wider(data = bea_prop,
                                     id_cols = county_FIPS,
@@ -345,7 +350,7 @@ bea_tx_prop <- bea_prop %>%
 ## Build an app showing broadband histogram and map ##
 ## UI part ##
 ui <- dashboardPage(
-  dashboardHeader(title = paste("Broadband & Entrepreneurship"), titleWidth = "300"),
+  dashboardHeader(title = paste("Broadband & Entrepreneurship"), titleWidth = "350"),
   dashboardSidebar(
     width = "160",
     sidebarMenu(
@@ -487,9 +492,9 @@ ui <- dashboardPage(
                     fluidRow(
                       tabBox(title = "Trend between 2014 & 2018", width = NULL,
                              tabPanel("% of Business Establishments (<10 employees)",
-                                      plotlyOutput("line_est10")),
+                                      plotOutput("line_est10")),
                              tabPanel("% of Propreitors",
-                                      plotlyOutput("line_nonfarm")))
+                                      plotOutput("line_nonfarm")))
                     )
                     )
                   )
@@ -516,7 +521,7 @@ server <- function(input, output) {
                 est_50 = sum(est_50_cbp),
                 est_10 = sum(est_10_cbp)) %>% 
       mutate(pct_50 = est_50 / est,
-             pct_10 = est_10 / est) %>% reshape2::melt(data.table::setDT(.), id = "year", measure.vars = 7)
+             pct_10 = est_10 / est) %>% gather(., key = "var_fact", value = "value", pct_10)
   })
   
   bea_reactive <- reactive({
@@ -526,8 +531,11 @@ server <- function(input, output) {
                 proprietors = sum(proprietors),
                 nonfarm_proprietors = sum(nonfarm_proprietors)) %>% 
       mutate(pct_prop_emp = proprietors / totalemp,
-             pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp) %>% reshape2::melt(data.table::setDT(.), id = "year", measure.vars = 5:6)
+             pct_nonfarm_prop_emp = nonfarm_proprietors / totalemp) %>% gather(., key = "var_fact", value = "value", pct_prop_emp:pct_nonfarm_prop_emp)
   })
+  
+  pal <- colorNumeric(palette = "YlOrRd", domain = c(0,1))
+  pal2 <- colorNumeric(palette = "YlOrRd", domain = c(min(st_reactive()[,"venturedensity_mean"]),max(st_reactive()[,"venturedensity_mean"])))
   
   # Reactive label for BB
   currentbb_label <- reactive({
@@ -635,43 +643,48 @@ server <- function(input, output) {
   })
   
   # Line graphs for entrepreneurship
-  output$line_est10 <- renderPlotly({
-    dd <- cbp_reactive()
-    ggplot(dd, aes(year, value, group = variable, color = variable)) + geom_line(size = 1.3) + 
-      geom_point(size = 4) + geom_point(size = 2.5, color = "white") + 
+  output$line_est10 <- renderPlot({
+    print(cbp_reactive())
+    ggplot(cbp_reactive(), aes(year, value, group = 1, color = var_fact)) + geom_line(size = 2.5) + 
+      geom_point(size = 6) + geom_point(size = 4, color = "white") + 
       theme_minimal() + theme(plot.title = element_text(face = "bold", size = 14),
                               plot.subtitle = element_text(size = 9, face = "italic"),
+                              legend.position = "none",
                               axis.text = element_text(size = 11),
                               axis.title = element_text(size = 12, face = "bold")) +
-      labs(title = "% of Business Establishments with <10 Employees (2014-2018)", subtitle = "Source: County Business Patterns (Census Bureau)",
-           x = "Year", y = "%", color = "Colors") + 
+      labs(title = "% of Establishments with <10 Employees (2014-2018)", subtitle = "Source: County Business Patterns (Census Bureau)",
+           x = "Year", y = "%") + 
       scale_y_continuous(labels = scales::percent,
                          breaks = scales::breaks_pretty()) +
-      scale_color_manual(labels = c("% of Business Establishments (<10 Employee)"),
-                         values = c("royalblue4"))
+      scale_color_manual(values = "royalblue4")
   })
   
-  output$line_nonfarm <- renderPlotly({
-    dd <- bea_reactive()
-    ggplot(dd, aes(year, value, group = variable, color = variable)) + geom_line(size = 1.3) + 
-      geom_point(size = 4) + geom_point(size = 2.5, color = "white") + 
+  output$line_nonfarm <- renderPlot({
+    print(bea_reactive())
+    ggplot(bea_reactive(), aes(year, value, group = var_fact, color = var_fact)) + geom_line(size = 2.5) + 
+      geom_point(size = 6) + geom_point(size = 4, color = "white") + 
       theme_minimal() + theme(plot.title = element_text(face = "bold", size = 14),
                               plot.subtitle = element_text(size = 9, face = "italic"),
                               axis.text = element_text(size = 11),
                               axis.title = element_text(size = 12, face = "bold")) +
-      labs(title = "Share of Proprietors/Non-farm Proprietors (2014-2018)",
+      labs(title = "Share of Proprietors/Non-farm Proprietors in Texas (2012-2018)",
            subtitle = "Source: Bureau of Economic Analysis",
            x = "Year", y = "%", color = "Colors") + 
-      scale_y_continuous(labels = scales::percent,
+      scale_y_continuous(limits = c(min(bea_reactive()[,"value"]),max(bea_reactive()[,"value"])),
+                         labels = scales::percent,
                          breaks = scales::breaks_pretty()) +
-      scale_color_manual(labels = c("% of Proprietors\nover total employment","% of Nonfarm Proprietors\nover total employment"),
+      scale_color_manual(labels = c("% of Proprietors", "% of Nonfarm Proprietors"),
                          values = c("red4","royalblue4"))
   })
     
     
   # Leaflet maps
   output$map <- renderLeaflet({
-    pal <- colorNumeric(palette = "YlOrRd", domain = c(0,1))
+    leaflet(st_reactive()) %>% addProviderTiles(providers$CartoDB.Positron) %>% 
+      setView(lng = -99, lat = 45, zoom = 10)
+  })
+  
+  output$map2 <- renderLeaflet({
     leaflet(st_reactive()) %>% addProviderTiles(providers$CartoDB.Positron) %>% 
       setView(lng = -99, lat = 45, zoom = 10)
   })
@@ -683,6 +696,7 @@ server <- function(input, output) {
                                  lat = median(as.numeric(INTPTLAT), na.rm = T))
   })
   
+  # Broadband Observe
   observe({
     proxy <- leafletProxy("map", data = st_reactive())
     if (input$bbtype == "pct_bb_fcc_2019") {
@@ -722,6 +736,38 @@ server <- function(input, output) {
                   labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
     }
   })
+  
+  # Entrepreneurship Observe
+  observe({
+    proxy <- leafletProxy("map2", data = st_reactive())
+    if (input$entmeasure == "pct_est_10_cbp_2018") {
+      proxy %>% clearControls() %>% 
+        addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
+                    color = ~pal(pct_10_est_cbp_2018)) %>% 
+        setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
+        addLegend("bottomright", pal = pal, values = ~pct_10_est_cbp_2018,
+                  title = "% of Establishments<br>(<10 Employees)",
+                  labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
+    }
+    else if (input$entmeasure == "pct_nonfarm_bea_2018") {
+      proxy %>% clearControls() %>% 
+        addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
+                    color = ~pal(pct_nonfarm_bea_2018)) %>% 
+        setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
+        addLegend("bottomright", pal = pal, values = ~pct_nonfarm_bea_2018,
+                  title = "% of Nonfarm<br>Proprietors (2018)",
+                  labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
+    }
+    else if (input$entmeasure == "venturedensity_mean") {
+      proxy %>% clearControls() %>% 
+        addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
+                    color = ~pal2(venturedensity_mean)) %>% 
+        setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
+        addLegend("bottomright", pal = pal2, values = ~venturedensity_mean,
+                  title = "Venture Density (2018-2019)", opacity = 1, labFormat = labelFormat(na.label = "N/A"))
+    }
+  })
+  
 }
 
 
