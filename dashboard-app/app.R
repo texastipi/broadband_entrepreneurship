@@ -12,9 +12,6 @@ library(sp)
 library(sf)
 library(scales)
 library(plotly)
-library(censusapi)
-library(bea.R)
-library(reshape2)
 set.seed(5000)
 
 #### Import dataset ####
