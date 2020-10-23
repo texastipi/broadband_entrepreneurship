@@ -17,6 +17,8 @@ library(sandwich)
 library(sjPlot)
 library(sjmisc)
 
+set.seed(5000)
+
 ## Import dataset ##
 bb_entrepreneur <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 bb_entrepreneur <- bb_entrepreneur %>% 
@@ -297,5 +299,67 @@ summary(nonmetro_sub_chg_mod1)
 
 # Note: Very significant relationship b/w information industry sector and change in nonfarm proprietorship
 # This could mean that information industry is critical in increasing entrepreneurship in non-metro area.
+
+#### Testing the Mediation ####
+
+str(bb_entrepreneur)
+summary(bb_entrepreneur$indstry_diversity)
+
+summary(lm(pct_chg_bea_2012_2018 ~ pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f, data = bb_entrepreneur))
+
+summary(lm(pct_chg_bea_2012_2018 ~ indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019, data = bb_entrepreneur))
+
+summary(lm(pct_chg_bea_2012_2018 ~ indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f, data = bb_entrepreneur))
+summary(lm(pct_chg_bea_2012_2018 ~ pctagriculture_2019 +
+          pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+          pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+          pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+        data = bb_entrepreneur))
+
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f, data = bb_entrepreneur))
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+           data = bb_entrepreneur))
+
+
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_MS + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f, data = bb_entrepreneur))
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_MS + pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+           data = bb_entrepreneur))
+
+
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pct_broadband_MS + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f, data = bb_entrepreneur))
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pct_broadband_MS + pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+           data = bb_entrepreneur))
+
+
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pct_broadband_MS * metro_f + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019, data = bb_entrepreneur))
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pct_broadband_MS * metro_f + pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+           data = bb_entrepreneur))
+
+
+summary(lm(pct_chg_bea_2012_2018 ~ pct_broadband_FCC + pct_broadband_MS * pctinformation_2019 + pctagriculture_2019 +
+             pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 +
+             pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 +
+             pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + metro_f,
+           data = bb_entrepreneur))
+
+
+
+
+
 
 
