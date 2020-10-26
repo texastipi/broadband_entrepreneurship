@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE, mmessage = FALSE, error = FALSE)
 
 In this document, We will set up, run, and examine several multiple regression models. In general, the models aim to investigate the relationhips between **broadband** and **entrepreneurship**. Specifically, **how broadband influences entrepreneurship**. Furthermore, the models will explore how different measures of broadband, specifically measures of availability and adoption, explain entrepreneurial activities differently. Finally, I will explore how broadband as well as entrepreneurial factors contribute to the overall prosperity.
 
-```{r Load packages & Get the dataset, results='hide'}
+```{r Load packages & Get the dataset, results='hide', include=FALSE}
 
 ## Load packages
 library(tidyverse)
@@ -19,15 +19,22 @@ library(gridExtra)
 library(stargazer)
 #install.packages("sjPlot")
 library(sjPlot)
+set.seed(5000)
 
 ## Read in dataset
 tx_bb_entrepreneur_merged_v2 <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 
-tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
+bb_entrepreneur_merged_all <- tx_bb_entrepreneur_merged_v2 %>% 
   mutate(chg_pct_50_est_cbp_2012_2018 = pct_50_est_cbp_2018 - pct_50_est_cbp_2012,
          chg_pct_10_est_cbp_2012_2018 = pct_10_est_cbp_2018 - pct_10_est_cbp_2012,
-         chgn_nonemp_2012_2018 = neest_nemp_2018 - neest_nemp_2012) %>% 
+         chgn_nonemp_2012_2018 = neest_nemp_2018 - neest_nemp_2012)
+
+tx_bb_entrepreneur_merged_v2 <- bb_entrepreneur_merged_all %>% 
   filter(ST == "TX")
+ks_bb_entrepreneur_merged_v2 <- bb_entrepreneur_merged_all %>% 
+  filter(ST == "KS")
+me_bb_entrepreneur_merged_v2 <- bb_entrepreneur_merged_all %>% 
+  filter(ST == "ME")
 
 ```
 
@@ -35,7 +42,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 
 First, let's take another look at some of the key variables.
 
-> Entrepreneurship
+### Entrepreneurship
 
 * `IRR2010`: Rural index (larger = rural)
 * **Entrepreneurship (2018)**
@@ -44,7 +51,7 @@ First, let's take another look at some of the key variables.
 * **Change Factors (2012-2018)**
   + `pct_chg_bea_2012_2018`: Change in % of nonfarm proprietors b/w 2012 and 2018
 
-> Broadband
+### Broadband
 
 * `pct_broadband_FCC`: FCC broadband availability in % (2017)
 * `pct_broadband_MS`: MS broadband availability in % (2019)
@@ -57,13 +64,17 @@ Here I investigate **models that estimate broadband variables' effect on the ent
 
 Entrepreneurial outcomes can be represented by several variables in this dataset. As the ASU research team's white paper argued, the venture density provided by GoDaddy activities reflects actual entrepreneurial activities in the form of online domain creation. In the dataset, we also have Texas state's sole proprietor statistics. These variables reflect small and medium sized businesses in each county.
 
-#### Control Variables
+### Control Variables
 
 For control variables, various demographic measures derived from the ACS estimates are available in the dataset. Furthermore, the rurality of the counties are reflected in the IRR index. Number of population, and regional industry characteristics will be also included as control variables.
 
+***
+
+# Texas
+
 ## Nonfarm Proprietors Share (2018)
 
-* DV: Nonfarm Proprietor Share (2012-2018)
+* DV: Nonfarm Proprietor Share (2018)
 * IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage
 * Control: Rurality, Industry structure, Education, Age
 
@@ -124,7 +135,7 @@ stargazer(model_propchg_1, model_propchg_2, model_propchg_3, model_propchg_4, ti
 
 ## Venture Density
 
-* DV: Venture Density
+* DV: Venture Density (average over the period 2018-2019)
 * IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage
 * Control: Rurality, Industry structure, Education, Age
 
@@ -166,7 +177,7 @@ Below, I explore regression models that consider **proprietors share as independ
 model_vd_2.1 <- lm(venturedensity_mean ~ pct_nonfarm_bea_2018 + IRR2010 + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + pctgenx_2019 + pctboomers_2019,
               data = tx_bb_entrepreneur_merged_v2)
 
-model_vd_2.2 <- lm(venturedensity_mean ~ pct_nonfarm_bea_2018 + IRR2010 + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + pctgenx_2019 + pctboomers_2019,
+model_vd_2.2 <- lm(venturedensity_mean ~ pct_nonfarm_bea_2018 + pct_broadband_FCC + IRR2010 + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + pctgenx_2019 + pctboomers_2019,
               data = tx_bb_entrepreneur_merged_v2)
 
 model_vd_2.3 <- lm(venturedensity_mean ~ pct_nonfarm_bea_2018 + pct_broadband_FCC + pct_broadband_MS + IRR2010 + pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + pctpublic_admin_2019 + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + pctgenx_2019 + pctboomers_2019,
@@ -198,4 +209,5 @@ stargazer(model_vd_2.1, model_vd_2.2, model_vd_2.3, model_vd_2.4, type = "html",
 
 
 ```
+
 

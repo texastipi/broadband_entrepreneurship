@@ -1,0 +1,12 @@
+name: bb-ent-dashboard-app
+title: bb-ent-dashboard-app
+username:
+account: jaewonrchoi
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3058843
+bundleId: 3771922
+url: https://jaewonrchoi.shinyapps.io/bb-ent-dashboard-app/
+when: 1603395401.39759
+asMultiple: FALSE
+asStatic: FALSE

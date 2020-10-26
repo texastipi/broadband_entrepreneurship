@@ -15,24 +15,32 @@ Here I will explore different potential entrepreneurship measurements available.
 * **Percent of Nonfarm Nonemployer Establishments**: % of nonfarm nonemployer establishment among total employments _(Nonemployer Statistics dataset from 2012,2017,2018)_
 * **Percent of Nonfarm Proprietors**: % of nonfarm proprietors among total employments _(Bureau of Economic Analysis dataset from 2012,2018)_
 
+Among these, the most conventional measure widely accepted by scholars and policymakers is **nonfarm proprietors**. In addition, to this traditional measure, a research team at the Arizona State University suggests potentially meaningful alternative entrepreneurship measure in the digital era: **"venture density"**.
+
+> "Percent of Non-farm Proprietors" measure is defined as share of nonfarm proprietors employment among total employments of a county. According to the Bureau of Economic Analysis, nonfarm proprietors employment **"consists of the number of nonfarm sole proprietorships and the number of individual general partners in nonfarm partnerships."**
+
 Throughout this page, I will explore descriptive statistics of these measures, distributions of the measures, correlations between these measures, and also how these measures look like on the map geographically.
+
+> "Venture Density" measure is defined as the number of ventures per county divided by the population (i.e., ventures per 100 people). _"A venture (website) is a business, nonprofit, cause or an idea that a GoDaddy customer is working on, as represented by a discrete website and/or a domain name with services attached (email, payments, social media)" (Mossberger, Tolbert, & LaCombe, 2020, p.6)_
 
 <div style="margin-bottom:30px;">
 </div>
 
 ## Descriptive Statistics of Entrepreneurship Measures
 
-```{r Impoart Libraries, results='hide', echo=FALSE}
+```{r Impoart Libraries, results='hide', echo=FALSE, include=FALSE}
 library(leaflet)
 library(tidyverse)
 library(RColorBrewer)
 library(tigris)
 library(ggplot2)
 library(sp)
+library(sf)
 library(stargazer)
 library(gridExtra)
 library(gghighlight)
 library(data.table)
+set.seed(5000)
 
 #### Import the merged dataset V2 ####
 tx_bb_entrepreneur_merged_v2 <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
@@ -44,7 +52,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          chg_pct_10_est_cbp_2012_2018 = pct_10_est_cbp_2018 - pct_10_est_cbp_2012)
 
 ## Set up spatial dataframe
-tx_county <- counties("Texas")
+tx_county <- counties(state ="TX")
 tx_bb_entrepreneur_merged_v3 <- sp::merge(tx_county, tx_bb_entrepreneur_merged_v2,
                                           by.x = "GEOID", by.y = "county_FIPS")
 ```
@@ -321,7 +329,7 @@ For the county level charts, **top 7 counties with the most change (i.e., differ
 #install.packages("censusapi")     # censusapi package allows us to access all available APIs provided by the Census Bureau
 #devtools::install_github("jwroycechoi/censusapi")     # A GitHub fork that fixes some issues regarding retrieving NAICS2017 and labels
 #install.packages("bea.R")         # Bureau of Economic Analysis data access
-library(tidycensus)
+
 library(tidyverse)
 library(censusapi)
 library(bea.R)

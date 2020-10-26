@@ -296,7 +296,11 @@ server <- function(input, output) {
     } else if (input$state == "KS") {
       "Kansas"
     } 
-    subtitle_text <- paste0("of ", subtitle_state, " population live in these counties")
+    subtitle_bb <- if (input$bbtype == "pct_bb_fcc_2019") {" population live in counties with less than 50% broadband availability"} 
+    else if (input$bbtype == "pct_broadband_MS") {" population live in counties where less than 50% of its population use broadband at 25/3Mbps"}
+    else if (input$bbtype == "pct_fixed_acs_2018") {" population live in counties with less than 50% fixed broadband subscription rate"}
+    else if (input$bbtype == "pct_broadband_mlab") {" population live in counties where less than 50% of its population tested for broadband at 25/3Mbps"}
+    subtitle_text <- paste0("of ", subtitle_state, subtitle_bb)
     valueBox(paste0(round((pop_vals$sum_50/pop_vals$sum_pop)*100, 0),"%"), subtitle = subtitle_text, color = "blue")
   })
   
@@ -325,21 +329,21 @@ server <- function(input, output) {
   
   output$hist_entrepreneurship <- renderPlotly({
     if (input$entmeasure != "venturedensity_mean") {
-      ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
+      ggplotly(ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
         geom_histogram(fill = "orangered3") + theme_minimal() + 
         theme(axis.text = element_text(face = "bold"),
               axis.title = element_text(face = "bold")) + 
         xlab(currentent_label()) + ylab("Number of Counties") +
         scale_y_continuous(breaks = scales::breaks_pretty()) +
-        scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(), limits = c(0,1.1))
+        scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(), limits = c(0,1.1)))
     } else if (input$entmeasure == "venturedensity_mean") {
-      ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
+      ggplotly(ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
         geom_histogram(fill = "orangered3") + theme_minimal() + 
         theme(axis.text = element_text(face = "bold"),
               axis.title = element_text(face = "bold")) + 
         xlab(currentent_label()) + ylab("Number of Counties") +
         scale_y_continuous(breaks = scales::breaks_pretty()) +
-        scale_x_continuous(breaks = scales::breaks_pretty())
+        scale_x_continuous(breaks = scales::breaks_pretty()))
     }
   })
   
@@ -368,7 +372,7 @@ server <- function(input, output) {
                               plot.subtitle = element_text(size = 9, face = "italic"),
                               axis.text = element_text(size = 11),
                               axis.title = element_text(size = 12, face = "bold")) +
-      labs(title = "Share of Proprietors/Non-farm Proprietors in Texas (2012-2018)",
+      labs(title = "Share of Proprietors/Non-farm Proprietors (2014-2018)",
            subtitle = "Source: Bureau of Economic Analysis",
            x = "Year", y = "%", color = "Colors") + 
       scale_y_continuous(limits = c(min(bea_reactive()[,"value"]),max(bea_reactive()[,"value"])),
