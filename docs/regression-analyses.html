@@ -23,6 +23,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
@@ -34,7 +36,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -366,6 +368,9 @@ $(document).ready(function () {
 <li><code>pct_chg_bea_2012_2018</code>: Change in % of nonfarm proprietors b/w 2012 and 2018</li>
 </ul></li>
 </ul>
+<blockquote>
+<p>Nonfarm proprietors share is defined as the percentage of nonfarm proprietorships over total employment in the county in 2018. According to the Bureau of Economic Analysis (BEA), nonfarm proprietorship <strong>“consists of the number of nonfarm sole proprietorships and the number of individual general partners in nonfarm partnerships.”</strong>. Change in the share of nonfarm proprietorship is a simple change measure calculated by substracting nonfarm proprietors share in 2012 from the same measure in 2018.</p>
+</blockquote>
 </div>
 <div id="broadband" class="section level3">
 <h3>Broadband</h3>
@@ -393,7 +398,7 @@ $(document).ready(function () {
 <h2>Nonfarm Proprietors Share (2018)</h2>
 <ul>
 <li>DV: Nonfarm Proprietor Share (2018)</li>
-<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
 <li>Control: Rurality, Industry structure, Education, Age</li>
 </ul>
 <table style="text-align:center">
@@ -421,7 +426,7 @@ $(document).ready(function () {
 <td style="text-align:left">
 </td>
 <td colspan="4">
-Nonfarm Proprietors Share
+Nonfarm Proprietors Share (2018)
 </td>
 </tr>
 <tr>
@@ -446,7 +451,7 @@ Nonfarm Proprietors Share
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability (%, 2017)
+FCC Broadband Availability (%, 2019)
 </td>
 <td>
 0.003
@@ -1298,7 +1303,7 @@ F Statistic
 <h2>Change in Nonfarm Proprietors Share (2012-2018)</h2>
 <ul>
 <li>DV: Change in Nonfarm Proprietors Share (2012-2018)</li>
-<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
 <li>Control: Rurality, Industry structure, Education, Age</li>
 </ul>
 <table style="text-align:center">
@@ -1326,7 +1331,7 @@ F Statistic
 <td style="text-align:left">
 </td>
 <td colspan="4">
-Change in Nonfarm Proprietors Share
+Change in Nonfarm Proprietors Share (2012-2018)
 </td>
 </tr>
 <tr>
@@ -1351,7 +1356,7 @@ Change in Nonfarm Proprietors Share
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability (%, 2017)
+FCC Broadband Availability (%, 2019)
 </td>
 <td>
 0.002
@@ -2203,7 +2208,7 @@ F Statistic
 <h2>Venture Density</h2>
 <ul>
 <li>DV: Venture Density (average over the period 2018-2019)</li>
-<li>IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage</li>
+<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
 <li>Control: Rurality, Industry structure, Education, Age</li>
 </ul>
 <table style="text-align:center">
@@ -2231,7 +2236,7 @@ F Statistic
 <td style="text-align:left">
 </td>
 <td colspan="4">
-Venture Density
+Venture Density (2018-2019)
 </td>
 </tr>
 <tr>
@@ -2256,7 +2261,7 @@ Venture Density
 </tr>
 <tr>
 <td style="text-align:left">
-FCC Broadband Availability (%, 2017)
+FCC Broadband Availability (%, 2019)
 </td>
 <td>
 0.199
@@ -3107,8 +3112,8 @@ F Statistic
 <h3>Models with Proprietor/Nonemp as IV</h3>
 <p>Below, I explore regression models that consider <strong>proprietors share as independent variables</strong> representing overall industry characteristics of the county. Dependent variables are <strong>venture density</strong> measures as representations of entrepreneurial activities online.</p>
 <ul>
-<li>DV: Venture Density</li>
-<li>IV: Nonfarm Proprietor Share, FCC Broadband availability, MS, ACS, M-Lab</li>
+<li>DV: Venture Density (2018-2019)</li>
+<li>IV: Nonfarm Proprietor Share (2018), FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
 <li>Control: Rurality, Education, Age</li>
 </ul>
 <table style="text-align:center">
@@ -3133,7 +3138,7 @@ F Statistic
 <td style="text-align:left">
 </td>
 <td colspan="4">
-Venture Density
+Venture Density (2018-2019)
 </td>
 </tr>
 <tr>
@@ -3158,7 +3163,7 @@ Venture Density
 </tr>
 <tr>
 <td style="text-align:left">
-Nonfarm Proprietor (%)
+Nonfarm Proprietor (%, 2018)
 </td>
 <td>
 2.942<sup>*</sup>
@@ -4046,7 +4051,7 @@ F Statistic
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

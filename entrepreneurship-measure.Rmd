@@ -30,6 +30,7 @@ Throughout this page, I will explore descriptive statistics of these measures, d
 
 ```{r Impoart Libraries, results='hide', echo=FALSE, include=FALSE}
 library(leaflet)
+library(psych)
 library(tidyverse)
 library(RColorBrewer)
 library(tigris)
@@ -57,17 +58,25 @@ tx_bb_entrepreneur_merged_v3 <- sp::merge(tx_county, tx_bb_entrepreneur_merged_v
                                           by.x = "GEOID", by.y = "county_FIPS")
 ```
 
-```{r Descriptive Statistics, results='asis', echo=FALSE}
+```{r Descriptive Statistics, echo=FALSE}
 #### Descriptive Statistics ####
-stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_50_est_cbp_2018","pct_10_est_cbp_2018","pct_nonfarmneest_nemp_2018","pct_nonfarm_bea_2018","venturedensity_mean")],
-          covariate.labels = c("% of Business Establishment (<50 Employees)",
+desc_tab <- describe(tx_bb_entrepreneur_merged_v2[c("pct_50_est_cbp_2018","pct_10_est_cbp_2018","pct_nonfarmneest_nemp_2018","pct_nonfarm_bea_2018","venturedensity_mean")])
+
+rownames(desc_tab) <- c("% of Business Establishment (<50 Employees)",
                                "% of Business Establishment (<10 Employees)",
                                "% of Nonfarm Nonemployer",
                                "% of Nonfarm Proprietors",
-                               "Average Venture Density"), type = "html",
-          align = TRUE, font.size = "Huge", column.sep.width = "2pt")
+                               "Average Venture Density")
+desc_tab <- desc_tab %>% select(n, mean, sd, median, min, max, range, skew, kurtosis) %>% 
+  rename(N = n, Mean = mean, SD = sd, Median = median, Min = min, Max = max, Range = range, Skew = skew, Kurtosis = kurtosis)
+
+knitr::kable(desc_tab, caption = "Table 1: Descriptive statistics of entrepreneurship measures",
+             digits = 3, align = "rcccccccc") %>% kableExtra::kable_styling(full_width = F, position = "center")
 
 ```
+
+<div style="margin-bottom:30px;">
+</div>
 
 ```{r Contextual Table, echo=FALSE}
 #### Contextual Table of Various Entrepreneurship Measures ####
@@ -80,7 +89,8 @@ cont_table <- tx_bb_entrepreneur_merged_v2 %>%
 
 cont_table <- as.data.frame(t(cont_table)) %>% rename(Total = V1)
 
-cont_table
+knitr::kable(cont_table, caption = "Table 2: Business statistics of Texas (2018, Source: BEA, CBP)", format.args = list(big.mark = ","),
+             align = "rc") %>% kableExtra::kable_styling(full_width = F, position = "center")
 
 ```
 
@@ -117,7 +127,7 @@ grid.arrange(
   ggplot(tx_bb_entrepreneur_merged_v2, aes(x = venturedensity_mean)) + geom_histogram() +
     theme_minimal() + theme(axis.text = element_text(size = 11),
                             axis.title = element_text(size = 12, face = "bold")) +
-    xlab("Venture Density") + ylab("Frequency") +
+    xlab("Venture Density (2018-19)") + ylab("Frequency") +
     scale_x_continuous(breaks = scales::breaks_pretty()),
   nrow = 2, ncol = 3, top = grid::textGrob("Entrepreneurship Measure Distribution", 
                                            gp = grid::gpar(fontface="bold",fontsize=14))

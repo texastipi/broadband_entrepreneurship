@@ -130,6 +130,15 @@ ggscatter(d, x = "IRR2010", y = "bb_adopt_qos.pct",
 
 ## We can see that rural areas tend to experience larger discrepancies b/w availability, adoption, and QoS
 
+# Entrepreneurship and broadband difference
+
+ggscatter(d, x = "bb_avail_qos.pct", y = "venturedensity_mean",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+ggscatter(d, x = "bb_avail_adopt.pct", y = "venturedensity_mean",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+ggscatter(d, x = "bb_adopt_qos.pct", y = "venturedensity_mean",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+
 #### Regression Modeling ####
 ## See whether the composite QoS variables work inside our previous models ##
 
@@ -234,5 +243,55 @@ mod3.4 <- lm(venturedensity_mean ~ bb_composite_w + IRR2010 +
 summary(mod3.4)
 
 
+#### Clustering similar counties ####
+## Clustering based on 
+## 1. Industry composition
+## 2. Age group composition
+## 3. Total employment
+
+# Selecting variables to use for clustering
+d.cluster <- d %>% select(totalemp_bea_2018, pctboomers_2019, pctgenx_2019, pctmilennial_2019,
+                          population_2019, pctlessthanhigh_2019, pctbachelors_2019, pctgraduate_2019, pctagriculture_2019,
+                          pctconstruction_2019, pctmanufacture_2019, pctwholesale_2019, pctretail_2019, pcttransportation_2019,
+                          pctinformation_2019, pctfinance_2019, pctprofessional_2019, pctedu_healthcare_social_2019,
+                          pctarts_ent_2019, pctother_occupation_2019, pctpublic_admin_2019, pct_self_employed_2019)
+# Removing NAs and standardizing
+d.cluster <- na.omit(d.cluster)
+d.cluster <- scale(d.cluster)
+# Trying to determine the optimal number of clusters by generating a screeplot
+wssplot <- function(data, nc=15, seed=1234){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")}
+
+wssplot(d.cluster, nc=5)
+
+# Generating clusters and fits
+d.cluster.fit <- kmeans(d.cluster, 3)
+summary(d.cluster.fit)
+d.cluster.fit$size
+# Visually examining different clusters
+library(cluster)
+clusplot(d.cluster, d.cluster.fit$cluster, color = T, shade = T, labels = 2, lines = 0)
+# Add the clustering information to the dataset
+d <- tibble(d, cluster = d.cluster.fit$cluster)
+# Examine characteristics of different clusters
+d %>% dplyr::group_by(cluster) %>% summarize(obs = n(),
+                                             pop = mean(population_2019),
+                                             indstry_diversity = mean(indstry_diversity),
+                                             emp = mean(totalemp_bea_2018),
+                                             irr = mean(IRR2010),
+                                             boomers = mean(pctboomers_2019),
+                                             milennial = mean(pctmilennial_2019),
+                                             agriculture = mean(pctagriculture_2019))
+# Try whether different clusters show different results for the regression analysis
+test <- d %>% filter(cluster == 3) %>% lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos,
+                                          data = .)
+summary(test)
+
+summary(lm(pct_nonfarm_bea_2018 ~ IRR2010 + pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos, data = d))
 
 

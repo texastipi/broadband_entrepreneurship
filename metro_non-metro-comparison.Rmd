@@ -18,7 +18,7 @@ Overall, we will take the following strategies in constructing models for analys
 
 We will first import packages and dataset.
   
-```{r import dataset and libraries, results='hide'}
+```{r import dataset and libraries, results='hide', include=FALSE}
 ####################################
 ### Metro & Non-metro Comparison ###
 ####################################
@@ -34,6 +34,7 @@ library(sandwich)
 library(sjPlot)
 library(sjmisc)
 library(stargazer)
+set.seed(5000)
 
 ## Import dataset ##
 bb_entrepreneur <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
@@ -214,7 +215,7 @@ stargazer(model_nonfarmchg, model_nonfarmchg_int, title = "Change in Nonfarm Pro
   + FCC Broadband Availability (2019, %)
   + Microsoft Broadband Usage (2019, %)
   + ACS Fixed Broadband Subscription (2018, %)
-  + M-Lab Broadband Usage (2018-9, %)
+  + M-Lab Broadband Usage (2019, %)
   + Metro/Non-Metro
 * **Control Variables**
   + Industry Structure
@@ -230,11 +231,11 @@ model_vd_int <- lm(venturedensity_mean ~ pct_bb_fcc_2019 * metro_f + pct_broadba
 
 ## Generate stargazer table ##
 stargazer(model_vd, model_vd_int, title = "Venture Density",
-          type = "html", align = T, dep.var.labels = c("Venture Density"),
+          type = "html", align = T, dep.var.labels = c("Venture Density (2018-19)"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
-                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2019)",
                                "Metro/Non-Metro (Reference: Metro)",
                                "Agriculture (% of workers)",
                                "Construction (% of workers)",
@@ -267,7 +268,7 @@ The results indicate quite significant main effects of Microsoft's broadband usa
 ## Generate Plot ##
 plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_MS","metro_f"),
            title = "Interaction Effects of MS Broadband & Metro/Non-Metro on Venture Density",
-           axis.title = c("MS Broadband Usage (%)","Venture Density"),
+           axis.title = c("MS Broadband Usage (%, 2019)","Venture Density (2018-19"),
            legend.title = "Metro/Non-Metro")
 
 ```
@@ -276,7 +277,7 @@ plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_MS","metro_f"),
 ## Generate Plot ##
 plot_model(model_vd_int, type = "pred", terms = c("pct_broadband_mlab","metro_f"),
            title = "Interaction Effects of M-Lab Broadband & Metro/Non-Metro on Venture Density",
-           axis.title = c("M-Lab Broadband Usage (%)","Venture Density"),
+           axis.title = c("M-Lab Broadband Usage (%, 2019)","Venture Density (2018-19"),
            legend.title = "Metro/Non-Metro")
 
 ```
@@ -300,7 +301,7 @@ nonmetro_tx <- tx_bb_subset %>% filter(metro_f == "Nonmetro")
   + FCC Broadband Availability (2019, %)
   + Microsoft Broadband Usage (2019, %)
   + ACS Fixed Broadband Subscription (2018, %)
-  + M-Lab Broadband Usage (2018-9, %)
+  + M-Lab Broadband Usage (2019, %)
 * **Control Variables**
   + Industry Structure
   + Education
@@ -315,12 +316,12 @@ model_nonfarm_nonmetro <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_broadb
 
 ## Generate stargazer table ##
 stargazer(model_nonfarm_metro, model_nonfarm_nonmetro, title = "Nonfarm Proprietors Share",
-          type = "html", align = T, dep.var.labels = c("Nonfarm Proprietors Share"),
+          type = "html", align = T, dep.var.labels = c("Nonfarm Proprietors Share (2018)"),
           column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
-                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2019)",
                                "Agriculture (% of workers)",
                                "Construction (% of workers)",
                                "Wholesale (% of workers)",
@@ -347,7 +348,7 @@ stargazer(model_nonfarm_metro, model_nonfarm_nonmetro, title = "Nonfarm Propriet
   + FCC Broadband Availability (2019, %)
   + Microsoft Broadband Usage (2019, %)
   + ACS Fixed Broadband Subscription (2018, %)
-  + M-Lab Broadband Usage (2018-9, %)
+  + M-Lab Broadband Usage (2019, %)
 * **Control Variables**
   + Industry Structure
   + Education
@@ -362,12 +363,12 @@ model_nonfarmchg_nonmetro <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_br
 
 ## Generate stargazer table ##
 stargazer(model_nonfarmchg_metro, model_nonfarmchg_nonmetro, title = "Change in Nonfarm Proprietors Share",
-          type = "html", align = T, dep.var.labels = c("Change in Nonfarm Proprietors Share"),
+          type = "html", align = T, dep.var.labels = c("Change in Nonfarm Proprietors Share (2012-2018)"),
           column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
-                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2019)",
                                "Agriculture (% of workers)",
                                "Construction (% of workers)",
                                "Wholesale (% of workers)",
@@ -394,7 +395,7 @@ stargazer(model_nonfarmchg_metro, model_nonfarmchg_nonmetro, title = "Change in 
   + FCC Broadband Availability (2019, %)
   + Microsoft Broadband Usage (2019, %)
   + ACS Fixed Broadband Subscription (2018, %)
-  + M-Lab Broadband Usage (2018-9, %)
+  + M-Lab Broadband Usage (2019, %)
 * **Control Variables**
   + Industry Structure
   + Education
@@ -409,12 +410,12 @@ model_vd_nonmetro <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_broadband_MS
 
 ## Generate stargazer table ##
 stargazer(model_vd_metro, model_vd_nonmetro, title = "Venture Density",
-          type = "html", align = T, dep.var.labels = c("Venture Density"),
+          type = "html", align = T, dep.var.labels = c("Venture Density (2018-19)"),
           column.labels = c("Metro","Non-Metro"),
           covariate.labels = c("FCC Broadband Availability (%,2019)",
                                "MS Broadband Usage (%,2019)",
                                "ACS Broadband Subscription (% of population with fixed broadband subscription, 2018)",
-                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2018-9)",
+                               "M-Lab Broadband Use (% of testers with 25/3 Mbps speed, 2019)",
                                "Agriculture (% of workers)",
                                "Construction (% of workers)",
                                "Wholesale (% of workers)",
