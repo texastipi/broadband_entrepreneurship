@@ -51,6 +51,8 @@ First, let's take another look at some of the key variables.
 * **Change Factors (2012-2018)**
   + `pct_chg_bea_2012_2018`: Change in % of nonfarm proprietors b/w 2012 and 2018
 
+>Nonfarm proprietors share is defined as the percentage of nonfarm proprietorships over total employment in the county in 2018. According to the Bureau of Economic Analysis (BEA), nonfarm proprietorship **"consists of the number of nonfarm sole proprietorships and the number of individual general partners in nonfarm partnerships."**. Change in the share of nonfarm proprietorship is a simple change measure calculated by substracting nonfarm proprietors share in 2012 from the same measure in 2018. 
+
 ### Broadband
 
 * `pct_bb_fcc_2019`: FCC broadband availability in % (June 2019)
@@ -75,7 +77,7 @@ For control variables, various demographic measures derived from the ACS estimat
 ## Nonfarm Proprietors Share (2018)
 
 * DV: Nonfarm Proprietor Share (2018)
-* IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage
+* IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)
 * Control: Rurality, Industry structure, Education, Age
 
 ```{r Nonfarm Proprietors Share, results='asis', echo=FALSE}
@@ -98,15 +100,15 @@ model_nonfarm_4 <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_201
 
 ## Generate Table
 stargazer(model_nonfarm_1, model_nonfarm_2, model_nonfarm_3, model_nonfarm_4, title = "Nonfarm Proprietors Share Regression Results", type = "html",
-          align = TRUE, dep.var.labels = c("Nonfarm Proprietors Share"),
-          covariate.labels = c("FCC Broadband Availability (%, 2017)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
+          align = TRUE, dep.var.labels = c("Nonfarm Proprietors Share (2018)"),
+          covariate.labels = c("FCC Broadband Availability (%, 2019)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
 
 ```
 
 ## Change in Nonfarm Proprietors Share (2012-2018)
 
 * DV: Change in Nonfarm Proprietors Share (2012-2018)
-* IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage
+* IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)
 * Control: Rurality, Industry structure, Education, Age
 
 ```{r Change in Nonfarm Proprietors Share, results='asis', echo=FALSE}
@@ -129,14 +131,14 @@ model_propchg_4 <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_20
 
 ## Generate Table
 stargazer(model_propchg_1, model_propchg_2, model_propchg_3, model_propchg_4, title = "Change in Nonfarm Proprietors Share Regression Results", type = "html",
-          align = TRUE, dep.var.labels = c("Change in Nonfarm Proprietors Share"),
-          covariate.labels = c("FCC Broadband Availability (%, 2017)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
+          align = TRUE, dep.var.labels = c("Change in Nonfarm Proprietors Share (2012-2018)"),
+          covariate.labels = c("FCC Broadband Availability (%, 2019)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
 ```
 
 ## Venture Density
 
 * DV: Venture Density (average over the period 2018-2019)
-* IV: FCC Broadband availability, MS Broadband, ACS Broadband Subscription, M-Lab Broadband Usage
+* IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)
 * Control: Rurality, Industry structure, Education, Age
 
 ```{r Venture Density, results='asis', echo=FALSE}
@@ -159,8 +161,8 @@ model_vd_4 <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pc
 
 ## Generate Table
 stargazer(model_vd_1, model_vd_2, model_vd_3, model_vd_4, title = "Venture Density Regression Results", type = "html",
-          align = TRUE, dep.var.labels = c("Venture Density"),
-          covariate.labels = c("FCC Broadband Availability (%, 2017)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
+          align = TRUE, dep.var.labels = c("Venture Density (2018-2019)"),
+          covariate.labels = c("FCC Broadband Availability (%, 2019)","ACS Broadband Subscription (% of people with fixed broadband subscription)","MS Broadband (%, 2019)","M-Lab Broadband (% of testers with 25/3 Mbps speed)","Rurality Index (2010)","Agriculture (% of workers)","Construction (% of workers)","Wholesale (% of workers)","Retail (% of workers)","Transportation (% of workers)","IT (% of workers)","Finance (% of workers)","Professional (% of workers)","Education (% of workers)","Other occupation (% of workers)","Public (% of workers)","Education Less than Highschool","Bachelors Degree","Graduate Degree","Millenials","GenX","Babyboomer"), no.space = TRUE)
 
 ```
 
@@ -168,8 +170,8 @@ stargazer(model_vd_1, model_vd_2, model_vd_3, model_vd_4, title = "Venture Densi
 
 Below, I explore regression models that consider **proprietors share as independent variables** representing overall industry characteristics of the county. Dependent variables are **venture density** measures as representations of entrepreneurial activities online.
 
-* DV: Venture Density
-* IV: Nonfarm Proprietor Share, FCC Broadband availability, MS, ACS, M-Lab
+* DV: Venture Density (2018-2019)
+* IV: Nonfarm Proprietor Share (2018), FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)
 * Control: Rurality, Education, Age
 
 ```{r Venture Density and Proprietor as IV, results='asis', echo=FALSE}
@@ -188,8 +190,8 @@ model_vd_2.4 <- lm(venturedensity_mean ~ pct_nonfarm_bea_2018 + pct_bb_fcc_2019 
 
 ## Generate Table
 stargazer(model_vd_2.1, model_vd_2.2, model_vd_2.3, model_vd_2.4, type = "html", align = T,
-          dep.var.labels = c("Venture Density"),
-          covariate.labels = c("Nonfarm Proprietor (%)",
+          dep.var.labels = c("Venture Density (2018-2019)"),
+          covariate.labels = c("Nonfarm Proprietor (%, 2018)",
                                "FCC Broadband Availability (%, 2017)",
                                "ACS Broadband Subscription (% of people with fixed broadband subscription)",
                                "MS Broadband (%, 2019)",
