@@ -26,6 +26,7 @@ rm(list = ls())   ## Clear the workspace
 #install.packages("ggplot2")
 library(tidyverse)
 library(ggplot2)
+library(reticulate)
 
 ```
 
@@ -78,7 +79,7 @@ In the following section, I will import, inspect and set up the dataset for furt
 ```{r GoDaddy Data Import, echo=TRUE, results='hide', cache=TRUE}
 ## Import the Dataset
 godaddy_cbsa <- read.csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/GoDaddy_CBSA.csv", header = T)    # GoDaddy dataset at the unit of Core Based Statistical Area (CBSA) defined by U.S. Department of Housing and Urban Development
-godaddy_county <- read.csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/GoDaddy_County.csv", header = T)    # GoDaddy dataset at the county level
+godaddy_county <- read.csv("https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/godaddy_nov_2020_county.csv", header = T)    # GoDaddy dataset at the county level
 
 ## Inspect Structure
 str(godaddy_cbsa)
@@ -95,7 +96,8 @@ str(godaddy_county)
 godaddy_county_txksme <- godaddy_county %>% 
   filter(startsWith(as.character(cfips), "48") | startsWith(as.character(cfips), "23") |
            startsWith(as.character(cfips), "20")) %>% # Filter Texas, Kansas, Maine
-  mutate(population = as.numeric(gsub(",","",as.character(population)))) %>% # Convert population from factor to numeric
+  mutate(population_2018 = as.numeric(gsub(",","",as.character(population))),
+         cfips = as.character(cfips)) %>% # Convert population from factor to numeric
   separate(county, into = c("county", "state"), sep = ", ", remove = T) %>% # Separate county variable which had state and county data at the same time
   droplevels()  # Drop unused levels from factor variables
 
@@ -299,25 +301,16 @@ rural_2010_txksme <- rural_2010_txksme %>% mutate(FIPS2010 = as.character(FIPS20
 godaddy_county_txksme <- godaddy_county_txksme %>% mutate(cfips = as.character(cfips))
 
 tx_bb_entrepreneur_merged <- left_join(ms_broadband_txksme, rural_2010_txksme, by = c("county_FIPS" = "FIPS2010")) %>% 
-  left_join(., select(godaddy_county_txksme, c("cfips","county","state",
-                                           "venturedensitymay18","venturedensitynov18",
-                                           "venturedensityfeb19","venturedensitysep19",
-                                           "venturedensityoct19","venturedensitynov19",
-                                           "venturedensitydec19",
-                                           "highlyactive_vdmay18","highlyactive_vdnov18",
-                                           "highlyactive_vdfeb19","highlyactive_vdsep19",
-                                           "highlyactive_vdoct19","highlyactive_vdnov19",
-                                           "highlyactive_vddec19",
-                                           "prosperityindex2016","prosperity2007",
-                                           "change_prosperity")), by = c("county_FIPS" = "cfips")) %>% 
+  left_join(., select(godaddy_county_txksme, c("cfips","county","state", "population_2018",
+                                               starts_with("venturedensity"), starts_with("highlyactive"),
+                                           "prosperityindex2016","prosperityindex2018",
+                                           "change_prosperity_07_16","change_prosperity_07_18")), by = c("county_FIPS" = "cfips")) %>% 
   left_join(., mlab_sept_txksme, by = c("county_FIPS" = "county_FIPS.sept")) %>% 
   left_join(., mlab_oct_txksme, by = c("county_FIPS" = "county_FIPS.oct")) %>% 
   left_join(., mlab_nov_txksme, by = c("county_FIPS" = "county_FIPS.nov")) %>% 
   left_join(., mlab_dec_txksme, by = c("county_FIPS" = "county_FIPS.dec"))
 
 str(tx_bb_entrepreneur_merged)
-
-knitr::kable(head(tx_bb_entrepreneur_merged, 20))
 
 ## Drop columns with duplicate information
 
@@ -392,48 +385,7 @@ listCensusMetadata(name = "nonemp", vintage = 2018, type = "geography")
 
 In order to retrive the datasets from the Census database you use `getCensus` function with specific arguments. Generally, required arguments are `name`, `vintage`(i.e., year), `vars`(i.e., variables), and `region`. In the code below, I'll retrieve CBP and Nonemployer datasets from year 2017 and 2018 for all counties within three states of our interest.
 
-```{r Census Dataset Retrieval}
-## Retrieve CBP datasets for the three states in 2017 and 2018 ##
-cbp2012_txksme <- getCensus(name = "cbp",
-                            vintage = 2012,
-                            vars = c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F"),
-                            region = "county:*",
-                            regionin = "state:20,23,48")
-
-cbp2017_txksme <- getCensus(name = "cbp",
-                            vintage = 2017,
-                            vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F"),
-                            region = "county:*",
-                            regionin = "state:20,23,48")
-
-cbp2018_txksme <- getCensus(name = "cbp",
-                            vintage = 2018,
-                            vars = c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F"),
-                            region = "county:*",
-                            regionin = "state:20,23,48")
-
-## Retrieve Nonemployer datasets for the three states in 2017 and 2018 ##
-nonemp2012 <- getCensus(name = "nonemp",
-                        vintage = 2012,
-                        vars = c("NESTAB","NESTAB_F","NAICS2012","NAICS2012_TTL","SECTOR"),
-                        region = "county:*",
-                        regionin = "state:20,23,48")
-
-nonemp2017 <- getCensus(name = "nonemp",
-                        vintage = 2017,
-                        vars = c("NESTAB","NESTAB_F","NAICS2017","NAICS2017_TTL","SECTOR"),
-                        region = "county:*",
-                        regionin = "state:20,23,48")
-
-nonemp2018 <- getCensus(name = "nonemp",
-                        vintage = 2018,
-                        vars = c("NESTAB","NESTAB_F","NAICS2017","NAICS2017_LABEL","SECTOR"),
-                        region = "county:*",
-                        regionin = "state:20,23,48")
-
-```
-
-Some variables should be numerical instead of character. Also, I'll create few factors for easier interpretation of regional information. Here I will create  variables that could potentially represent entrepreneurial activities within the counties. The variables have to be aggregated into county level observations. Note that currently our research purpose does not weigh into investigating industry breakdowns or revenues. Following list of variables will be aggregated at the county level:
+After raw data retrieval, I will create variables that could potentially represent entrepreneurial activities within the counties. The variables have to be aggregated into county level observations. Note that currently our research purpose does not weigh into investigating industry breakdowns or revenues. Following list of variables will be aggregated at the county level:
 
 **County Business Patterns Dataset**
 
@@ -447,169 +399,109 @@ Some variables should be numerical instead of character. Also, I'll create few f
 * `nonfarmneest_nemp_YEAR`: Total nonfarm nonemployer establishments in the county
 * `pct_nonfarmneest_nemp_YEAR`: % of nonfarm nonemployer establishments over all nonemployer establishments in the county
 
+Since we will be using same lines of code for different years, I'll write a local function for County Business Pattern and Nonemployer Statistics database that will 
 
-```{r Census Dataset Mod1, results='hide'}
-## Some modifications for CBP datasets ##
-cbp2012_txksme <- cbp2012_txksme %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         EMP = as.numeric(EMP),
-         ESTAB = as.numeric(ESTAB),
-         EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
-                         EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
-                         EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
-                         EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
-                         EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
-                         EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
-                         EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
-                         EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
-                         EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
-                         EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
-                         EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
-                         EMP_F == "m" ~ 100000,
-                         TRUE ~ EMP))
+1. *Retrieve data set for each year*
+2. *Calculate the variables*
+3. *Merge into single data frame*
 
-cbp2017_txksme <- cbp2017_txksme %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         EMP = as.numeric(EMP),
-         ESTAB = as.numeric(ESTAB),
-         EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
-                         EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
-                         EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
-                         EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
-                         EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
-                         EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
-                         EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
-                         EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
-                         EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
-                         EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
-                         EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
-                         EMP_F == "m" ~ 100000,
-                         TRUE ~ EMP))
+```{r Census Dataset Retrieval Function}
+## Retrieve CBP datasets ##
+## This function:
+## 1. Calls Census API for Employment, Employment size category, Establishments, and year
+## 2. Summarizes total employment, total business establishments, establishments with less than 50 employees, establishments with less than 10 employees,
+##    year, % of establishments with less than 50 employees over total establishments, % of establishmets with less than 10 employees over total establishments
+## Note: You can enter multiple years and counties of a single state
 
-cbp2018_txksme <- cbp2018_txksme %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         EMP = as.numeric(EMP),
-         ESTAB = as.numeric(ESTAB),
-         EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
-                         EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
-                         EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
-                         EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
-                         EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
-                         EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
-                         EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
-                         EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
-                         EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
-                         EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
-                         EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
-                         EMP_F == "m" ~ 100000,
-                         TRUE ~ EMP))
+getCBPemp <- function(yr, countyfips = "*", statefips){
+  yrlst <- list(yr)
+  dfs <- vector("list", length(yr))
+  for (i in seq_along(yrlst[[1]])) {
+    if(as.numeric(yrlst[[1]][i]) > 2016){
+      varlist <- c("EMP","EMP_F","EMPSZES","EMPSZES_LABEL","ESTAB","ESTAB_F","YEAR")
+    } else {
+      varlist <- c("EMP","EMP_F","EMPSZES","EMPSZES_TTL","ESTAB","ESTAB_F","YEAR")
+      }
+    dfs[[i]] <- getCensus(name = "cbp",
+                         vintage = as.numeric(yrlst[[1]][i]),
+                         vars = varlist,
+                         region = paste0("county:", paste0(countyfips, collapse = ",")),
+                         regionin = paste0("state:", paste0(statefips, collapse = ","))) %>% 
+      mutate(county_FIPS = paste0(state, county, sep = ""),
+             EMP = as.numeric(EMP),
+             ESTAB = as.numeric(ESTAB),
+             EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
+                             EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
+                             EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
+                             EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
+                             EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
+                             EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
+                             EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
+                             EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
+                             EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
+                             EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
+                             EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
+                             EMP_F == "m" ~ 100000,
+                             TRUE ~ EMP)) %>% 
+      filter(EMPSZES == "001"|
+               EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% 
+      mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
+             est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
+             est_10 = ifelse(EMPSZES == "210"|EMPSZES == "212" | EMPSZES == "220", ESTAB, 0)) %>% 
+      group_by(county_FIPS) %>% 
+      summarise(emp_cbp = sum(EMP, na.rm = T),
+                est_cbp = sum(est_total, na.rm = T),
+                est_50_cbp = sum(est_50, na.rm = T),
+                est_10_cbp = sum(est_10, na.rm = T),
+                year = yrlst[[1]][i]) %>% 
+      mutate(pct_50_est_cbp = est_50_cbp / est_cbp,
+             pct_10_est_cbp = est_10_cbp / est_cbp)
+  }
+  df <- bind_rows(dfs)
+  df <- df %>% 
+    pivot_wider(names_from = year,
+                names_glue = "{.value}_{year}",
+                values_from = c(emp_cbp, est_cbp, est_50_cbp, est_10_cbp, pct_50_est_cbp, pct_10_est_cbp))
+  return(df)
+}
 
-# Also, we need to filter for state of Texas at this point of the analysis
-cbp2012_tx <- cbp2012_txksme %>% filter(state == "48")
-cbp2017_tx <- cbp2017_txksme %>% filter(state == "48")
-cbp2018_tx <- cbp2018_txksme %>% filter(state == "48")
+cbp_txksme <- getCBPemp(c(2012,2017,2018), statefips = c(20,23,48))
 
-## Some modifications for Nonemployer datasets ##
-nonemp2012 <- nonemp2012 %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         NESTAB = as.numeric(NESTAB))
+## Retrieve Nonemployer datasets ##
+getNEMPemp <- function(yr, countyfips = "*", statefips){
+  yrlst <- list(yr)
+  dfs <- vector("list", length(yr))
+  for (i in seq_along(yrlst[[1]])) {
+    if(as.numeric(yrlst[[1]][i]) < 2017){
+      varlist <- c("NESTAB","NESTAB_F","NAICS2012","SECTOR")
+    } else if (as.numeric(yrlst[[1]][i] >= 2017)) {
+      varlist <- c("NESTAB","NESTAB_F","NAICS2017","SECTOR")
+    } 
+    dfs[[i]] <- getCensus(name = "nonemp",
+                         vintage = as.numeric(yrlst[[1]][i]),
+                         vars = varlist,
+                         region = paste0("county:", paste0(countyfips, collapse = ",")),
+                         regionin = paste0("state:", paste0(statefips, collapse = ","))) %>% 
+      mutate(county_FIPS = paste(state, county, sep = ""),
+             NESTAB = as.numeric(NESTAB)) %>% 
+      rename_with(~gsub("[[:digit:]]+","",.)) %>% 
+      mutate(est_total = ifelse(NAICS == "00", NESTAB, 0),
+             nonfarm_est_total = ifelse(str_detect(NAICS, "^11", negate = TRUE), NESTAB, 0),
+             nonfarm_est_total = ifelse(NAICS == "00", 0, nonfarm_est_total)) %>% 
+      group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
+      group_by(county_FIPS) %>% 
+      summarise(neest_nemp = sum(est_total, na.rm = T),
+                nonfarmneest_nemp = sum(nonfarm_est_total, na.rm = T),
+                year = yrlst[[1]][i]) %>% 
+      mutate(pct_nonfarmneest_nemp = nonfarmneest_nemp / neest_nemp)
+  }
+  df <- bind_rows(dfs)
+  df <- df %>% 
+    pivot_wider(names_from = year, names_glue = "{.value}_{year}", values_from = c(neest_nemp, nonfarmneest_nemp, pct_nonfarmneest_nemp))
+  return(df)
+}
 
-nonemp2017 <- nonemp2017 %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         NESTAB = as.numeric(NESTAB))
-
-nonemp2018 <- nonemp2018 %>% 
-  mutate(county_FIPS = paste(state, county, sep = ""),
-         NESTAB = as.numeric(NESTAB))
-
-# Filter Texas
-nonemp2012_tx <- nonemp2012 %>% filter(state == "48")
-nonemp2017_tx <- nonemp2017 %>% filter(state == "48")
-nonemp2018_tx <- nonemp2018 %>% filter(state == "48")
-```
-
-
-```{r CBP & Nonemployer Dataset Aggregation}
-#### CBP Dataset Aggregation ####
-cbp2012_txksme_agg <- cbp2012_txksme %>% 
-  filter(EMPSZES == "001"|EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001", EMP, 0),
-         est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
-         est_10 = ifelse(EMPSZES == "212" | EMPSZES == "220", ESTAB, 0)) %>% 
-  group_by(county_FIPS) %>% 
-  summarise(emp_cbp_2012 = sum(emp_total, na.rm = T),
-            est_cbp_2012 = sum(est_total, na.rm = T),
-            est_50_cbp_2012 = sum(est_50, na.rm = T),
-            est_10_cbp_2012 = sum(est_10, na.rm = T)) %>% 
-  mutate(pct_50_est_cbp_2012 = est_50_cbp_2012 / est_cbp_2012,
-         pct_10_est_cbp_2012 = est_10_cbp_2012 / est_cbp_2012)
-
-cbp2017_txksme_agg <- cbp2017_txksme %>% 
-  filter(EMPSZES == "001"|EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001", EMP, 0),
-         est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
-         est_10 = ifelse(EMPSZES == "210" | EMPSZES == "220", ESTAB, 0)) %>% 
-  group_by(county_FIPS) %>% 
-  summarise(emp_cbp_2017 = sum(emp_total, na.rm = T),
-            est_cbp_2017 = sum(est_total, na.rm = T),
-            est_50_cbp_2017 = sum(est_50, na.rm = T),
-            est_10_cbp_2017 = sum(est_10, na.rm = T)) %>% 
-  mutate(pct_50_est_cbp_2017 = est_50_cbp_2017 / est_cbp_2017,
-         pct_10_est_cbp_2017 = est_10_cbp_2017 / est_cbp_2017)
-
-cbp2018_txksme_agg <- cbp2018_txksme %>% 
-  filter(EMPSZES == "001"|EMPSZES == "210"|EMPSZES == "212"|EMPSZES == "220"|EMPSZES == "230"|EMPSZES == "241") %>% # Filter for employment size
-  mutate(est_total = ifelse(EMPSZES == "001", ESTAB, 0),
-         emp_total = ifelse(EMPSZES == "001", EMP, 0),
-         est_50 = ifelse(EMPSZES != "001", ESTAB, 0),
-         est_10 = ifelse(EMPSZES == "210" | EMPSZES == "220", ESTAB, 0)) %>% 
-  group_by(county_FIPS) %>% 
-  summarise(emp_cbp_2018 = sum(emp_total, na.rm = T),
-            est_cbp_2018 = sum(est_total, na.rm = T),
-            est_50_cbp_2018 = sum(est_50, na.rm = T),
-            est_10_cbp_2018 = sum(est_10, na.rm = T)) %>% 
-  mutate(pct_50_est_cbp_2018 = est_50_cbp_2018 / est_cbp_2018,
-         pct_10_est_cbp_2018 = est_10_cbp_2018 / est_cbp_2018)
-
-## Merge three years datasets ##
-cbp_txksme <- left_join(cbp2012_txksme_agg, cbp2017_txksme_agg, by = "county_FIPS") %>% left_join(., cbp2018_txksme_agg, by = "county_FIPS")
-
-#### Nonemployer Dataset Aggregation ####
-nonemp2012_txksme_agg <- nonemp2012 %>% 
-  mutate(est_total = ifelse(NAICS2012 == "00", NESTAB, 0),
-         nonfarm_est_total = ifelse(str_detect(NAICS2012, "^11", negate = TRUE), NESTAB, 0),
-         nonfarm_est_total = ifelse(NAICS2012 == "00", 0, nonfarm_est_total)) %>% 
-  group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
-  group_by(county_FIPS) %>% 
-  summarise(neest_nemp_2012 = sum(est_total, na.rm = T),
-            nonfarmneest_nemp_2012 = sum(nonfarm_est_total, na.rm = T)) %>% 
-  mutate(pct_nonfarmneest_nemp_2012 = nonfarmneest_nemp_2012 / neest_nemp_2012)
-
-nonemp2017_txksme_agg <- nonemp2017 %>% 
-  mutate(est_total = ifelse(SECTOR == "00", NESTAB, 0),
-         nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
-         nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
-  group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
-  group_by(county_FIPS) %>% 
-  summarise(neest_nemp_2017 = sum(est_total, na.rm = T),
-            nonfarmneest_nemp_2017 = sum(nonfarm_est_total, na.rm = T)) %>% 
-  mutate(pct_nonfarmneest_nemp_2017 = nonfarmneest_nemp_2017 / neest_nemp_2017)
-
-nonemp2018_txksme_agg <- nonemp2018 %>% 
-  mutate(est_total = ifelse(SECTOR == "00", NESTAB, 0),
-         nonfarm_est_total = ifelse(str_detect(NAICS2017, "^11", negate = TRUE), NESTAB, 0),
-         nonfarm_est_total = ifelse(NAICS2017 == "00", 0, nonfarm_est_total)) %>% 
-  group_by(SECTOR, county_FIPS) %>% slice(1) %>% ungroup() %>% 
-  group_by(county_FIPS) %>% 
-  summarise(neest_nemp_2018 = sum(est_total, na.rm = T),
-            nonfarmneest_nemp_2018 = sum(nonfarm_est_total, na.rm = T)) %>% 
-  mutate(pct_nonfarmneest_nemp_2018 = nonfarmneest_nemp_2018 / neest_nemp_2018)
-
-## Merge three years datasets ##
-nonemp_txksme <- left_join(nonemp2012_txksme_agg, nonemp2017_txksme_agg, by= "county_FIPS") %>% left_join(., nonemp2018_txksme_agg, by = "county_FIPS") %>% 
-  mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)
+nonemp_txksme <- getNEMPemp(c(2012,2017,2018), statefips = c(20,23,48)) %>% mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)
 
 ```
 
@@ -686,99 +578,63 @@ library(bea.R)
 ## The LineCode parameter does not allow multiple values input.
 ## Therefore, we have to generate separate tables for each LineCode and merge afterwards
 
-#### Retrive Data tables from BEA API ####
-# LineCode 10
-beaSpecs_10 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 10,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2018'
-)
+#### Function to Retrieve Data tables from BEA API ####
+getBEAstat <- function(yr, linecode = c(10, 40, 60)) {
+  beaKey <- "1C5D7A5A-D3C0-4919-8D47-820A118D7A56"
+  yrlist <- list(yr)
+  linecodelist <- list(linecode)
+  dfs <- vector("list", length(linecode))
+  for (i in seq_along(linecodelist[[1]])) {
+    beaSpecs <- list(
+      'UserID' = beaKey,
+      'Method' = 'GetData',
+      'datasetname' = 'Regional',
+      'TableName' = 'CAEMP25N',
+      'LineCode' = linecodelist[[1]][i],
+      'GeoFips' = 'COUNTY',
+      'Year' = paste0(yr, collapse = ",")
+    )
+    if (linecodelist[[1]][i] == 10) {
+      dfs[[i]] <- beaGet(beaSpecs, asWide = F) %>% 
+        filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
+        select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+        mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+        rename(totalemp_bea = DataValue,
+               county = GeoName)
+    } else if (linecodelist[[1]][i] == 40) {
+      dfs[[i]] <- beaGet(beaSpecs, asWide = F) %>% 
+        filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>%
+        select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+        mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+        rename(proprietors_bea = DataValue,
+               county = GeoName)
+    } else if (linecodelist[[1]][i] == 60) {
+      dfs[[i]] <- beaGet(beaSpecs, asWide = F) %>% 
+        filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
+        select(GeoFips, TimePeriod, DataValue, GeoName) %>% 
+        mutate(GeoName = gsub(",.*$","",GeoName)) %>% 
+        rename(nonfarmproprietors_bea = DataValue,
+               county = GeoName)
+    }
+  }
+  
+  bea_10 <- dfs[[1]] %>% select(-county)
+  bea_40 <- dfs[[2]] %>% select(-county)
+  bea_60 <- dfs[[3]] %>% select(-county)
+  bea_prop <- bea_10 %>% 
+    left_join(., select(bea_40, proprietors_bea, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
+    left_join(., select(bea_60, nonfarmproprietors_bea, TimePeriod, GeoFips), by = c("GeoFips" = "GeoFips", "TimePeriod" = "TimePeriod")) %>% 
+    mutate(pct_nonfarm_bea = nonfarmproprietors_bea / totalemp_bea) %>% 
+    rename(year = TimePeriod,
+           county_FIPS = GeoFips) %>% 
+    pivot_wider(names_from = year, names_glue = "{.value}_{year}", values_from = c(totalemp_bea, proprietors_bea, nonfarmproprietors_bea, pct_nonfarm_bea))
+  
+  return(bea_prop)
+  
+}
 
-bea_10 <- beaGet(beaSpecs_10, asWide = TRUE)
+bea_nonfarmproprietor_txksme <- getBEAstat(c(2012, 2017, 2018)) %>% mutate(pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)
 
-# LineCode 20
-beaSpecs_20 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 20,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2018'
-)
-
-bea_20 <- beaGet(beaSpecs_20, asWide = TRUE)
-
-# LineCode 40
-beaSpecs_40 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 40,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2018'
-)
-
-bea_40 <- beaGet(beaSpecs_40, asWide = TRUE)
-
-# LineCode 60
-beaSpecs_60 <- list(
-  'UserID' = beaKey,
-  'Method' = 'GetData',
-  'datasetname' = 'Regional',
-  'TableName' = 'CAEMP25N',
-  'LineCode' = 60,
-  'GeoFips' = 'COUNTY',
-  'Year' = '2012,2018'
-)
-
-bea_60 <- beaGet(beaSpecs_60, asWide = TRUE)
-
-#### Clean, Filter the Data Tables and Merge ####
-## BEA Total Employment
-bea_10 <- bea_10 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
-  select(GeoFips, DataValue_2012, DataValue_2018) %>% 
-  rename(totalemp_bea_2012 = DataValue_2012,
-         totalemp_bea_2018 = DataValue_2018)
-## BEA Wage and Salary Employment
-bea_20 <- bea_20 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
-  select(GeoFips, DataValue_2012, DataValue_2018) %>% 
-  rename(salaryemp_bea_2012 = DataValue_2012,
-         salaryemp_bea_2018 = DataValue_2018)
-## BEA Proprietors Employment
-bea_40 <- bea_40 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
-  select(GeoFips, DataValue_2012, DataValue_2018) %>% 
-  rename(proprietors_bea_2012 = DataValue_2012,
-         proprietors_bea_2018 = DataValue_2018)
-## BEA Nonfarm Proprietors Employment
-bea_60 <- bea_60 %>% filter(str_detect(GeoFips, "^48")|str_detect(GeoFips, "^20")|str_detect(GeoFips, "^23")) %>% 
-  select(GeoFips, DataValue_2012, DataValue_2018) %>% 
-  rename(nonfarmproprietors_bea_2012 = DataValue_2012,
-         nonfarmproprietors_bea_2018 = DataValue_2018)
-
-## Merge Datasets ##
-bea_nonfarmproprietor_txksme <- left_join(bea_10, bea_20, by = "GeoFips") %>% 
-  left_join(., bea_40, by = "GeoFips") %>% left_join(., bea_60, by = "GeoFips")
-
-## Calculate Several Variables ##
-# Percentage variables and change
-# Percentage of nonfarm proprietors in total employment
-# Percentage change from 2012 to 2018
-
-bea_nonfarmproprietor_txksme <- bea_nonfarmproprietor_txksme %>% 
-  mutate(pct_nonfarm_bea_2012 = nonfarmproprietors_bea_2012 / totalemp_bea_2012,
-         pct_nonfarm_bea_2018 = nonfarmproprietors_bea_2018 / totalemp_bea_2018,
-         pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)
-
-
-# Finally filter for Texas state
-bea_nonfarmproprietor_tx <- bea_nonfarmproprietor_txksme %>% 
-  filter(str_detect(GeoFips, "^48"))
 ```
 
 ### ABS Dataset API Call
@@ -947,7 +803,7 @@ demo_cont <- left_join(pep_agegroup, acs_demo, by = "county_FIPS")
 
 ## FCC 477 Broadband Availability for Year 2019
 
-I will here retrieve the most up to date FCC 477 broadband data as of June 2019. In order to interact with FCC broadband data directly through its API, one needs to register for the FCC data portal as well as personal API key. Instructions can be found [here](https://dev.socrata.com/foundry/opendata.fcc.gov/sgz3-kiqt). Package used to interact with the data is `RSocrata`.
+I will here retrieve the most up to date FCC 477 broadband data as of June 2019. In order to interact with FCC broadband data directly through its API, one needs to register for the FCC data portal as well as personal API key. Instructions can be found [here](https://dev.socrata.com/foundry/opendata.fcc.gov/whue-6pnt). Package used to interact with the data is `RSocrata`. However, the package is not consistent or doesn't work at all often. Therefore, I'll use python's `sodapy` to interact with the API.
 
 Alternative to using the API, we could also download the dataset directly from FCC website using the URLs. As API interaction did not work properly at the time of writing this, we will retreive data directly from the URL.
 
@@ -958,23 +814,57 @@ Using the raw data, We will generate:
 * `pct_bb_fcc_100-10_2019`: % of broadband availability at the speed of 100/10 per county
 * `pct_bb_fcc_250-25_2019`: % of broadband availability at the speed of 250/25 per county
 
-```{r FCC Data Update, eval=FALSE}
-install.packages("RSocrata")
-library(RSocrata)
+```{python FCC Data Update, eval=FALSE, include=FALSE, echo=FALSE}
 
 ## Retrieve FCC 477 data of TX using API##
+# Make sure you install pandas and sodapy library in your Python environment
 
-fcc477_2019_raw <- read.socrata(
-  "https://opendata.fcc.gov/resource/sgz3-kiqt.csv?stateabbr=TX",
-  app_token = "YOUR API KEY",
-  email = "ID",
-  password = "password"
-)
+import pandas as pd
+from sodapy import Socrata
+
+## Call the API
+client = Socrata("opendata.fcc.gov",
+                  "MyAppToken",
+                  userame="user@example.com",
+                  password="AFakePassword")
+                  
+## Retrieve results
+results = client.get("whue-6pnt")
+
+## Convert to pandas dataframe
+results_df = pd.DataFrame.from_records(results)
+
 ```
 
+``` {python FCC Data Retrieval_run, eval=FALSE, include=FALSE, echo=FALSE}
+## Retrieve FCC 477 data of TX using API##
+# Make sure you install pandas and sodapy library in your Python environment
+
+
+
+import pandas as pd
+from sodapy import Socrata
+
+## Call the API
+client = Socrata("opendata.fcc.gov",
+                  "WHT9nk7BMfD3HeJF6rxayRokn",
+                  userame="jwroycechoi@gmail.com",
+                  password="Wodnjs58640!")
+                  
+## Retrieve results
+results = client.get("whue-6pnt")
+
+## Convert to pandas dataframe
+results_df = pd.DataFrame.from_records(results)
+
+```
 
 ```{r FCC Data Import}
 #### Import FCC 477 Data of Three States from URL ####
+
+#fcc477_Dec2019_raw <- py$results_df
+#fcc477_Dec2019_txksme <- fcc477_Dec2019_raw %>% 
+#  filter(stateabbr == "TX" | stateabbr == "KS" | stateabbr == "ME")
 
 ## Write query for three states ME, KS, TX
 # Create temporary file space to download the dataset
@@ -982,17 +872,17 @@ temp <- tempfile()
 temp2 <- tempfile()
 # Download dataset for each state, unzip and import to data frame
 # Texas as of June 2019
-download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Jun19/Version%201/TX-Fixed-Jun2019.zip", temp)
+download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/TX-Fixed-Dec2019.zip", temp, method = "curl")
 unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_tx <- read.csv(file.path(temp2, "TX-Fixed-Jun2019-v1.csv"), header = T)
+fcc477_2019_tx <- read.csv(file.path(temp2, "TX-Fixed-Dec2019-v1.csv"), header = T)
 # Kansas as of June 2019
-download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Jun19/Version%201/KS-Fixed-Jun2019.zip", temp)
+download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/KS-Fixed-Dec2019.zip", temp, method = "curl")
 unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_ks <- read.csv(file.path(temp2, "KS-Fixed-Jun2019-v1.csv"), header = T)
+fcc477_2019_ks <- read.csv(file.path(temp2, "KS-Fixed-Dec2019-v1.csv"), header = T)
 # Maine as of June 2019
-download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Jun19/Version%201/ME-Fixed-Jun2019.zip", temp)
+download.file("https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/ME-Fixed-Dec2019.zip", temp, method = "curl")
 unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_me <- read.csv(file.path(temp2, "ME-Fixed-Jun2019-v1.csv"), header = T)
+fcc477_2019_me <- read.csv(file.path(temp2, "ME-Fixed-Dec2019-v1.csv"), header = T)
 
 # Bind into one
 fcc477_Jun2019_txksme <- rbind(fcc477_2019_tx, fcc477_2019_ks, fcc477_2019_me)
@@ -1115,15 +1005,17 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged %>%
   left_join(., cbp_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., nonemp_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., acs_broadband_pct, by = c("county_FIPS" = "county_FIPS")) %>% 
-  left_join(., bea_nonfarmproprietor_txksme, by = c("county_FIPS" = "GeoFips")) %>% 
+  left_join(., bea_nonfarmproprietor_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., firmlevel_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., select(rucc2013, c("FIPS","RUCC_2013","metro_desc")), by = c("county_FIPS" = "FIPS")) %>% 
   left_join(., demo_cont, by = c("county_FIPS" = "county_FIPS"))
 
 ## Generate average GoDaddy & M-lab broadband measures and clean unnecessary variables ##
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
-  mutate(venturedensity_mean = rowMeans(select(., c(venturedensitymay18, venturedensitynov18, venturedensityfeb19, venturedensitysep19, venturedensityoct19, venturedensitynov19, venturedensitydec19)), na.rm = T),
-         highlyactive_vd_mean = rowMeans(select(., c(highlyactive_vdmay18, highlyactive_vdnov18, highlyactive_vdfeb19, highlyactive_vdsep19, highlyactive_vdoct19, highlyactive_vdnov19, highlyactive_vddec19)), na.rm = T),
+  mutate(vd_mean_19 = rowMeans(select(., matches("^venturedensity.*19$")), na.rm = T),
+         vd_mean_20 = rowMeans(select(., matches("^venturedensity.*20$")), na.rm = T),
+         havd_mean_19 = rowMeans(select(., matches("^highlyactive.*19$")), na.rm = T),
+         havd_mean_20 = rowMeans(select(., matches("^highlyactive.*20$")), na.rm = T),
          pct_broadband_mlab = rowMeans(select(., c(frac_BB.sept, frac_BB.oct, frac_BB.nov, frac_BB.dec)), na.rm = T)) %>% 
   select(-c(starts_with("frac_under_"), starts_with("frac_over"), starts_with("samples."), starts_with("BB_samples"), state, county.y, starts_with("DL"), starts_with("UL"), starts_with("dl_sample"), starts_with("ul_sample")))
 
@@ -1165,7 +1057,10 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
   mutate(pct_bb_fcc_2019 = case_when(is.na(pct_bb_fcc_2019) ~ 0, TRUE ~ pct_bb_fcc_2019),
          pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
          pct_fixed_acs_2018 = case_when(is.na(pct_fixed_acs_2018) ~ 0, TRUE ~ pct_fixed_acs_2018),
-         pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab))
+         pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab),
+         nonfarmprop_percapita = nonfarmproprietors_bea_2018 / population_2018,
+         est_10_cbp_percapita = est_10_cbp_2018 / population_2018,
+         est_50_cbp_percapita = est_50_cbp_2018 / population_2018)
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")
