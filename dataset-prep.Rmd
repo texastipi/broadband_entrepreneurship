@@ -749,6 +749,12 @@ acs_broadband_pct <- acs_broadband_pct %>%
          pct_anycomputer_acs_2018 = S2801_C02_002E) %>% 
   mutate(pct_anybroadband_acs_2018 = 100 - pct_nobroadband_acs_2018,
          pct_nocomputer_acs_2018 = 100 - pct_anycomputer_acs_2018,
+         pct_cellularonly_acs_2018 = pct_cellularonly_acs_2018/100,
+         pct_fixed_acs_2018 = pct_fixed_acs_2018/100,
+         pct_sat_acs_2018 = pct_sat_acs_2018/100,
+         pct_nobroadband_acs_2018 = pct_nobroadband_acs_2018/100,
+         pct_mobileonly_acs_2018 = pct_mobileonly_acs_2018/100,
+         pct_anycomputer_acs_2018 = pct_anycomputer_acs_2018/100,
          county_FIPS = paste(state, county, sep = ""))
 
 # Calculate Digital Distress Index informed by Gallardo & Geideman (2019) (https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b)
