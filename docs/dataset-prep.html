@@ -1065,8 +1065,8 @@ acs_broadband_pct &lt;- acs_broadband_pct %&gt;%
          pct_nobroadband_acs_2018 = S2801_C02_019E,
          pct_mobileonly_acs_2018 = S2801_C02_006E,
          pct_anycomputer_acs_2018 = S2801_C02_002E) %&gt;% 
-  mutate(pct_anybroadband_acs_2018 = 100 - pct_nobroadband_acs_2018,
-         pct_nocomputer_acs_2018 = 100 - pct_anycomputer_acs_2018,
+  mutate(pct_anybroadband_acs_2018 = (100 - pct_nobroadband_acs_2018)/100,
+         pct_nocomputer_acs_2018 = (100 - pct_anycomputer_acs_2018)/100,
          pct_cellularonly_acs_2018 = pct_cellularonly_acs_2018/100,
          pct_fixed_acs_2018 = pct_fixed_acs_2018/100,
          pct_sat_acs_2018 = pct_sat_acs_2018/100,
