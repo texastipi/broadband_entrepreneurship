@@ -4,7 +4,7 @@ author: "Jaewon R. Choi"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, mmessage = FALSE, error = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, error = FALSE)
 ```
 
 In this document, We will set up, run, and examine several multiple regression models. In general, the models aim to investigate the relationhips between **broadband** and **entrepreneurship**. Specifically, **how broadband influences entrepreneurship**. Furthermore, the models will explore how different measures of broadband, specifically measures of availability and adoption, explain entrepreneurial activities differently. Finally, I will explore how broadband as well as entrepreneurial factors contribute to the overall prosperity.

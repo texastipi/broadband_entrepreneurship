@@ -1,0 +1,44 @@
+---
+title: "Coarsened Exact Matching (CEM) Analysis"
+author: "Jaewon R. Choi"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, error = F)
+```
+
+In this document, I'll go through the process of **Coarsened Exact Matching (CEM)**, which allows us to only include comparable counties in the dataset we have been working on. Through this process, we can minimize the imbalance in covariates, which can be problematic for the full regression model.
+
+## Coarsened Exact Matching (CEM)
+
+To conduct CEM in R, we will use `cem` package. The method and the package have been developed and advanced by a team of researchers. You can find more details [here](https://gking.harvard.edu/cem).
+
+```{r import packages, results='hide'}
+set.seed(5000)
+# install.packages("cem")
+library(tidyverse)
+library(cem)
+library(ggplot2)
+
+```
+
+Clean the worksapce and import raw dataset from GitHub repository.
+
+```{r import dataset, results='hide'}
+rm(list = ls())     # Clean workspace
+
+d <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
+glimpse(d)
+```
+
+### Treatment, Outcome, and Covariate Variables
+
+CEM involves defining treatment, outcome, and covariate variables of interest. In our analysis, we are interested in the treatment effect of broadband-related variables on entrepreneurial outcome variables. The reason for conducting CEM is to address the imbalance in terms of various economic and demographic factors of different counties. Below are the treatment, outcome, and covariates. 
+
+#### Treatment
+
+For the listed treatment braodband variables, we split each variable into three categories (Low, Medium, High). Following [Gallardo, Whitacre, Kumar, & Upendram (2021)](https://ideas.repec.org/a/spr/anresc/v66y2021i1d10.1007_s00168-020-01015-0.html), we eliminate the 'Medium' category and consider 'High' as the treated group and 'Low' as untreated group. The variables converted to treatment factors are:
+
+* 
+
+
