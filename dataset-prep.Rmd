@@ -1029,6 +1029,12 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          est_10_cbp_percapita = est_10_cbp_2018 / population_2018,
          est_50_cbp_percapita = est_50_cbp_2018 / population_2018)
 
+## Create composite measure of broadband Quality of Service (QoS) using Microsoft's broadband variable and Mlab data
+## This is done by standardizing each variable, adding the two, and normalizing it
+tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
+  mutate(pct_bb_qos = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
+                                      range = c(0,100))/100)
+
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")
 

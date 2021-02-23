@@ -445,23 +445,9 @@ mlab_dec_txksme &lt;- mlab_dec %&gt;%
 <h2>Texas Sole Proprietors Dataset</h2>
 <p>This dataset contains information of sole proprietors number provided by the Bureau of Business Research at <span class="math inline">\(IC^{2}\)</span> Institute. The information is presented at the county level.</p>
 <pre class="r"><code>## Import the Dataset
-tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   county = col_character(),
-##   pct_change_proprietors_2000_2017 = col_double(),
-##   proprietors_2000 = col_double(),
-##   proprietors_2017 = col_double(),
-##   pct_proprietors_employment_2000 = col_double(),
-##   pct_proprietors_employment_2010 = col_double(),
-##   pct_proprietors_employment_2017 = col_double(),
-##   total_employment_2017 = col_double(),
-##   wage_salary_jobs_2017 = col_double(),
-##   pct_change_pro_emp_2000_2017 = col_double(),
-##   pct_change_pro_emp_2010_2017 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect the Structure
+tx_proprietor &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/Sole-Proprietors-tx-combined.csv&quot;)
+
+## Inspect the Structure
 str(tx_proprietor)</code></pre>
 <p>This dataset’s variables are straighforward as it was pre-cleaned on Excel spreadsheet.</p>
 </div>
@@ -470,23 +456,10 @@ str(tx_proprietor)</code></pre>
 <p>This dataset contains information of IRR index at the county level. The index calculates the extent to which a certain county could be considered as <em>‘rural’</em>. Smaller the value of the index, more rural the county is considered to be.</p>
 <p>There are two datasets that contains data from 2000 and 2010. I will import these datasets, filter for Texas and set up for a final merge of all datasets we have.</p>
 <pre class="r"><code>## Import the Dataset
-rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## cols(
-##   FIPS2000 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2000 = col_double()
-## )</code></pre>
-<pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## cols(
-##   FIPS2010 = col_double(),
-##   `County Name` = col_character(),
-##   IRR2010 = col_double()
-## )</code></pre>
-<pre class="r"><code>## Inspect Structure
+rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)
+rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)
+
+## Inspect Structure
 str(rural_2000)
 str(rural_2010)
 
@@ -510,18 +483,9 @@ str(rural_2010_txksme)</code></pre>
 <div id="rural-urban-continuum-codes" class="section level2">
 <h2>Rural-Urban Continuum Codes</h2>
 <p>In addition to the IRR index, I also import the <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">Rural-Urban Continuum Codes</a> (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.</p>
-<pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## cols(
-##   FIPS = col_character(),
-##   State = col_character(),
-##   County_Name = col_character(),
-##   Population_2010 = col_number(),
-##   RUCC_2013 = col_double(),
-##   Description = col_character()
-## )</code></pre>
-<pre class="r"><code>rucc2013 &lt;- rucc2013 %&gt;% 
+<pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)
+
+rucc2013 &lt;- rucc2013 %&gt;% 
   mutate(Description = str_extract(Description, &quot;^.*?(?= -)&quot;)) %&gt;% 
   rename(metro_desc = Description)</code></pre>
 </div>
@@ -1254,6 +1218,12 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
          nonfarmprop_percapita = nonfarmproprietors_bea_2018 / population_2018,
          est_10_cbp_percapita = est_10_cbp_2018 / population_2018,
          est_50_cbp_percapita = est_50_cbp_2018 / population_2018)
+
+## Create composite measure of broadband Quality of Service (QoS) using Microsoft&#39;s broadband variable and Mlab data
+## This is done by standardizing each variable, adding the two, and normalizing it
+tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
+  mutate(pct_bb_qos = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
+                                      range = c(0,100))/100)
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>
