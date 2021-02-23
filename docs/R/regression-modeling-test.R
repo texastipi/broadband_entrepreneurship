@@ -3,6 +3,7 @@ library(psych)
 library(ggplot2)
 library(gridExtra)
 library(ggpubr)
+library(sjPlot)
 set.seed(5000)
 
 #### Testing some of the regression modeling ideas ####
@@ -32,11 +33,15 @@ alpha(bb_qos)
 bb_qos_score <- scoreItems(keys = c(1:length(bb_qos)), impute = "mean", items = bb_qos)
 # Add the score to the dataset
 d$pct_bb_qos <- bb_qos_score$scores[,]
+# Another indexing strategy: Standardize each, add the two, and normalize
+d <- d %>% mutate(pct_bb_qos_2 = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
+                                      range = c(0,100))/100)
 # Explore the distribution
 grid.arrange(ggplot(d, aes(x = pct_broadband_MS)) + geom_histogram(),
              ggplot(d, aes(x = pct_broadband_mlab)) + geom_histogram(),
              ggplot(d, aes(x = pct_bb_qos)) + geom_histogram(),
-             nrow = 1, ncol = 3)
+             ggplot(d, aes(x = pct_bb_qos_2)) + geom_histogram(),
+             nrow = 2, ncol = 2)
 # Explore the correlation b/w M-Lab, MS, and the composite score
 grid.arrange(ggscatter(d, x = "pct_broadband_MS", y = "pct_broadband_mlab",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
@@ -44,7 +49,13 @@ grid.arrange(ggscatter(d, x = "pct_broadband_MS", y = "pct_broadband_mlab",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              ggscatter(d, x = "pct_broadband_mlab", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             nrow = 1, ncol = 3)
+             ggscatter(d, x = "pct_broadband_MS", y = "pct_bb_qos_2",
+                       add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
+             ggscatter(d, x = "pct_broadband_mlab", y = "pct_bb_qos_2",
+                       add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
+             ggscatter(d, x = "pct_bb_qos", y = "pct_bb_qos_2",
+                       add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
+             nrow = 3, ncol = 3)
 # Descriptive statistics
 describe(select(d, pct_broadband_MS, pct_broadband_mlab, pct_bb_qos))
 
@@ -60,9 +71,10 @@ grid.arrange(ggscatter(d, x = "pct_bb_fcc_2019", y = "pct_fixed_acs_2018",
              nrow = 1, ncol = 3)
 
 # Standardizing the broadband measures
-d <- d %>% mutate(s.pct_bb_fcc_2019 = scale(pct_bb_fcc_2019),
-             s.pct_fixed_acs_2018 = scale(pct_fixed_acs_2018),
-             s.pct_bb_qos = scale(pct_bb_qos))
+d <- d %>% mutate(s.pct_bb_fcc_2019 = scale(pct_bb_fcc_2019)[,],
+             s.pct_fixed_acs_2018 = scale(pct_fixed_acs_2018)[,],
+             s.pct_bb_qos = scale(pct_bb_qos)[,],
+             s.pct_bb_qos_2 = scale(pct_bb_qos_2)[,])
 
 grid.arrange(ggscatter(d, x = "s.pct_bb_fcc_2019", y = "s.pct_fixed_acs_2018",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
@@ -86,14 +98,14 @@ describe(select(d, pct_bb_fcc_2019, pct_fixed_acs_2018, pct_bb_qos, s.pct_bb_fcc
 ## Secondly, I calculate percentage difference b/w the two measures by dividing the absolute difference by their average
 
 d <- d %>% mutate(bb_avail_adopt.raw = (pct_bb_fcc_2019 - pct_fixed_acs_2018),
-                  bb_avail_qos.raw = (pct_bb_fcc_2019 - pct_bb_qos),
-                  bb_adopt_qos.raw = (pct_fixed_acs_2018 - pct_bb_qos),
+                  bb_avail_qos.raw = (pct_bb_fcc_2019 - pct_bb_qos_2),
+                  bb_adopt_qos.raw = (pct_fixed_acs_2018 - pct_bb_qos_2),
                   bb_avail_adopt.rs = scales::rescale((s.pct_bb_fcc_2019 - s.pct_fixed_acs_2018)),
-                  bb_avail_qos.rs = scales::rescale((s.pct_bb_fcc_2019 - s.pct_bb_qos)),
-                  bb_adopt_qos.rs = scales::rescale((s.pct_fixed_acs_2018 - s.pct_bb_qos)),
+                  bb_avail_qos.rs = scales::rescale((s.pct_bb_fcc_2019 - s.pct_bb_qos_2)),
+                  bb_adopt_qos.rs = scales::rescale((s.pct_fixed_acs_2018 - s.pct_bb_qos_2)),
                   bb_avail_adopt.pct = abs((pct_bb_fcc_2019 - pct_fixed_acs_2018))/((pct_bb_fcc_2019 + pct_fixed_acs_2018)/2),
-                  bb_avail_qos.pct = abs((pct_bb_fcc_2019 - pct_bb_qos))/((pct_bb_fcc_2019 + pct_bb_qos)/2),
-                  bb_adopt_qos.pct = abs((pct_fixed_acs_2018 - pct_bb_qos))/((pct_fixed_acs_2018 + pct_bb_qos)/2))
+                  bb_avail_qos.pct = abs((pct_bb_fcc_2019 - pct_bb_qos_2))/((pct_bb_fcc_2019 + pct_bb_qos_2)/2),
+                  bb_adopt_qos.pct = abs((pct_fixed_acs_2018 - pct_bb_qos_2))/((pct_fixed_acs_2018 + pct_bb_qos_2)/2))
 # Descriptive statistics
 describe(select(d, bb_avail_adopt.raw, bb_avail_qos.raw, bb_adopt_qos.raw,
                 bb_avail_adopt.pct, bb_avail_qos.pct, bb_adopt_qos.pct,
@@ -113,11 +125,14 @@ ggscatter(d, x = "IRR2010", y = "bb_adopt_qos.raw",
 # Standardized differences rescaled to 0-1
 
 ggscatter(d, x = "IRR2010", y = "bb_avail_qos.rs",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Availability and Quality of Service Gap")
 ggscatter(d, x = "IRR2010", y = "bb_avail_adopt.rs",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Availability and Adoption Gap")
 ggscatter(d, x = "IRR2010", y = "bb_adopt_qos.rs",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Adoption and Quality of Service Gap")
 
 # Difference in percentages
 
@@ -131,13 +146,16 @@ ggscatter(d, x = "IRR2010", y = "bb_adopt_qos.pct",
 ## We can see that rural areas tend to experience larger discrepancies b/w availability, adoption, and QoS
 
 # Entrepreneurship and broadband difference
-
-ggscatter(d, x = "bb_avail_qos.pct", y = "venturedensity_mean",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
-ggscatter(d, x = "bb_avail_adopt.pct", y = "venturedensity_mean",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
-ggscatter(d, x = "bb_adopt_qos.pct", y = "venturedensity_mean",
-          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson")
+d <- d %>% mutate(vd_20_LN = log(vd_mean_20))
+ggscatter(d, x = "bb_avail_qos.rs", y = "vd_mean_20",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Availability-QoS Gap and Venture Density")
+ggscatter(d, x = "bb_avail_adopt.rs", y = "vd_mean_20",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Availability-Adoption Gap and Venture Density")
+ggscatter(d, x = "bb_adopt_qos.rs", y = "vd_mean_20",
+          add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson",
+          title = "Adoption-QoS Gap and Venture Density")
 
 #### Regression Modeling ####
 ## See whether the composite QoS variables work inside our previous models ##

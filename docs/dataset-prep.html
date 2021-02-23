@@ -19,11 +19,18 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
@@ -38,11 +45,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -55,32 +57,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -91,10 +68,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -111,40 +84,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -172,7 +118,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -184,7 +130,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -195,10 +141,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -210,7 +169,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -288,7 +246,7 @@ $(document).ready(function () {
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
     Home
   </a>
@@ -339,7 +297,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -363,16 +321,8 @@ $(document).ready(function () {
 
 #install.packages(&quot;tidyverse&quot;)
 #install.packages(&quot;ggplot2&quot;)
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.4     ✓ dplyr   1.0.2
-## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
-## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(ggplot2)
+library(tidyverse)
+library(ggplot2)
 library(reticulate)</code></pre>
 <hr />
 <div id="microsoft-broadband-availability-dataset" class="section level2">
@@ -522,7 +472,7 @@ str(tx_proprietor)</code></pre>
 <pre class="r"><code>## Import the Dataset
 rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS2000 = col_double(),
 ##   `County Name` = col_character(),
@@ -530,7 +480,7 @@ rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/br
 ## )</code></pre>
 <pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS2010 = col_double(),
 ##   `County Name` = col_character(),
@@ -562,7 +512,7 @@ str(rural_2010_txksme)</code></pre>
 <p>In addition to the IRR index, I also import the <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">Rural-Urban Continuum Codes</a> (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.</p>
 <pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS = col_character(),
 ##   State = col_character(),
@@ -688,11 +638,6 @@ Sys.setenv(CENSUS_KEY=&quot;YOUR KEY GOES HERE&quot;)
 readRenviron(&quot;~/.Renviron&quot;)
 # Check to see that the expected key is output in your R console
 Sys.getenv(&quot;CENSUS_KEY&quot;)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;censusapi&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:methods&#39;:
-## 
-##     getFunction</code></pre>
 <p>You can take a look at available APIs and other important metadata related to specific APIs using the following functions. Refer to specific documentations of the functions as well as the specific API that you want to investigate.</p>
 <ul>
 <li><code>listCensusApis()</code>: Retrieve all available API handles provided by the Census Bureau.</li>
@@ -795,11 +740,9 @@ getCBPemp &lt;- function(yr, countyfips = &quot;*&quot;, statefips){
   return(df)
 }
 
-cbp_txksme &lt;- getCBPemp(c(2012,2017,2018), statefips = c(20,23,48))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)
-## `summarise()` ungrouping output (override with `.groups` argument)
-## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>## Retrieve Nonemployer datasets ##
+cbp_txksme &lt;- getCBPemp(c(2012,2017,2018), statefips = c(20,23,48))
+
+## Retrieve Nonemployer datasets ##
 getNEMPemp &lt;- function(yr, countyfips = &quot;*&quot;, statefips){
   yrlst &lt;- list(yr)
   dfs &lt;- vector(&quot;list&quot;, length(yr))
@@ -834,9 +777,6 @@ getNEMPemp &lt;- function(yr, countyfips = &quot;*&quot;, statefips){
 }
 
 nonemp_txksme &lt;- getNEMPemp(c(2012,2017,2018), statefips = c(20,23,48)) %&gt;% mutate(chg_pct_nonfarmneest_nemp_2012_2018 = pct_nonfarmneest_nemp_2018 - pct_nonfarmneest_nemp_2012)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)
-## `summarise()` ungrouping output (override with `.groups` argument)
-## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 </div>
 <div id="other-economic-statistics" class="section level2">
 <h2>Other Economic Statistics</h2>
@@ -885,19 +825,8 @@ beaParams(beaKey = beaKey, &#39;Regional&#39;)
 ## Further, you can see what values are available for specific parameter using code below
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;TableName&#39;)
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;LineCode&#39;)</code></pre>
-<pre class="r"><code>library(bea.R)</code></pre>
-<pre><code>## Loading required package: data.table</code></pre>
-<pre><code>## 
-## Attaching package: &#39;data.table&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     between, first, last</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     transpose</code></pre>
-<pre><code>## Creating a generic function for &#39;toJSON&#39; from package &#39;jsonlite&#39; in package &#39;googleVis&#39;</code></pre>
-<pre><code>## Note: As of February 2018, beaGet() requires &#39;TableName&#39; for NIPA and NIUnderlyingDetail data instead of &#39;TableID.&#39; See https://github.us-bea/bea.R for details.</code></pre>
-<pre class="r"><code>### Finally, we will use the parameter and parameter values to retrieve data table
+<pre class="r"><code>library(bea.R)
+### Finally, we will use the parameter and parameter values to retrieve data table
 ## In terms of LineCode, we are interested in:
 ## 10: Total employment
 ## 20: Wage and salary employment
@@ -912,8 +841,8 @@ beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;LineCode&#39;)</code></pr
 ## Therefore, we have to generate separate tables for each LineCode and merge afterwards
 
 #### Function to Retrieve Data tables from BEA API ####
-getBEAstat &lt;- function(yr, linecode = c(10, 40, 60)) {
-  beaKey &lt;- &quot;1C5D7A5A-D3C0-4919-8D47-820A118D7A56&quot;
+getBEAstat &lt;- function(yr, beaKey, linecode = c(10, 40, 60)) {
+  beaKey &lt;- beaKey
   yrlist &lt;- list(yr)
   linecodelist &lt;- list(linecode)
   dfs &lt;- vector(&quot;list&quot;, length(linecode))
@@ -966,7 +895,7 @@ getBEAstat &lt;- function(yr, linecode = c(10, 40, 60)) {
   
 }
 
-bea_nonfarmproprietor_txksme &lt;- getBEAstat(c(2012, 2017, 2018)) %&gt;% mutate(pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)</code></pre>
+bea_nonfarmproprietor_txksme &lt;- getBEAstat(c(2012, 2017, 2018), beaKey = beaKey) %&gt;% mutate(pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)</code></pre>
 </div>
 <div id="abs-dataset-api-call" class="section level3">
 <h3>ABS Dataset API Call</h3>
@@ -1136,151 +1065,148 @@ demo_cont &lt;- acs_demo %&gt;%
 </div>
 <div id="fcc-477-broadband-availability-for-year-2019" class="section level2">
 <h2>FCC 477 Broadband Availability for Year 2019</h2>
-<p>I will here retrieve the most up to date FCC 477 broadband data as of June 2019. In order to interact with FCC broadband data directly through its API, one needs to register for the FCC data portal as well as personal API key. Instructions can be found <a href="https://dev.socrata.com/foundry/opendata.fcc.gov/whue-6pnt">here</a>. Package used to interact with the data is <code>RSocrata</code>. However, the package is not consistent or doesn’t work at all often. Therefore, I’ll use python’s <code>sodapy</code> to interact with the API.</p>
-<p>Alternative to using the API, we could also download the dataset directly from FCC website using the URLs. As API interaction did not work properly at the time of writing this, we will retreive data directly from the URL.</p>
+<p>I will here retrieve FCC 477 broadband data from 2016 to 2019. FCC publishes fixed broadband deployment data every 6 months. Here I will get data from <em>December 2016 to December 2019</em> from Area Tables API provided by the FCC. In order to interact with FCC broadband data directly through its API, one needs to register for the FCC data portal as well as personal API App Token. Instructions can be found <a href="https://dev.socrata.com/foundry/opendata.fcc.gov/whue-6pnt">here</a>. Package used to interact with the data is <code>RSocrata</code>.</p>
+<p>Alternative to using the API, we could also download the dataset directly from FCC website using the URLs. As API interaction did not work properly at the time of writing this, we will retrieve data directly from the URL.</p>
 <p>Using the raw data, We will generate:</p>
 <ul>
-<li><code>pct_bb_fcc_2019</code>: % of broadband availability at the speed of 25/3 per county</li>
-<li><code>pct_bb_fcc_50-5_2019</code>: % of broadband availability at the speed of 50/5 per county</li>
-<li><code>pct_bb_fcc_100-10_2019</code>: % of broadband availability at the speed of 100/10 per county</li>
-<li><code>pct_bb_fcc_250-25_2019</code>: % of broadband availability at the speed of 250/25 per county</li>
+<li><code>pct25_3_(month_yr)_fcc</code>: % of broadband availability at the speed of 25/3 per county</li>
+<li><code>pct100_10_(month_yr)_fcc</code>: % of broadband availability at the speed of 100/10 per county</li>
+<li><code>pct250_25_(month_yr)_fcc</code>: % of broadband availability at the speed of 250/25 per county</li>
+<li><code>pct1000_10_(month_yr)_fcc</code>: % of broadband availability at the speed of 1000/100 per county</li>
 </ul>
-<pre class="r"><code>#### Import FCC 477 Data of Three States from URL ####
+<pre class="r"><code>#### Import FCC 477 Data of Three States from Area Tables API ####
+## Queries for ME, KS, TX for each time point
+# Dec 2016
+fcc_AT_dec_2016 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/xv2f-wqqz.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# June 2017
+fcc_AT_jun_2017 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/yikn-7er3.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# Dec 2017
+fcc_AT_dec_2017 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/fnid-qg8r.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# Jun 2018
+fcc_AT_jun_2018 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/cekp-f8tj.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# Dec 2018
+fcc_AT_dec_2018 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/wucg-w9k9.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# Jun 2019
+fcc_AT_jun_2019 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/udcw-naqn.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
+# Dec 2019
+fcc_AT_dec_2019 &lt;- read.socrata(
+  &quot;https://opendata.fcc.gov/resource/ws2a-amik.json?$where=type = &#39;county&#39; AND (starts_with(id,&#39;20&#39;) OR starts_with(id,&#39;48&#39;) OR starts_with(id,&#39;23&#39;)) AND (speed = &#39;25&#39; OR speed = &#39;100&#39; OR speed = &#39;250&#39; OR speed = &#39;1000&#39;)&amp;$order=id&quot;,
+  app_token = token,
+  email = email,
+  password = password
+)
 
-#fcc477_Dec2019_raw &lt;- py$results_df
-#fcc477_Dec2019_txksme &lt;- fcc477_Dec2019_raw %&gt;% 
-#  filter(stateabbr == &quot;TX&quot; | stateabbr == &quot;KS&quot; | stateabbr == &quot;ME&quot;)
-
-## Write query for three states ME, KS, TX
+## Queries for downloading FCC staff county estimates
 # Create temporary file space to download the dataset
 temp &lt;- tempfile()
 temp2 &lt;- tempfile()
-# Download dataset for each state, unzip and import to data frame
-# Texas as of June 2019
-download.file(&quot;https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/TX-Fixed-Dec2019.zip&quot;, temp, method = &quot;curl&quot;)
-unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_tx &lt;- read.csv(file.path(temp2, &quot;TX-Fixed-Dec2019-v1.csv&quot;), header = T)
-# Kansas as of June 2019
-download.file(&quot;https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/KS-Fixed-Dec2019.zip&quot;, temp, method = &quot;curl&quot;)
-unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_ks &lt;- read.csv(file.path(temp2, &quot;KS-Fixed-Dec2019-v1.csv&quot;), header = T)
-# Maine as of June 2019
-download.file(&quot;https://transition.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/ME-Fixed-Dec2019.zip&quot;, temp, method = &quot;curl&quot;)
-unzip(zipfile = temp, exdir = temp2)
-fcc477_2019_me &lt;- read.csv(file.path(temp2, &quot;ME-Fixed-Dec2019-v1.csv&quot;), header = T)
-
-# Bind into one
-fcc477_Jun2019_txksme &lt;- rbind(fcc477_2019_tx, fcc477_2019_ks, fcc477_2019_me)
-
 ## Import FCC Staff&#39;s block estimates ##
 ## The dataset provides FCC&#39;s estimates of population, households, and housing units per census block ##
 ## The links are available at https://www.fcc.gov/reports-research/data/staff-block-estimates ##
-download.file(&quot;https://www.fcc.gov/file/17838/download&quot;, temp)
+download.file(&quot;https://www.fcc.gov/file/19314/download&quot;, temp)  # 2019 Estimates
 unzip(zipfile = temp, exdir = temp2)
-fcc_staff_est_us2018 &lt;- read.csv(file.path(temp2, &quot;us2018.csv&quot;), header = T)
-
-fcc_staff_est_county2018 &lt;- read.csv(&quot;https://www.fcc.gov/file/17821/download&quot;, header = T)
+fcc_staff_est_us2019 &lt;- read.csv(file.path(temp2, &quot;us2019.csv&quot;), header = T)
 unlink(temp)
 unlink(temp2)
 rm(temp)
 rm(temp2)
 
 #### Clean Dataset ####
-fcc477_Jun2019_txksme &lt;- fcc477_Jun2019_txksme %&gt;% 
-  mutate(BlockCode = as.character(BlockCode),
-         TechCode = as.character(TechCode),
-         Consumer = as.character(Consumer)) %&gt;% 
-  select(Provider_Id, ProviderName, StateAbbr, BlockCode, TechCode, Consumer, MaxAdDown, MaxAdUp) %&gt;% 
-  mutate(county_fips = str_sub(BlockCode, 1, 5)) %&gt;% 
-  filter(TechCode != c(&quot;60&quot;))
-
 ## Staff Estimates for US Census Block Level ##
-fcc_staff_est_us2018 &lt;- fcc_staff_est_us2018 %&gt;% 
+## Aggregate into county level estimates
+fcc_staff_est_us2019 &lt;- fcc_staff_est_us2019 %&gt;% 
   mutate(block_fips = as.character(block_fips),
          county_fips = str_sub(block_fips, 1, 5)) %&gt;% 
-  select(stateabbr, county_fips, block_fips, ends_with(&quot;2018&quot;))
-
-## County Level Staff Estimates ##
-fcc_staff_est_county2018 &lt;- fcc_staff_est_county2018 %&gt;% 
-  select(Id, Id2, Geography, ends_with(&quot;2018&quot;)) %&gt;% 
-  rename(hu2018 = `Housing.Unit.Estimate..as.of.July.1....2018`,
-         pop2018 = `Population.Estimate..as.of.July.1....2018`)
+  select(stateabbr, county_fips, block_fips, starts_with(&quot;pop&quot;)) %&gt;% 
+  group_by(county_fips) %&gt;% 
+  summarise_at(., vars(starts_with(&quot;pop&quot;)), sum)
 
 #### Calculating the Broadband Availability ####
 ## General process:
-## 1. Code blocks based on presence of broadband service at 25/3 Mbps level
-## 2. If the block has 25/3 Mbps service the block is considered to have broadband availability
-## 3. Aggregate at the county level
-## 4. Merge with staff estimates and calculate percentages
+## 1. Filter by tech code in order to eliminate satellite technology
+## 2. Based on speed categories, sum up population of the counties that have at least one provider
+##    providing broadband at the speed category
+## 3. Merge with the staff estimate total county population for each year
+## 4. Calculate percentages
 
-### Data as of June 2019 ###
-# Step 1 Code blocks based on persence of broadband service (25/3)
-fcc477_Jun2019_txksme &lt;- fcc477_Jun2019_txksme %&gt;% 
-  mutate(broadband_f = as.factor(ifelse(MaxAdDown &gt;= 25 &amp; MaxAdUp &gt;= 3, 1, 0)),
-         bb_50_5_f = as.factor(ifelse(MaxAdDown &gt;= 50 &amp; MaxAdUp &gt;= 5, 1, 0)),
-         bb_100_10_f = as.factor(ifelse(MaxAdDown &gt;= 100 &amp; MaxAdUp &gt;= 10, 1, 0)),
-         bb_250_25_f = as.factor(ifelse(MaxAdDown &gt;= 250 &amp; MaxAdUp &gt;= 25, 1, 0)))
-# Join the staff estimates and filter only consumer services
-fcc477_Jun2019_txksme &lt;- fcc477_Jun2019_txksme %&gt;% 
-  left_join(., fcc_staff_est_us2018, by = c(&quot;BlockCode&quot; = &quot;block_fips&quot;)) %&gt;% 
-  filter(Consumer == 1)
+dflst &lt;- list(dec_2016 = fcc_AT_dec_2016,
+              jun_2017 = fcc_AT_jun_2017,
+              dec_2017 = fcc_AT_dec_2017,
+              jun_2018 = fcc_AT_jun_2018,
+              dec_2018 = fcc_AT_dec_2018,
+              jun_2019 = fcc_AT_jun_2019,
+              dec_2019 = fcc_AT_dec_2019)
 
-# Aggregate at the census block level
-# Summing the broadband factor variable would let us know if there is a census block with broadband
-# availability or not (if there are, the sum would be greater than 0, if there is non, sum would be 0)
-fcc477_txksme_block_1 &lt;- fcc477_Jun2019_txksme %&gt;% 
-  filter(broadband_f == &quot;1&quot;) %&gt;% 
-  distinct(BlockCode, .keep_all = T)
-fcc477_txksme_block_2 &lt;- fcc477_Jun2019_txksme %&gt;% 
-  filter(bb_50_5_f == &quot;1&quot;) %&gt;% 
-  distinct(BlockCode, .keep_all = T)
-fcc477_txksme_block_3 &lt;- fcc477_Jun2019_txksme %&gt;% 
-  filter(bb_100_10_f == &quot;1&quot;) %&gt;% 
-  distinct(BlockCode, .keep_all = T)
-fcc477_txksme_block_4 &lt;- fcc477_Jun2019_txksme %&gt;% 
-  filter(bb_250_25_f == &quot;1&quot;) %&gt;% 
-  distinct(BlockCode, .keep_all = T)
+# Function to clean and calculate all the variables for retrieved datasets
 
-# Aggregate at the county level and merge with FCC staff estimates
-fcc477_txksme_county_1 &lt;- fcc477_txksme_block_1 %&gt;% 
-  group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_2 &lt;- fcc477_txksme_block_2 %&gt;% 
-  group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_3 &lt;- fcc477_txksme_block_3 %&gt;% 
-  group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fcc477_txksme_county_4 &lt;- fcc477_txksme_block_4 %&gt;% 
-  group_by(county_fips.x) %&gt;% summarise(pop_bb_county2018 = sum(pop2018)) %&gt;% 
-  left_join(., fcc_staff_est_county2018, by = c(&quot;county_fips.x&quot; = &quot;Id2&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>#### Calculating FCC Deployment Percentages ####
-## 477 Data as of June 2019 &amp; Staff Estimates as of 2018 ##
-# Calculate broadband percentage by dividing census block population with broadband by total county
-# population
-fcc477_txksme_county_1 &lt;- fcc477_txksme_county_1 %&gt;% 
-  mutate(pct_bb_fcc_2019 = pop_bb_county2018 / pop2018)
-fcc477_txksme_county_2 &lt;- fcc477_txksme_county_2 %&gt;% 
-  mutate(pct_bb_fcc_50_5_2019 = pop_bb_county2018 / pop2018)
-fcc477_txksme_county_3 &lt;- fcc477_txksme_county_3 %&gt;% 
-  mutate(pct_bb_fcc_100_10_2019 = pop_bb_county2018 / pop2018)
-fcc477_txksme_county_4 &lt;- fcc477_txksme_county_4 %&gt;% 
-  mutate(pct_bb_fcc_250_25_2019 = pop_bb_county2018 / pop2018)
+getFCCpct &lt;- function(dflst) {
+  dfs &lt;- vector(&quot;list&quot;, length(dflst))
+  for (i in seq_along(dflst)) {
+    if (gsub(&quot;\\_.*&quot;,&quot;&quot;,names(dflst[i])) == &quot;jun&quot;) {
+      staff_est &lt;- fcc_staff_est_us2019 %&gt;% select(., county_fips, ends_with(as.character(as.numeric(gsub(&quot;[^[:digit:]]&quot;,&quot;&quot;, names(dflst)[i]))-1)))
+    } else {staff_est &lt;- fcc_staff_est_us2019 %&gt;% select(., county_fips, ends_with(gsub(&quot;[^[:digit:]]&quot;, &quot;&quot;, names(dflst)[i])))}
+    
+    dfs[[i]] &lt;- dflst[[i]] %&gt;% 
+      filter(tech == &quot;acfow&quot;) %&gt;% mutate_at(vars(starts_with(&quot;has_&quot;)), as.numeric) %&gt;% 
+      mutate(pop25_3 = ifelse(speed == &quot;25&quot; &amp; (has_1 &gt; 0 | has_2 &gt; 0 | has_3more &gt; 0), rowSums(select(., starts_with(&quot;has_&quot;), -has_0)), 0),
+             pop100_10 = ifelse(speed == &quot;100&quot; &amp; (has_1 &gt; 0 | has_2 &gt; 0 | has_3more &gt; 0), rowSums(select(., starts_with(&quot;has_&quot;), -has_0)), 0),
+             pop250_25 = ifelse(speed == &quot;250&quot; &amp; (has_1 &gt; 0 | has_2 &gt; 0 | has_3more &gt; 0), rowSums(select(., starts_with(&quot;has_&quot;), -has_0)), 0),
+             pop1000_100 = ifelse(speed == &quot;1000&quot; &amp; (has_1 &gt; 0 | has_2 &gt; 0 | has_3more &gt; 0), rowSums(select(., starts_with(&quot;has_&quot;), -has_0)), 0)) %&gt;% 
+      group_by(id) %&gt;% summarise(pop25_3 = sum(pop25_3),
+                                 pop100_10 = sum(pop100_10),
+                                 pop250_25 = sum(pop250_25),
+                                 pop1000_100 = sum(pop1000_100),
+                                 mth_yr = names(dflst)[i]) %&gt;% 
+      left_join(., staff_est, by = c(&quot;id&quot; = &quot;county_fips&quot;)) %&gt;%
+      mutate(pct25_3 = (pop25_3/select(., starts_with(&quot;pop20&quot;)))[,1],
+             pct100_10 = (pop100_10/select(., starts_with(&quot;pop20&quot;)))[,1],
+             pct250_25 = (pop250_25/select(., starts_with(&quot;pop20&quot;)))[,1],
+             pct1000_100 = (pop1000_100/select(., starts_with(&quot;pop20&quot;)))[,1])
+  }
+  df &lt;- bind_rows(dfs)
+  df &lt;- df %&gt;% 
+    pivot_wider(names_from = mth_yr,
+                names_glue = &quot;{.value}_{mth_yr}_fcc&quot;,
+                values_from = c(pct25_3, pct100_10, pct250_25, pct1000_100)) %&gt;% 
+    gather(var, val, pct25_3_dec_2016_fcc:pct1000_100_dec_2019_fcc, na.rm = T) %&gt;% 
+    group_by(id, var) %&gt;% 
+    distinct(val) %&gt;% 
+    spread(var, val) %&gt;% mutate_at(vars(-id), ~ifelse(.x &gt; 1, NA, .x))
+  
+  return(df)
+}
 
-fcc477_txksme_county &lt;- fcc477_txksme_county_1 %&gt;% 
-  left_join(., select(fcc477_txksme_county_2, county_fips.x, pct_bb_fcc_50_5_2019),
-            by = c(&quot;county_fips.x&quot;)) %&gt;% 
-  left_join(., select(fcc477_txksme_county_3, county_fips.x, pct_bb_fcc_100_10_2019),
-            by = c(&quot;county_fips.x&quot;)) %&gt;% 
-  left_join(., select(fcc477_txksme_county_4, county_fips.x, pct_bb_fcc_250_25_2019),
-            by = c(&quot;county_fips.x&quot;)) %&gt;% 
-  select(county_fips.x, pct_bb_fcc_2019, pct_bb_fcc_50_5_2019, pct_bb_fcc_100_10_2019, pct_bb_fcc_250_25_2019)
-
-fcc477_txksme_county[is.na(fcc477_txksme_county)] &lt;- 0</code></pre>
+fcc477_txksme_county &lt;- getFCCpct(dflst = dflst)</code></pre>
 <p>Now we will merge these datasets by county FIPS numbers altogether</p>
 <pre class="r"><code>## Create a V2 merged dataset ##
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged %&gt;%  
@@ -1302,7 +1228,7 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
   select(-c(starts_with(&quot;frac_under_&quot;), starts_with(&quot;frac_over&quot;), starts_with(&quot;samples.&quot;), starts_with(&quot;BB_samples&quot;), state, county.y, starts_with(&quot;DL&quot;), starts_with(&quot;UL&quot;), starts_with(&quot;dl_sample&quot;), starts_with(&quot;ul_sample&quot;)))
 
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
-  left_join(., fcc477_txksme_county, by = c(&quot;county_FIPS&quot; = &quot;county_fips.x&quot;))
+  left_join(., fcc477_txksme_county, by = c(&quot;county_FIPS&quot; = &quot;id&quot;))
 
 ## Modify nonemployer percentage - Nonemployer share over total employment
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
@@ -1322,8 +1248,7 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
                                     pctfinance_2018^2 + pctprofessional_2018^2 +
                                     pctedu_healthcare_social_2018^2 + pctother_occupation_2018^2 +
                                     pctpublic_admin_2018^2)) %&gt;% 
-  mutate(pct_bb_fcc_2019 = case_when(is.na(pct_bb_fcc_2019) ~ 0, TRUE ~ pct_bb_fcc_2019),
-         pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
+  mutate(pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
          pct_fixed_acs_2018 = case_when(is.na(pct_fixed_acs_2018) ~ 0, TRUE ~ pct_fixed_acs_2018),
          pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab),
          nonfarmprop_percapita = nonfarmproprietors_bea_2018 / population_2018,
@@ -1362,7 +1287,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
