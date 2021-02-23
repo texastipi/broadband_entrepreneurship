@@ -279,11 +279,11 @@ server <- function(input, output) {
     subtitle_text <- if (input$bbtype == "pct_bb_fcc_2019") {
       paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% broadband availability")
     } else if (input$bbtype == "pct_broadband_MS") {
-      paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% of population use broadband","at 25/3Mbps")
+      paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% of population use broadband"," at 25/3Mbps")
     } else if (input$bbtype == "pct_fixed_acs_2018") {
       paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% fixed broadband subsciprion rate")
     } else if (input$bbtype == "pct_broadband_mlab") {
-      paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% of population test for","broadband at 25/3Mbps")
+      paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% of population test for"," broadband at 25/3Mbps")
     }
     valueBox(pop_vals$sum_50_county, subtitle = subtitle_text, color = "yellow")
   })
