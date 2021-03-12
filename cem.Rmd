@@ -35,10 +35,402 @@ glimpse(d)
 
 CEM involves defining treatment, outcome, and covariate variables of interest. In our analysis, we are interested in the treatment effect of broadband-related variables on entrepreneurial outcome variables. The reason for conducting CEM is to address the imbalance in terms of various economic and demographic factors of different counties. Below are the treatment, outcome, and covariates. 
 
+
 #### Treatment
 
-For the listed treatment braodband variables, we split each variable into three categories (Low, Medium, High). Following [Gallardo, Whitacre, Kumar, & Upendram (2021)](https://ideas.repec.org/a/spr/anresc/v66y2021i1d10.1007_s00168-020-01015-0.html), we eliminate the 'Medium' category and consider 'High' as the treated group and 'Low' as untreated group. The variables converted to treatment factors are:
+For the listed treatment braodband variables, we split each variable into two categories (Low, High). [Gallardo, Whitacre, Kumar, & Upendram (2021)](https://ideas.repec.org/a/spr/anresc/v66y2021i1d10.1007_s00168-020-01015-0.html) used three categories and eliminated the 'Medium' category and consider 'High' as the treated group and 'Low' as untreated group. However, our sample is substantially smaller and we are more likely to end up with matched observations that are too small for any inferential statistical analysis considering the number of pre-treatment covariates. Therefore, we will convert the following variables to mean-based treatment categories:
 
-* 
+* `pct_25_3_dec_2019_fcc`: FCC 477 availability of broadband at 25/3Mbps per county (%, data as of Dec 2019)
+* `pct_100_10_dec_2019_fcc`: FCC 477 availability of broadband at 100/10Mbps per county (%, data as of Dec 2019)
+* `pct_250_25_dec_2019_fcc`: FCC 477 availability of broadband at 250/25Mbps per county (%, data as of Dec 2019)
+* `pct_1000_100_dec_2019_fcc`: FCC 477 availability of broadband at 1000/100Mbps per county (%, data as of Dec 2019)
+* `pct_fixed_acs_2018`: Fixed broadband service subscription according to ACS 5-year estimates (%, 2018)
+* `pct_bb_qos`: Compostive broadband quality of service (QoS) measure based on Microsoft's broadband through-put data (2019) and Mlab's broadband test data (2018-2019) (%)
 
+
+#### Outcome
+
+For the entrepreneurial outcome variables, we investigate several measures of entrepreneurship that were used in the traditional multiple regression analysis. In addition, we explore non-farm proprietorship per capita as a new possible representation of entrepreneurship in a county.
+
+* `pct_nonfarm_bea_2018`: Share of non-farm proprietors over total employment of a county (%, 2018; Source: BEA)
+* `vd_mean_20`: Average venture density (2020; Source: GoDaddy)
+* `havd_mean_20`: Average highly active venture density (2020; Source: GoDaddy)
+* `nonfarmprop_percapita`: Number of non-farm proprietors per capita (2018; Source: BEA)
+
+
+#### Covariates
+
+For covariates, we include several economic and demographic variables that could be closely related to the imbalance within the sample. To give an example, Gallardo et al. (2021) used natural log of population, % of people with bachelor's degree, unemployment rate, and industry diversity index. Our full regression models used industry characteristics, education, age, and rurality as control variables. Here, we will use log of population, % of people with bachelor's degree, unemployment rate, industry diversity index as covariates for matching. Rurality measures will be investigated in relation to the broadband treatments in the following  regression models.
+
+* Log of `population_2018`: Natural log of county population (2018)
+* `indstry_diversity`: Industry diversty index calculated based on methods described by Gallardo et al. (2021)
+* `pctbachelors_2018`: % of people with Bachelor's degree (2018; Source: ACS 5-year estimates)
+* `pct_unemployment_2018`: Unemployment rate (2018; Source: ACS 5-year estimates)
+
+#### Rurality measures as additional independent variable
+
+* `RUCC_2013`: Rural-Urban Continuum Codes developed by [USDA (2013)](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx)
+* `metro_f`: Metro/Non-Metro categories based on the RUCC documentation
+* `IRR2010`: Rurality index created by [Waldorf & Kim (2018)](https://purr.purdue.edu/publications/2960/1). Continuous measure ranging from 0 to 1
+
+
+### Data Preparation and Matching
+
+Let's first create a subset of data with only the variables we need and some basic identities.
+
+```{r subset data}
+## Subset data with the aforementioned variables, create NLpop_2018 (natural log of population)
+
+d2 <- d %>% select(county_FIPS, county.x,
+                   pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
+                   pct_fixed_acs_2018, pct_bb_qos,
+                   pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                   population_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, RUCC_2013, metro_f, IRR2010) %>% 
+  mutate(LNpop_2018 = log(population_2018))
+
+```
+
+Let's create treatment variables by recoding the original variables. First, we'll take a look at the variables distribution and create categories. For matching to work and be useful in the final analysis, we create categories based on average. 
+
+```{r create treatment variable}
+## Take a look at the broadband variable summaries
+
+d2 %>% select(pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
+             pct_fixed_acs_2018, pct_bb_qos) %>% summary()
+
+## Use first and third quartile for creating categories
+## For the 1000/100 Mbps measure, the 1st quartile is 0. Therefore, we will use mean split as an alternative
+
+d2 <- d2 %>% 
+  mutate(BB_25_3_high = case_when(pct25_3_dec_2019_fcc < mean(pct25_3_dec_2019_fcc, na.rm = T) ~ 0,
+                                  pct25_3_dec_2019_fcc > mean(pct25_3_dec_2019_fcc, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_),
+         BB_100_10_high = case_when(pct100_10_dec_2019_fcc < mean(pct100_10_dec_2019_fcc, na.rm = T) ~ 0,
+                                  pct100_10_dec_2019_fcc > mean(pct100_10_dec_2019_fcc, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_),
+         BB_250_25_high = case_when(pct250_25_dec_2019_fcc < mean(pct250_25_dec_2019_fcc, na.rm = T) ~ 0,
+                                  pct250_25_dec_2019_fcc > mean(pct250_25_dec_2019_fcc, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_),
+         BB_1000_100_high = case_when(pct1000_100_dec_2019_fcc < mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 0,
+                                  pct1000_100_dec_2019_fcc > mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_),
+         BB_adoption_high = case_when(pct_fixed_acs_2018 < mean(pct_fixed_acs_2018, na.rm = T) ~ 0,
+                                  pct_fixed_acs_2018 > mean(pct_fixed_acs_2018, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_),
+         BB_qos_high = case_when(pct_bb_qos < mean(pct_bb_qos, na.rm = T) ~ 0,
+                                  pct_bb_qos > mean(pct_bb_qos, na.rm = T) ~ 1,
+                                  TRUE ~ NA_real_))
+
+str(d2)
+
+```
+
+We'll now use `cem` package to match the sample to treatment based on the covariates we mentioned above.
+
+Note that the package does not allow `NA`s in the treatment variable. Therefore, we have to create separate datasets for each treatment variable of interest.
+
+Also, our sample size after omiting `NA`s will become substantially small. Especially as we are using 4 pre-treatment covariates for matching. This could be problematic, making the following regression analyses less effective and meaningful. Therefore, we will apply user choiced coarsening to the covariates. This will relax the categories for matching. Specifically, we will set custom cut points for each covariate by retrieving break points for 3 bins in the total range of each variable.
+
+```{r CEM matching}
+## Inspect how much observations are there in treated and control groups
+table(d2$BB_25_3_high)
+table(d2$BB_100_10_high)
+table(d2$BB_250_25_high)
+table(d2$BB_1000_100_high)
+table(d2$BB_adoption_high)
+table(d2$BB_qos_high)
+
+## Set cut points for each covariate
+popcut <- hist(d2$LNpop_2018, br=seq(min(d2$LNpop_2018, na.rm = T), max(d2$LNpop_2018, na.rm = T), length.out = 4), plot = F)$breaks
+indstrycut <- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 4), plot = F)$breaks
+educut <- hist(d2$pctbachelors_2018, br=seq(min(d2$pctbachelors_2018), max(d2$pctbachelors_2018), length.out = 4), plot = F)$breaks
+unempcut <- hist(d2$pct_unemployment_2018, br=seq(min(d2$pct_unemployment_2018), max(d2$pct_unemployment_2018), length.out = 4), plot = F)$breaks
+
+mycp <- list(LNpop_2018 = popcut, indstry_diversity = indstrycut, pctbachelors_2018 = educut, pct_unemployment_2018 = unempcut)
+
+## List of covariates
+vars <- c("LNpop_2018", "indstry_diversity", "pctbachelors_2018", "pct_unemployment_2018")
+droplst <- c("pct_nonfarm_bea_2018", "vd_mean_20", "havd_mean_20", "nonfarmprop_percapita", "RUCC_2013", "metro_f", "IRR2010")
+
+#### Treatment: BB_25_3_high ####
+
+d25_3 <- d2 %>% select(BB_25_3_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+d25_3 <- data.frame(na.omit(d25_3))
+
+## Overall imbalance check
+
+imbalance(group = d25_3$BB_25_3_high, data = d25_3[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_25_3 <- cem(treatment = "BB_25_3_high", data = d25_3,
+                      drop = droplst,
+                      cutpoints = mycp, keep.all = T)
+
+match_fcc_25_3
+
+#### Treatment: BB_100_10_high ####
+
+d100_10 <- d2 %>% select(BB_100_10_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+d100_10 <- data.frame(na.omit(d100_10))
+
+## Overall imbalance check
+
+imbalance(group = d100_10$BB_100_10_high, data = d100_10[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_100_10 <- cem(treatment = "BB_100_10_high", data = d100_10,
+                        drop = droplst,
+                        cutpoints = mycp, keep.all = T)
+
+match_fcc_100_10
+
+#### Treatment: BB_250_25_high ####
+
+d250_25 <- d2 %>% select(BB_250_25_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+d250_25 <- data.frame(na.omit(d250_25))
+
+## Overall imbalance check
+
+imbalance(group = d250_25$BB_250_25_high, data = d250_25[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_250_25 <- cem(treatment = "BB_250_25_high", data = d250_25,
+                        drop = droplst,
+                        cutpoints = mycp, keep.all = T)
+
+match_fcc_250_25
+
+#### Treatment: BB_1000_100_high ####
+
+d1000_100 <- d2 %>% select(BB_1000_100_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+d1000_100 <- data.frame(na.omit(d1000_100))
+
+## Overall imbalance check
+
+imbalance(group = d1000_100$BB_1000_100_high, data = d1000_100[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_1000_100 <- cem(treatment = "BB_1000_100_high", data = d1000_100,
+                        drop = droplst,
+                        cutpoints = mycp, keep.all = T)
+
+match_fcc_1000_100
+
+#### Treatment: BB_adoption_high ####
+
+dadoption <- d2 %>% select(BB_adoption_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+dadoption <- data.frame(na.omit(dadoption))
+
+## Overall imbalance check
+
+imbalance(group = dadoption$BB_adoption_high, data = dadoption[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_adoption <- cem(treatment = "BB_adoption_high", data = dadoption,
+                        drop = droplst,
+                        cutpoints = mycp, keep.all = T)
+
+match_fcc_adoption
+
+#### Treatment: BB_qos_high ####
+
+dqos <- d2 %>% select(BB_qos_high,
+                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
+                    RUCC_2013, metro_f, IRR2010)
+dqos <- data.frame(na.omit(dqos))
+
+## Overall imbalance check
+
+imbalance(group = dqos$BB_qos_high, data = dqos[vars])
+
+## CEM match using user-choice coarsening
+
+match_fcc_qos <- cem(treatment = "BB_qos_high", data = dqos,
+                        drop = droplst,
+                        cutpoints = mycp, keep.all = T)
+
+match_fcc_qos
+
+```
+
+### Causal Inference on the Matched Data
+
+In this section, I will use linear model to estimate the sample average treatment effect on the treated (SATT) using weights produced by CEM stored in the matched dataset. Each subsection is laid out based on different broadband measures (i.e., treatment measures). There will be four models fitted for each treatment broadband variable. The model will estimate broadband treatment effect on the dependent variable. Additionally, the models estimate main effect of metro/non-metro classification and interaction effect as well. 
+
+#### Broadband 25/3Mbps on Entrepreneurship measures
+
+```{r causal inference analysis1}
+
+#### Treatment: BB_25_3_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_25_3_nonfarm <- att(match_fcc_25_3, pct_nonfarm_bea_2018 ~ BB_25_3_high * metro_f, data = d25_3)
+summary(mod_25_3_nonfarm)
+
+#### Treatment: BB_25_3_high & Outcome: vd_mean_20 ####
+
+mod_25_3_vd <- att(match_fcc_25_3, vd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+summary(mod_25_3_vd)
+
+#### Treatment: BB_25_3_high & Outcome: havd_mean_20 ####
+
+mod_25_3_havd <- att(match_fcc_25_3, havd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+summary(mod_25_3_havd)
+
+#### Treatment: BB_25_3_high & Outcome: nonfarmprop_percapita ####
+
+mod_25_3_nonfarmpc <- att(match_fcc_25_3, nonfarmprop_percapita ~ BB_25_3_high * metro_f, data = d25_3)
+summary(mod_25_3_nonfarmpc)
+
+```
+
+#### Broadband 100/10Mbps on Entrepreneurship measures
+
+```{r causal inference analysis2}
+
+#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_100_10_nonfarm <- att(match_fcc_100_10, pct_nonfarm_bea_2018 ~ BB_100_10_high * metro_f, data = d100_10)
+summary(mod_100_10_nonfarm)
+
+#### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
+
+mod_100_10_vd <- att(match_fcc_100_10, vd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+summary(mod_100_10_vd)
+
+#### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
+
+mod_100_10_havd <- att(match_fcc_100_10, havd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+summary(mod_100_10_havd)
+
+#### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
+
+mod_100_10_nonfarmpc <- att(match_fcc_100_10, nonfarmprop_percapita ~ BB_100_10_high * metro_f, data = d100_10)
+summary(mod_100_10_nonfarmpc)
+
+```
+
+#### Broadband 250_25Mbps on Entrepreneurship measures
+
+```{r causal inference analysis3}
+
+#### Treatment: BB_250_25_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_250_25_nonfarm <- att(match_fcc_250_25, pct_nonfarm_bea_2018 ~ BB_250_25_high * metro_f, data = d250_25)
+summary(mod_250_25_nonfarm)
+
+#### Treatment: BB_250_25_high & Outcome: vd_mean_20 ####
+
+mod_250_25_vd <- att(match_fcc_250_25, vd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+summary(mod_250_25_vd)
+
+#### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
+
+mod_250_25_havd <- att(match_fcc_250_25, havd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+summary(mod_250_25_havd)
+
+#### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
+
+mod_250_25_nonfarmpc <- att(match_fcc_250_25, nonfarmprop_percapita ~ BB_250_25_high * metro_f, data = d250_25)
+summary(mod_250_25_nonfarmpc)
+
+```
+
+#### Broadband 1000_100Mbps on Entrepreneurship measures
+
+```{r causal inference analysis4}
+
+#### Treatment: BB_1000_100_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_1000_100_nonfarm <- att(match_fcc_1000_100, pct_nonfarm_bea_2018 ~ BB_1000_100_high * metro_f, data = d1000_100)
+summary(mod_1000_100_nonfarm)
+
+#### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
+
+mod_1000_100_vd <- att(match_fcc_1000_100, vd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+summary(mod_1000_100_vd)
+
+#### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
+
+mod_1000_100_havd <- att(match_fcc_1000_100, havd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+summary(mod_1000_100_havd)
+
+#### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
+
+mod_1000_100_nonfarmpc <- att(match_fcc_1000_100, nonfarmprop_percapita ~ BB_1000_100_high * metro_f, data = d1000_100)
+summary(mod_1000_100_nonfarmpc)
+
+```
+
+#### Broadband Adoption on Entrepreneurship measures
+
+```{r causal inference analysis5}
+
+#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_adoption_nonfarm <- att(match_fcc_adoption, pct_nonfarm_bea_2018 ~ BB_adoption_high * metro_f, data = dadoption)
+summary(mod_adoption_nonfarm)
+
+#### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
+
+mod_adoption_vd <- att(match_fcc_adoption, vd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+summary(mod_adoption_vd)
+
+#### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
+
+mod_adoption_havd <- att(match_fcc_adoption, havd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+summary(mod_adoption_havd)
+
+#### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
+
+mod_adoption_nonfarmpc <- att(match_fcc_adoption, nonfarmprop_percapita ~ BB_adoption_high * metro_f, data = dadoption)
+summary(mod_adoption_nonfarmpc)
+
+```
+
+#### Broadband Quality of Service on Entrepreneurship measures
+
+```{r causal inference analysis6}
+
+#### Treatment: BB_qos_high & Outcome: pct_nonfarm_bea_2018 ####
+
+mod_qos_nonfarm <- att(match_fcc_qos, pct_nonfarm_bea_2018 ~ BB_qos_high * metro_f, data = dqos)
+summary(mod_qos_nonfarm)
+
+#### Treatment: BB_qos_high & Outcome: vd_mean_20 ####
+
+mod_qos_vd <- att(match_fcc_qos, vd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+summary(mod_qos_vd)
+
+#### Treatment: BB_qos_high & Outcome: havd_mean_20 ####
+
+mod_qos_havd <- att(match_fcc_qos, havd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+summary(mod_qos_havd)
+
+#### Treatment: BB_qos_high & Outcome: nonfarmprop_percapita ####
+
+mod_qos_nonfarmpc <- att(match_fcc_qos, nonfarmprop_percapita ~ BB_qos_high * metro_f, data = dqos)
+summary(mod_qos_nonfarmpc)
+
+```
 

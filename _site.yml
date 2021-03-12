@@ -23,6 +23,8 @@ navbar:
         href: regression-analyses.html
       - text: "Metro/Non-Metro Comparison"
         href: metro_non-metro-comparison.html
+      - text: "CEM Matching Analysis"
+        href: cem.html
 output:
   html_document:
     theme: cosmo

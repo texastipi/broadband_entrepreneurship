@@ -57,7 +57,7 @@ First, let's take another look at some of the key variables.
 
 * `pct_bb_fcc_2019`: FCC broadband availability in % (June 2019)
 * `pct_broadband_MS`: MS broadband availability in % (2019)
-* `pct_fixed_acs_2018`: ACS broadband subscription in $ (2018)
+* `pct_fixed_acs_2018`: ACS broadband subscription in % (2018)
 * `pct_broadband_mlab`: M-Lab broadband measure (2019)
 
 ### Broadband's Effect on Entrepreneurial Outcome
