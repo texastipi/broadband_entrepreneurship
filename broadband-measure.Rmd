@@ -33,16 +33,13 @@ allstate_import <- read.csv("https://raw.githubusercontent.com/texastipi/broadba
 
 ## Texas dataset
 tx_bb_entrepreneur_merged_v2 <- allstate_import %>% 
-  filter(ST == "TX") %>% 
-  mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100)
+  filter(ST == "TX")
 ## Maine dataset
 me_bb_entrepreneur_merged_v2 <- allstate_import %>% 
-  filter(ST == "ME") %>% 
-  mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100)
+  filter(ST == "ME")
 ## Kansas dataset
 ks_bb_entrepreneur_merged_v2 <- allstate_import %>% 
-  filter(ST == "KS") %>% 
-  mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100)
+  filter(ST == "KS")
 
 #### Set up spatial dataframe ####
 ## Texas dataset
@@ -66,7 +63,7 @@ ks_bb_entrepreneur_merged_v3 <- sp::merge(ks_county, ks_bb_entrepreneur_merged_v
 
 ```{r Descriptive Statistics Texas, results='asis'}
 #### Descriptive Statistics ####
-stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
+stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct25_3_dec_2019_fcc","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
           covariate.labels = c("FCC Broadband Availability (25/3 Mbps)","Microsoft Broadband (25/3)","ACS Fixed Subscription Level","M-Lab Broadband Test (25/3)"), type = "html",
           align = TRUE, font.size = "Huge", column.sep.width = "2pt")
 ```
@@ -78,7 +75,7 @@ stargazer(as.data.frame(tx_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_b
 
 ```{r Descriptive Statistics Maine, results='asis'}
 #### Descriptive Statistics ####
-stargazer(as.data.frame(me_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
+stargazer(as.data.frame(me_bb_entrepreneur_merged_v2)[c("pct25_3_dec_2019_fcc","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
           covariate.labels = c("FCC Broadband Availability (25/3 Mbps)","Microsoft Broadband (25/3)","ACS Fixed Subscription Level","M-Lab Broadband Test (25/3)"), type = "html",
           align = TRUE, font.size = "Huge", column.sep.width = "2pt")
 ```
@@ -90,7 +87,7 @@ stargazer(as.data.frame(me_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_b
 
 ```{r Descriptive Statistics Kansas, results='asis'}
 #### Descriptive Statistics ####
-stargazer(as.data.frame(ks_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
+stargazer(as.data.frame(ks_bb_entrepreneur_merged_v2)[c("pct25_3_dec_2019_fcc","pct_broadband_MS","pct_fixed_acs_2018","pct_broadband_mlab")],
           covariate.labels = c("FCC Broadband Availability (25/3 Mbps)","Microsoft Broadband (25/3)","ACS Fixed Subscription Level","M-Lab Broadband Test (25/3)"), type = "html",
           align = TRUE, font.size = "Huge", column.sep.width = "2pt")
 ```
@@ -105,7 +102,7 @@ stargazer(as.data.frame(ks_bb_entrepreneur_merged_v2)[c("pct_bb_fcc_2019","pct_b
 
 ```{r Distributions of Broadband Measures Texas, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019)) + 
+  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
@@ -141,7 +138,7 @@ grid.arrange(
 
 ```{r Distributions of Broadband Measures Maine, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019)) + 
+  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
@@ -177,7 +174,7 @@ grid.arrange(
 
 ```{r Distributions of Broadband Measures Kansas, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019)) + 
+  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc)) + 
     geom_histogram() + theme_minimal() + 
     theme(axis.text = element_text(size = 11),
           axis.title = element_text(size = 12, face = "bold")) + 
@@ -218,7 +215,7 @@ grid.arrange(
 
 ```{r Correlations b/w Broadband Measures Texas, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_MS)) + 
+  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_MS)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() + 
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -226,7 +223,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_fixed_acs_2018)) +
+  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_fixed_acs_2018)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -234,7 +231,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_mlab)) +
+  ggplot(tx_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_mlab)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -276,7 +273,7 @@ grid.arrange(
 
 ```{r Correlations b/w Broadband Measures Maine, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_MS)) + 
+  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_MS)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() + 
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -284,7 +281,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_fixed_acs_2018)) +
+  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_fixed_acs_2018)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -292,7 +289,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_mlab)) +
+  ggplot(me_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_mlab)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -334,7 +331,7 @@ grid.arrange(
 
 ```{r Correlations b/w Broadband Measures Kansas, echo=FALSE, message=FALSE, fig.retina=2, fig.dim=c(10,7)}
 grid.arrange(
-  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_MS)) + 
+  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_MS)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() + 
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -342,7 +339,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_fixed_acs_2018)) +
+  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_fixed_acs_2018)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -350,7 +347,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct_bb_fcc_2019, y = pct_broadband_mlab)) +
+  ggplot(ks_bb_entrepreneur_merged_v2, aes(x = pct25_3_dec_2019_fcc, y = pct_broadband_mlab)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -397,25 +394,25 @@ grid.arrange(
 
 ```{r Map Setup, echo=FALSE, results='hide'}
 ## Create continuous color palette function based on FCC broadband range (0~1) ##
-pal <- colorNumeric(palette = "YlOrRd", domain = tx_bb_entrepreneur_merged_v2$pct_bb_fcc_2019)
+pal <- colorNumeric(palette = "YlOrRd", domain = tx_bb_entrepreneur_merged_v2$pct25_3_dec_2019_fcc)
 ## Set a popup template ##
 # Texas
 popup_tx <- paste0("<strong>", tx_bb_entrepreneur_merged_v3$county,
-                   "</strong><br />FCC: ", tx_bb_entrepreneur_merged_v3$pct_bb_fcc_2019*100, "%",
+                   "</strong><br />FCC: ", tx_bb_entrepreneur_merged_v3$pct25_3_dec_2019_fcc*100, "%",
                    "<br />MS: ", tx_bb_entrepreneur_merged_v3$pct_broadband_MS*100, "%",
                    "<br />ACS: ", tx_bb_entrepreneur_merged_v3$pct_fixed_acs_2018*100, "%",
                    "<br />M-Lab: ", round(tx_bb_entrepreneur_merged_v3$pct_broadband_mlab*100,
                                           digits = 1), "%")
 # Maine
 popup_me <- paste0("<strong>", me_bb_entrepreneur_merged_v3$county,
-                   "</strong><br />FCC: ", me_bb_entrepreneur_merged_v3$pct_bb_fcc_2019*100, "%",
+                   "</strong><br />FCC: ", me_bb_entrepreneur_merged_v3$pct25_3_dec_2019_fcc*100, "%",
                    "<br />MS: ", me_bb_entrepreneur_merged_v3$pct_broadband_MS*100, "%",
                    "<br />ACS: ", me_bb_entrepreneur_merged_v3$pct_fixed_acs_2018*100, "%",
                    "<br />M-Lab: ", round(me_bb_entrepreneur_merged_v3$pct_broadband_mlab*100,
                                           digits = 1), "%")
 # Kansas
 popup_ks <- paste0("<strong>", ks_bb_entrepreneur_merged_v3$county,
-                   "</strong><br />FCC: ", ks_bb_entrepreneur_merged_v3$pct_bb_fcc_2019*100, "%",
+                   "</strong><br />FCC: ", ks_bb_entrepreneur_merged_v3$pct25_3_dec_2019_fcc*100, "%",
                    "<br />MS: ", ks_bb_entrepreneur_merged_v3$pct_broadband_MS*100, "%",
                    "<br />ACS: ", ks_bb_entrepreneur_merged_v3$pct_fixed_acs_2018*100, "%",
                    "<br />M-Lab: ", round(ks_bb_entrepreneur_merged_v3$pct_broadband_mlab*100,
@@ -441,10 +438,10 @@ map_ks <- leaflet(ks_bb_entrepreneur_merged_v3)
 ## FCC Broadband Map ##
 map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
-                                   color = ~pal(pct_bb_fcc_2019),
+                                   color = ~pal(pct25_3_dec_2019_fcc),
               popup = ~popup_tx) %>% 
-  addLegend("bottomright", pal = pal, values = ~pct_bb_fcc_2019,
-            title = "FCC Broadband (%)",
+  addLegend("bottomright", pal = pal, values = ~pct25_3_dec_2019_fcc,
+            title = "FCC Broadband<br>at 25/3Mbps (%)",
             labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
 
 ```
@@ -524,10 +521,10 @@ map %>% addTiles() %>% setView(lng = -100.000, lat = 31.000, zoom = 6) %>%
 ## FCC Broadband Map ##
 map_me %>% addTiles() %>% setView(lng = -68.972168, lat = 45.367584, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
-                                   color = ~pal(pct_bb_fcc_2019),
+                                   color = ~pal(pct25_3_dec_2019_fcc),
               popup = ~popup_tx) %>% 
-  addLegend("bottomright", pal = pal, values = ~pct_bb_fcc_2019,
-            title = "FCC Broadband (%)",
+  addLegend("bottomright", pal = pal, values = ~pct25_3_dec_2019_fcc,
+            title = "FCC Broadband<br>at 25/3Mbps (%)",
             labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
 
 ```
@@ -607,10 +604,10 @@ map_me %>% addTiles() %>% setView(lng = -68.972168, lat = 45.367584, zoom = 6) %
 ## FCC Broadband Map ##
 map_ks %>% addTiles() %>% setView(lng = -98.000000, lat = 38.500000, zoom = 6) %>% 
   addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
-                                   color = ~pal(pct_bb_fcc_2019),
+                                   color = ~pal(pct25_3_dec_2019_fcc),
               popup = ~popup_tx) %>% 
-  addLegend("bottomright", pal = pal, values = ~pct_bb_fcc_2019,
-            title = "FCC Broadband (%)",
+  addLegend("bottomright", pal = pal, values = ~pct25_3_dec_2019_fcc,
+            title = "FCC Broadband<br>at 25/3Mbps (%)",
             labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
 
 ```
