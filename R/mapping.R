@@ -28,14 +28,15 @@ w2 <- map_lgl(w1, function(x) {
 
 # Subset 
 kmsa2 <- ks[w2,]
-
+kmsa2 <- kmsa2 %>% 
+  st_union()
 # Plot
 ggplot() + 
   geom_sf(data = ks_bb_entrepreneur_merged_v3, aes(fill = pct25_3_dec_2019_fcc), lwd = 0) +
   scale_fill_gradientn(colours = brewer.pal(5, "YlOrRd"),
                        name = "FCC Broadband\n at 25/3 Mbps (%)",
                        label = scales::percent) +
-  geom_sf(data = kmsa2, fill = NA, color = "white") +
+  geom_sf(data = kmsa2, fill = alpha("grey50", 0.5), color = "white") +
   theme_minimal() +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_blank(),
@@ -104,6 +105,7 @@ ggsave("ks-ms-hist.png",
        plot = ks_ms_hist, width = 10, height = 6, units = "in", dpi = 600)
 
 #### ACS Any broadband ####
+library(censusapi)
 acs_ks_anybb <- getCensus(name = "acs/acs5/subject", vintage = 2019,
                           vars = "S2801_C02_014E",
                           region = "county:*",
@@ -122,9 +124,6 @@ ks_bb_entrepreneur_merged_v3 <- left_join(ks_bb_entrepreneur_merged_v3,
 
 glimpse(ks_bb_entrepreneur_merged_v3)
 
-ks_bb_entrepreneur_merged_v3 <- ks_bb_entrepreneur_merged_v3 %>% 
-  mutate(pct_anybroadband_acs_2019 = pct_anybroadband_acs_2018)
-
 ## Map Kansas ACS Any broadband
 
 ks_acs_map <- ggplot() + 
@@ -132,7 +131,7 @@ ks_acs_map <- ggplot() +
   scale_fill_gradientn(colours = brewer.pal(5, "YlOrRd"),
                        name = "ACS Household with\nAny Broadband Subscription (%)",
                        label = scales::percent) +
-  geom_sf(data = kmsa2, fill = NA, color = alpha("honeydew3", 0.8), lwd = 0.6) +
+  geom_sf(data = kmsa2, fill = alpha("honeydew3", 0.3), color = alpha("royalblue3", 1), lwd = 0.6) +
   theme_minimal() +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_blank(),
@@ -142,3 +141,60 @@ ks_acs_map <- ggplot() +
 
 ggsave("ks-acs-map.png",
        plot = ks_acs_map, width = 10, height = 6, units = "in", dpi = 600)
+
+#### Sole-Proprietorship map ####
+
+## % of nonfarm proprietorship
+ks_nonfarm_map <- ggplot() + 
+  geom_sf(data = ks_bb_entrepreneur_merged_v3, aes(fill = pct_nonfarm_bea_2018), lwd = 0.1) +
+  scale_fill_gradientn(colours = brewer.pal(5, "YlOrRd"),
+                       name = "Nonfarm Proprietorship (%)",
+                       label = scales::percent) +
+  labs(caption = "Source: Bureau of Economic Analysis (2018)") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank())
+
+ggsave("ks-nonfarm-map.png",
+       plot = ks_nonfarm_map, width = 10, height = 6, units = "in", dpi = 600)
+
+## Change in nonfarm proprietorship
+ggplot() + 
+  geom_sf(data = ks_bb_entrepreneur_merged_v3, aes(fill = pct_chg_bea_2012_2018), lwd = 0.1) +
+  scale_fill_gradientn(colours = brewer.pal(5, "YlOrRd"),
+                       name = "Change in Nonfarm\nProprietorship 2012-2018 (%)",
+                       label = scales::percent) +
+  labs(caption = "Source: Bureau of Economic Analysis (2012, 2018)") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank())
+
+## Average venture density 2019-2020
+
+ks_bb_entrepreneur_merged_v3 <- ks_bb_entrepreneur_merged_v3 %>% 
+  mutate(vd_mean = (vd_mean_19 + vd_mean_20)/2)
+
+ks_vd_map <- ggplot() + 
+  geom_sf(data = ks_bb_entrepreneur_merged_v3, aes(fill = vd_mean), lwd = 0.1) +
+  scale_fill_gradientn(colours = brewer.pal(5, "YlOrRd"),
+                       name = "Average Venture Density\n(per 100 people)") +
+  labs(caption = "Source: GoDaddy (2019-2020)") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank())
+
+ggsave("ks-vd-map.png",
+       plot = ks_vd_map, width = 10, height = 6, units = "in", dpi = 600)
+
+
+
+
