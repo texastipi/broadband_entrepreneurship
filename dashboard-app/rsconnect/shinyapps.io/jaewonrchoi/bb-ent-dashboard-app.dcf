@@ -5,8 +5,8 @@ account: jaewonrchoi
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3058843
-bundleId: 4185273
+bundleId: 4501672
 url: https://jaewonrchoi.shinyapps.io/bb-ent-dashboard-app/
-when: 1612538406.3198
+when: 1619034453.53077
 asMultiple: FALSE
 asStatic: FALSE

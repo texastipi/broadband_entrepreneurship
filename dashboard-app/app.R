@@ -25,8 +25,7 @@ fcc_staff_est_county2018 <- fcc_staff_est_county2018 %>%
   rename(hu2018 = `Housing.Unit.Estimate..as.of.July.1....2018`,
          pop2018 = `Population.Estimate..as.of.July.1....2018`)
 allstate_import <- allstate_import %>% 
-  mutate(pct_fixed_acs_2018 = pct_fixed_acs_2018/100,
-         county_FIPS = as.character(county_FIPS))
+  mutate(county_FIPS = as.character(county_FIPS))
 
 allstate_import <- left_join(allstate_import, fcc_staff_est_county2018, by = c("county_FIPS" = "Id2"))
 allstate_import_geo <- sp::merge(txksme_counties, allstate_import, by.x = "GEOID", by.y = "county_FIPS")
@@ -87,7 +86,7 @@ ui <- dashboardPage(
                            h3("Select Measure"),
                            fluidRow(
                              column(12, radioButtons(inputId = "bbtype", label = "Choose a Broadband Measure",
-                                                    choices = c("FCC" = "pct_bb_fcc_2019",
+                                                    choices = c("FCC" = "pct25_3_jun_2019_fcc",
                                                                 "Microsoft" = "pct_broadband_MS",
                                                                 "ACS" = "pct_fixed_acs_2018",
                                                                 "M-Lab" = "pct_broadband_mlab")))
@@ -159,7 +158,7 @@ ui <- dashboardPage(
                            ),
                            footer = tags$footer(tags$i(tags$sup("1"),"Source: County Business Dynamics (2018)"),br(),
                                                 tags$i(tags$sup("2"),"Source: Bureau of Economic Analysis (2018)"),br(),
-                                                tags$i(tags$sup("3"),"Source: GoDaddy; Density measures used are originally calculated by Mossberger, Tolber, & LaCombe (2020); Number represented here is an average of data points available throughout 2018 and 2019"),
+                                                tags$i(tags$sup("3"),"Source: GoDaddy; Density measures used are originally calculated by Mossberger, Tolber, & LaCombe (2020); Number represented here is an average of data points available in 2020"),
                                                 style = "font-size: 80%"),
                            tags$hr(),
                            h3("Select Measure"),
@@ -167,7 +166,7 @@ ui <- dashboardPage(
                              column(12, radioButtons(inputId = "entmeasure", label = "Choose a Entrepreneurship Measure",
                                                     choices = c("% of Business Establishments (less than 10 employees)" = "pct_10_est_cbp_2018",
                                                                 "% of Nonfarm Proprietors" = "pct_nonfarm_bea_2018",
-                                                                "Venture Density" = "venturedensity_mean")))
+                                                                "Venture Density" = "vd_mean_20")))
                            ))
               ),
               column(7, tabsetPanel(
@@ -231,7 +230,7 @@ server <- function(input, output) {
   
   # Reactive label for BB
   currentbb_label <- reactive({
-    if (req(input$bbtype) == "pct_bb_fcc_2019"){"FCC Broadband (June 2019)"}
+    if (req(input$bbtype) == "pct25_3_jun_2019_fcc"){"FCC Broadband (June 2019)"}
     else if (req(input$bbtype) == "pct_broadband_MS"){"Microsoft Broadband (2019)"}
     else if (req(input$bbtype) == "pct_fixed_acs_2018"){"ACS Broadband Subscription (2018)"}
     else if (req(input$bbtype) == "pct_broadband_mlab"){"M-Lab Broadband (Sep-Dec 2019)"}
@@ -240,15 +239,15 @@ server <- function(input, output) {
   currentent_label <- reactive({
     if (req(input$entmeasure) == "pct_10_est_cbp_2018"){"% of Establishments (<10 employee, 2018)"}
     else if (req(input$entmeasure) == "pct_nonfarm_bea_2018"){"% of Nonfarm Proprietors (2018)"}
-    else if (req(input$entmeasure) == "venturedensity_mean"){"Average Venture Density (2018-2019)"}
+    else if (req(input$entmeasure) == "vd_mean_20"){"Average Venture Density (2020)"}
   })
   
   # Reactive variables for text outputs
   pop_vals <- reactiveValues()
   observe({
     df <- allstate_import %>% filter(ST == req(input$state))
-    if (input$bbtype == "pct_bb_fcc_2019") {
-      df_50 <- df %>% filter(pct_bb_fcc_2019 <= 0.5)
+    if (input$bbtype == "pct25_3_jun_2019_fcc") {
+      df_50 <- df %>% filter(pct25_3_jun_2019_fcc <= 0.5)
       pop_vals$sum_50 <- df_50 %>% dplyr::summarise(sum_50 = sum(pop2018)) %>% pull(sum_50)
       pop_vals$sum_50_county <- df_50 %>% dplyr::summarise(sum_50_county = n()) %>% pull(sum_50_county)
       pop_vals$sum_pop <- df %>% dplyr::summarise(sum_pop = sum(pop2018)) %>% pull(sum_pop)
@@ -276,7 +275,7 @@ server <- function(input, output) {
   
   # Value boxes
   output$vbox_county <- renderValueBox({
-    subtitle_text <- if (input$bbtype == "pct_bb_fcc_2019") {
+    subtitle_text <- if (input$bbtype == "pct25_3_jun_2019_fcc") {
       paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% broadband availability")
     } else if (input$bbtype == "pct_broadband_MS") {
       paste0("Counties", " out of ", pop_vals$sum_county, " had", " less than 50% of population use broadband"," at 25/3Mbps")
@@ -296,7 +295,7 @@ server <- function(input, output) {
     } else if (input$state == "KS") {
       "Kansas"
     } 
-    subtitle_bb <- if (input$bbtype == "pct_bb_fcc_2019") {" population live in counties with less than 50% broadband availability"} 
+    subtitle_bb <- if (input$bbtype == "pct25_3_jun_2019_fcc") {" population live in counties with less than 50% broadband availability"} 
     else if (input$bbtype == "pct_broadband_MS") {" population live in counties where less than 50% of its population use broadband at 25/3Mbps"}
     else if (input$bbtype == "pct_fixed_acs_2018") {" population live in counties with less than 50% fixed broadband subscription rate"}
     else if (input$bbtype == "pct_broadband_mlab") {" population live in counties where less than 50% of its population tested for broadband at 25/3Mbps"}
@@ -305,7 +304,7 @@ server <- function(input, output) {
   })
   
   ## Keeping a subtitle draft here for later use if necessary
-  # if (input$bbtype == "pct_bb_fcc_2019") {
+  # if (input$bbtype == "pct25_3_jun_2019_fcc") {
   #   paste0("of ", subtitle_state, " population live in counties with less than 50% broadband availability")
   # } else if (input$bbtype == "pct_broadband_MS") {
   #   paste0("of ", subtitle_state, " population live in counties where less than half of its population used broadband at 25/3Mbps")
@@ -328,7 +327,7 @@ server <- function(input, output) {
     })
   
   output$hist_entrepreneurship <- renderPlotly({
-    if (input$entmeasure != "venturedensity_mean") {
+    if (input$entmeasure != "vd_mean_20") {
       ggplotly(ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
         geom_histogram(fill = "orangered3") + theme_minimal() + 
         theme(axis.text = element_text(face = "bold"),
@@ -336,7 +335,7 @@ server <- function(input, output) {
         xlab(currentent_label()) + ylab("Number of Counties") +
         scale_y_continuous(breaks = scales::breaks_pretty()) +
         scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty(), limits = c(0,1.1)))
-    } else if (input$entmeasure == "venturedensity_mean") {
+    } else if (input$entmeasure == "vd_mean_20") {
       ggplotly(ggplot(st_reactive(), aes_string(x = req(input$entmeasure))) + 
         geom_histogram(fill = "orangered3") + theme_minimal() + 
         theme(axis.text = element_text(face = "bold"),
@@ -404,12 +403,12 @@ server <- function(input, output) {
   # Broadband Observe
   observe({
     proxy <- leafletProxy("map", data = st_reactive())
-    if (input$bbtype == "pct_bb_fcc_2019") {
+    if (input$bbtype == "pct25_3_jun_2019_fcc") {
       proxy %>% clearControls() %>% 
         addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
-                          color = ~pal(pct_bb_fcc_2019)) %>% 
+                          color = ~pal(pct25_3_jun_2019_fcc)) %>% 
         setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
-        addLegend("bottomright", pal = pal, values = ~pct_bb_fcc_2019,
+        addLegend("bottomright", pal = pal, values = ~pct25_3_jun_2019_fcc,
                   title = "FCC Broadband (%)",
                   labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
     }
@@ -463,13 +462,13 @@ server <- function(input, output) {
                   title = "% of Nonfarm<br>Proprietors (2018)",
                   labFormat = labelFormat(suffix = "%", transform = function(x) 100*x), na.label = "N/A", opacity = 1)
     }
-    else if (input$entmeasure == "venturedensity_mean") {
+    else if (input$entmeasure == "vd_mean_20") {
       proxy %>% clearControls() %>% 
         addPolygons(stroke = F, smoothFactor = 0.2, fillOpacity = 0.9,
-                    color = ~pal2(venturedensity_mean)) %>% 
+                    color = ~pal2(vd_mean_20)) %>% 
         setView(lng = lonlat()[,"lng"], lat = lonlat()[,"lat"], zoom = 6) %>% 
-        addLegend("bottomright", pal = pal2, values = ~venturedensity_mean,
-                  title = "Venture Density<br>(2018-2019)", opacity = 1)
+        addLegend("bottomright", pal = pal2, values = ~vd_mean_20,
+                  title = "Venture Density<br>(2020)", opacity = 1)
     }
   })
   
