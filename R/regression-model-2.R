@@ -14,17 +14,6 @@ rm(list = ls())
 d <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 glimpse(d)
 
-# Calculate Digital Distress Index informed by Gallardo & Geideman (2019) (https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b)
-normalize <- function(x, range = c(0,1)) {
-  norm <- (range[2] - range[1])*((x - min(x))/(max(x) - min(x))) + range[1]
-  return(norm)
-} # Function that normalizes the given vector
-
-d <- d %>% mutate(nonfarmprop_per100 = nonfarmprop_percapita * 100,
-                  est_50_cbp_per100 = est_50_cbp_percapita * 100,
-                  est_10_cbp_per100 = est_10_cbp_percapita * 100,
-                  pct_bb_qos_2 = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
-                                           range = c(0,100))/100)
 #### Overview ####
 ## In this script, we will explore a more complicated regression models incorporating some of the modifications below
 ## 1. Natural log transformation for some applicable variable
@@ -41,9 +30,9 @@ d <- d %>% mutate(nonfarmprop_per100 = nonfarmprop_percapita * 100,
 ggd <- ggplot(d)
 
 grid.arrange( # Histograms of broadband measures
-  ggd + geom_histogram(aes(x = pct_bb_fcc_2019)),
+  ggd + geom_histogram(aes(x = pct25_3_dec_2019_fcc)),
   ggd + geom_histogram(aes(x = pct_fixed_acs_2018)),
-  ggd + geom_histogram(aes(x = pct_bb_qos_2)),
+  ggd + geom_histogram(aes(x = pct_bb_qos)),
   nrow = 1, ncol = 3
 )
 
@@ -135,7 +124,7 @@ d <- d %>% mutate(popLN_2018 = log(population_2018),
 
 #### Inspecting Correlations b/w Broadband Measures ####
 grid.arrange(
-  ggplot(d, aes(x = pct_bb_fcc_2019, y = pct_bb_qos_2)) + 
+  ggplot(d, aes(x = pct25_3_dec_2019_fcc, y = pct_bb_qos)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() + 
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -143,7 +132,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(d, aes(x = pct_bb_fcc_2019, y = pct_fixed_acs_2018)) +
+  ggplot(d, aes(x = pct25_3_dec_2019_fcc, y = pct_fixed_acs_2018)) +
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -151,7 +140,7 @@ grid.arrange(
     scale_x_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     scale_y_continuous(labels = scales::percent, breaks = scales::breaks_pretty()) +
     ggpubr::stat_cor(p.accuracy = 0.001, r.accuracy = 0.01),
-  ggplot(d, aes(x = pct_bb_qos_2, y = pct_fixed_acs_2018)) + 
+  ggplot(d, aes(x = pct_bb_qos, y = pct_fixed_acs_2018)) + 
     geom_point(color = "grey10", alpha = 0.7, size = 3) + 
     geom_smooth(method = "lm", color = "darkorange3") + theme_minimal() +
     theme(axis.text = element_text(size = 11), axis.title = element_text(size = 12, face = "bold")) +
@@ -175,24 +164,17 @@ grid.arrange(
 mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
                   pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                   pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                  pct_bb_fcc_2019 * IRR2010, data = d)
+                  pct25_3_dec_2019_fcc * IRR2010, data = d)
 summary(mod.1.FCC.25.3)
-
-# Model 1 with FCC 50/5 %
-mod.1.FCC.50.5 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                       pct_bb_fcc_50_5_2019 * IRR2010, data = d)
-summary(mod.1.FCC.50.5)
 
 # Model 1 with FCC 100/10 %
 mod.1.FCC.100.10 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
                        pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                        pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                       pct_bb_fcc_100_10_2019 * IRR2010, data = d)
+                       pct100_10_dec_2019_fcc * IRR2010, data = d)
 summary(mod.1.FCC.100.10)
 
-plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct_bb_fcc_100_10_2019", "IRR2010"),
+plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
            title = "",
            axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
            legend.title = "Rurality Index (IRR)")
@@ -201,12 +183,24 @@ plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct_bb_fcc_100_10_2019", 
 mod.1.FCC.250.25 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
                        pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                        pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                       pct_bb_fcc_250_25_2019 * IRR2010, data = d)
+                       pct250_25_dec_2019_fcc * IRR2010, data = d)
 summary(mod.1.FCC.250.25)
 
-plot_model(mod.1.FCC.250.25, type = "pred", terms = c("pct_bb_fcc_250_25_2019", "IRR2010"),
+plot_model(mod.1.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
            title = "",
            axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
+           legend.title = "Rurality Index (IRR)")
+
+# Model 1 with FCC 1000/100 %
+mod.1.FCC.1000.100 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
+                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
+                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+                       pct1000_100_dec_2019_fcc * IRR2010, data = d)
+summary(mod.1.FCC.1000.100)
+
+plot_model(mod.1.FCC.1000.100, type = "pred", terms = c("pct1000_100_dec_2019_fcc", "IRR2010"),
+           title = "",
+           axis.title = c("FCC Broadband Availability (1000/100Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
            legend.title = "Rurality Index (IRR)")
 
 # Model 1 with ACS Bbnd adoption %
@@ -220,7 +214,7 @@ summary(mod.1.ACS)
 mod.1.QoS <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
                   pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                   pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                  pct_bb_qos_2 * IRR2010, data = d)
+                  pct_bb_qos * IRR2010, data = d)
 summary(mod.1.QoS)
 
 ## Model 2: DV is Venture Density
@@ -233,34 +227,22 @@ summary(mod.1.QoS)
 mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
                        pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                        pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                       pct_bb_fcc_2019 * IRR2010, data = d)
+                       pct25_3_dec_2019_fcc * IRR2010, data = d)
 summary(mod.2.FCC.25.3)
 
-plot_model(mod.2.FCC.25.3, type = "pred", terms = c("pct_bb_fcc_2019", "IRR2010"),
+plot_model(mod.2.FCC.25.3, type = "pred", terms = c("pct25_3_dec_2019_fcc", "IRR2010"),
            title = "",
            axis.title = c("FCC Broadband Availability (25/3Mbps, 2019)", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)")
-
-# Model 2 with FCC 50/5 %
-mod.2.FCC.50.5 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                       pct_bb_fcc_50_5_2019 * IRR2010, data = d)
-summary(mod.2.FCC.50.5)
-
-plot_model(mod.2.FCC.50.5, type = "pred", terms = c("pct_bb_fcc_50_5_2019", "IRR2010"),
-           title = "",
-           axis.title = c("FCC Broadband Availability (50/5Mbps, 2019)", "Venture Density (2020)"),
            legend.title = "Rurality Index (IRR)")
 
 # Model 2 with FCC 100/10 %
 mod.2.FCC.100.10 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
                          pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                          pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                         pct_bb_fcc_100_10_2019 * IRR2010, data = d)
+                         pct100_10_dec_2019_fcc * IRR2010, data = d)
 summary(mod.2.FCC.100.10)
 
-plot_model(mod.2.FCC.100.10, type = "pred", terms = c("pct_bb_fcc_100_10_2019", "IRR2010"),
+plot_model(mod.2.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
            title = "",
            axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Venture Density (2020)"),
            legend.title = "Rurality Index (IRR)")
@@ -269,13 +251,20 @@ plot_model(mod.2.FCC.100.10, type = "pred", terms = c("pct_bb_fcc_100_10_2019", 
 mod.2.FCC.250.25 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
                          pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                          pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                         pct_bb_fcc_250_25_2019 * IRR2010, data = d)
+                         pct250_25_dec_2019_fcc * IRR2010, data = d)
 summary(mod.2.FCC.250.25)
 
-plot_model(mod.2.FCC.250.25, type = "pred", terms = c("pct_bb_fcc_250_25_2019", "IRR2010"),
+plot_model(mod.2.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
            title = "",
            axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Venture Density (2020)"),
            legend.title = "Rurality Index (IRR)")
+
+# Model 2 with FCC 1000/100 %
+mod.2.FCC.1000.100 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
+                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
+                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+                       pct1000_100_dec_2019_fcc * IRR2010, data = d)
+summary(mod.2.FCC.1000.100)
 
 # Model 2 with ACS Bbnd adoption %
 mod.2.ACS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
@@ -293,10 +282,10 @@ plot_model(mod.2.ACS, type = "pred", terms = c("pct_fixed_acs_2018", "IRR2010"),
 mod.2.QoS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
                   pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
                   pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                  pct_bb_qos_2 * IRR2010, data = d)
+                  pct_bb_qos * IRR2010, data = d)
 summary(mod.2.QoS)
 
-plot_model(mod.2.QoS, type = "pred", terms = c("pct_bb_qos_2", "IRR2010"),
+plot_model(mod.2.QoS, type = "pred", terms = c("pct_bb_qos", "IRR2010"),
            title = "",
            axis.title = c("Broadband Quality of Service", "Venture Density (2020)"),
            legend.title = "Rurality Index (IRR)")

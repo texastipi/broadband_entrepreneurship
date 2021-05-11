@@ -4,6 +4,19 @@ library(tidyverse)
 options(tigris_class = "sf")
 options(tigris_use_cache = TRUE)
 
+#### Import the merged dataset V2 ####
+allstate_import <- read.csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
+
+## Kansas dataset
+ks_bb_entrepreneur_merged_v2 <- allstate_import %>% 
+  filter(ST == "KS")
+
+#### Set up spatial dataframe ####
+## Kansas dataset
+ks_county <- counties("Kansas")
+ks_bb_entrepreneur_merged_v3 <- sp::merge(ks_county, ks_bb_entrepreneur_merged_v2,
+                                          by.x = "GEOID", by.y = "county_FIPS")
+
 ## Getting the Metro & Micro areas
 ks <- tracts("KS", cb = T)
 cb <- core_based_statistical_areas(cb = T)

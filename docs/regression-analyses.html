@@ -20,11 +20,18 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
@@ -39,11 +46,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -56,32 +58,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
@@ -92,10 +69,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -112,40 +85,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -173,7 +119,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -185,7 +131,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -196,10 +142,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -211,7 +170,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -289,7 +247,7 @@ $(document).ready(function () {
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
     Home
   </a>
@@ -330,6 +288,9 @@ $(document).ready(function () {
     <li>
       <a href="metro_non-metro-comparison.html">Metro/Non-Metro Comparison</a>
     </li>
+    <li>
+      <a href="cem.html">CEM Matching Analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -340,7 +301,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -349,23 +310,36 @@ $(document).ready(function () {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#broadband-and-entrepreneurship">Broadband and Entrepreneurship</a><ul>
+<li><a href="#entrepreneurship-dv">Entrepreneurship (DV)</a></li>
+<li><a href="#broadband">Broadband</a></li>
+<li><a href="#other-explanatory-variables">Other Explanatory Variables</a></li>
+<li><a href="#broadbands-effect-on-entrepreneurial-outcome">Broadband’s Effect on Entrepreneurial Outcome</a></li>
+</ul></li>
+<li><a href="#multiple-linear-regression-models">Multiple Linear Regression Models</a><ul>
+<li><a href="#nonfarm-proprietors-share-2018">Nonfarm Proprietors Share (2018)</a></li>
+<li><a href="#venture-density-2020">Venture Density (2020)</a></li>
+</ul></li>
+<li><a href="#interaction-plots">Interaction Plots</a><ul>
+<li><a href="#nonfarm-proprietors-share-2018-1">Nonfarm Proprietors Share (2018)</a></li>
+<li><a href="#average-venture-density-2020">Average Venture Density (2020)</a></li>
+</ul></li>
+</ul>
+</div>
 
-<p>In this document, We will set up, run, and examine several multiple regression models. In general, the models aim to investigate the relationhips between <strong>broadband</strong> and <strong>entrepreneurship</strong>. Specifically, <strong>how broadband influences entrepreneurship</strong>. Furthermore, the models will explore how different measures of broadband, specifically measures of availability and adoption, explain entrepreneurial activities differently. Finally, I will explore how broadband as well as entrepreneurial factors contribute to the overall prosperity.</p>
+<p>In this document, I will set up, run, and examine several multiple regression models. In general, the models investigate the relationships between <strong>broadband</strong> and <strong>entrepreneurship</strong>. Specifically, <strong>how broadband influences entrepreneurship</strong>. Furthermore, the models will explore how different measures of broadband, specifically measures of availability, adoption, and quality of service (QoS) explain entrepreneurial activities differently. Finally, I will explore how broadband interacts with rurality in its effect on entrepreneurial factors.</p>
 <div id="broadband-and-entrepreneurship" class="section level2">
 <h2>Broadband and Entrepreneurship</h2>
 <p>First, let’s take another look at some of the key variables.</p>
-<div id="entrepreneurship" class="section level3">
-<h3>Entrepreneurship</h3>
+<div id="entrepreneurship-dv" class="section level3">
+<h3>Entrepreneurship (DV)</h3>
 <ul>
-<li><code>IRR2010</code>: Rural index (larger = rural)</li>
 <li><strong>Entrepreneurship (2018)</strong>
 <ul>
-<li><code>pct_nonfarm_bea_2018</code>: % of nonfarm proprietors over total employment in 2018</li>
-<li><code>venturedensity_mean</code>: Average venture density in 2018 and 2019 (GoDaddy)</li>
-</ul></li>
-<li><strong>Change Factors (2012-2018)</strong>
-<ul>
-<li><code>pct_chg_bea_2012_2018</code>: Change in % of nonfarm proprietors b/w 2012 and 2018</li>
+<li><code>pct_nonfarm_bea_2018</code>: % of nonfarm proprietors over total employment in 2018 (Source: BEA)</li>
+<li><code>vd_mean_20</code>: Average venture density from Jan 2020 to Sept 2020 (Source: GoDaddy)</li>
 </ul></li>
 </ul>
 <blockquote>
@@ -375,57 +349,77 @@ $(document).ready(function () {
 <div id="broadband" class="section level3">
 <h3>Broadband</h3>
 <ul>
-<li><code>pct_bb_fcc_2019</code>: FCC broadband availability in % (June 2019)</li>
-<li><code>pct_broadband_MS</code>: MS broadband availability in % (2019)</li>
-<li><code>pct_fixed_acs_2018</code>: ACS broadband subscription in $ (2018)</li>
-<li><code>pct_broadband_mlab</code>: M-Lab broadband measure (2019)</li>
+<li><code>pct[download speed_upload speed]_dec_2019_fcc</code>: FCC broadband availability in % (Data as of Dec 2019, multiple download and upload speed availability investigated)</li>
+<li><code>pct_fixed_acs_2018</code>: ACS broadband subscription in % (2018)</li>
+<li><code>pct_bb_qos</code>: Broadband quality of service (composite variable of MS broadband and M-Lab broadband measure)</li>
+</ul>
+</div>
+<div id="other-explanatory-variables" class="section level3">
+<h3>Other Explanatory Variables</h3>
+<ul>
+<li><code>IRR2010</code>: Rural index (larger = rural)</li>
+<li>Age cohorts: % of people in the age groups of Gen Z, Millennial, Gen X, and Boomers</li>
+<li>Education level: % of people with less than high school, Bachelor’s degree, and graduate degree education</li>
+<li>Unemployment rate (%, Source: ACS, 2018)</li>
+<li>Digital Distress Index (based on <a href="https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b">Gallardo &amp; Geideman (2019)</a>, Source: ACS, 2018)</li>
+<li>Industry diversity (based on <a href="https://link.springer.com/article/10.1007/s00168-020-01015-0">Gallardo et al. (2020)</a>, Source: ACS, 2018)</li>
 </ul>
 </div>
 <div id="broadbands-effect-on-entrepreneurial-outcome" class="section level3">
 <h3>Broadband’s Effect on Entrepreneurial Outcome</h3>
-<p>Here I investigate <strong>models that estimate broadband variables’ effect on the entrepreneurial outcome.</strong> Several different broadband measures are in the dataset. I will first model <strong>each measure’s relationship with the entrepreneurial outcome separately.</strong></p>
-<p>Entrepreneurial outcomes can be represented by several variables in this dataset. As the ASU research team’s white paper argued, the venture density provided by GoDaddy activities reflects actual entrepreneurial activities in the form of online domain creation. In the dataset, we also have Texas state’s sole proprietor statistics. These variables reflect small and medium sized businesses in each county.</p>
-</div>
-<div id="control-variables" class="section level3">
-<h3>Control Variables</h3>
-<p>For control variables, various demographic measures derived from the ACS estimates are available in the dataset. Furthermore, the rurality of the counties are reflected in the IRR index. Number of population, and regional industry characteristics will be also included as control variables.</p>
+<p>Here I investigate <strong>models that estimate broadband variables’ effect on the entrepreneurial outcome.</strong> Several different broadband measures are in the dataset. Each broadband measure was introduced separately as they are highly inter-correlated.</p>
 <hr />
 </div>
 </div>
-<div id="texas" class="section level1">
-<h1>Texas</h1>
-<div id="nonfarm-proprietors-share-2018" class="section level2">
-<h2>Nonfarm Proprietors Share (2018)</h2>
+<div id="multiple-linear-regression-models" class="section level2">
+<h2>Multiple Linear Regression Models</h2>
+<div id="nonfarm-proprietors-share-2018" class="section level3">
+<h3>Nonfarm Proprietors Share (2018)</h3>
 <ul>
 <li>DV: Nonfarm Proprietor Share (2018)</li>
-<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
-<li>Control: Rurality, Industry structure, Education, Age</li>
+<li>Key IV
+<ul>
+<li>Model 1: FCC availability of broadband at 25/3 Mbps (Dec 2019)</li>
+<li>Model 2: FCC availability of broadband at 100/10 Mbps (Dec 2019)</li>
+<li>Model 3: FCC availability of broadband at 250/25 Mbps (Dec 2019)</li>
+<li>Model 4: FCC availability of broadband at 1000/100 Mbps (Dec 2019)</li>
+<li>Model 5: ACS Broadband Subscription (2018)</li>
+<li>Model 6: Broadband Quality of Service</li>
+</ul></li>
+<li>Other IVs: Rurality, Industry diversity, Digital distress, Unemployment, Education, Age</li>
+<li>Interaction: Rurality x Broadband</li>
 </ul>
+<p>The models are fitted using the codes below</p>
+<pre class="r"><code># Model 1 with FCC 25/3 %
+mod.1.FCC.25.3 &lt;- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
+                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
+                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+                  pct25_3_dec_2019_fcc * IRR2010, data = d)</code></pre>
 <table style="text-align:center">
 <caption>
 <strong>Nonfarm Proprietors Share Regression Results</strong>
 </caption>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
-<td colspan="4">
+<td colspan="6">
 <em>Dependent variable:</em>
 </td>
 </tr>
 <tr>
 <td>
 </td>
-<td colspan="4" style="border-bottom: 1px solid black">
+<td colspan="6" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
-<td colspan="4">
+<td colspan="6">
 Nonfarm Proprietors Share (2018)
 </td>
 </tr>
@@ -444,657 +438,105 @@ Nonfarm Proprietors Share (2018)
 <td>
 (4)
 </td>
+<td>
+(5)
+</td>
+<td>
+(6)
+</td>
 </tr>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-FCC Broadband Availability (%, 2019)
-</td>
-<td>
-0.003
-</td>
-<td>
-0.005
-</td>
-<td>
-0.002
-</td>
-<td>
-0.0004
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+GenZ
 </td>
 <td>
-(0.013)
+0.658<sup>***</sup>
 </td>
 <td>
-(0.014)
+0.573<sup>***</sup>
 </td>
 <td>
-(0.014)
+0.598<sup>***</sup>
 </td>
 <td>
-(0.014)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-ACS Broadband Subscription (% of people with fixed broadband subscription)
+0.702<sup>***</sup>
 </td>
 <td>
+0.401<sup>**</sup>
 </td>
 <td>
--0.0002
-</td>
-<td>
--0.0004
-</td>
-<td>
--0.0005
+0.713<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-</td>
-<td>
-(0.0004)
-</td>
-<td>
-(0.0004)
-</td>
-<td>
-(0.0004)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-MS Broadband (%, 2019)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-0.042
-</td>
-<td>
-0.018
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-(0.036)
-</td>
-<td>
-(0.041)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-M-Lab Broadband (% of testers with 25/3 Mbps speed)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-0.045
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-(0.038)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Rurality Index (2010)
-</td>
-<td>
-0.004
-</td>
-<td>
-0.003
-</td>
-<td>
-0.019
-</td>
-<td>
-0.031
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.073)
-</td>
-<td>
-(0.073)
-</td>
-<td>
-(0.075)
-</td>
-<td>
-(0.075)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Agriculture (% of workers)
-</td>
-<td>
-0.317<sup>***</sup>
-</td>
-<td>
-0.325<sup>***</sup>
-</td>
-<td>
-0.334<sup>***</sup>
-</td>
-<td>
-0.334<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.072)
-</td>
-<td>
-(0.074)
-</td>
-<td>
-(0.075)
-</td>
-<td>
-(0.074)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Construction (% of workers)
-</td>
-<td>
-0.917<sup>***</sup>
-</td>
-<td>
-0.918<sup>***</sup>
-</td>
-<td>
-0.921<sup>***</sup>
-</td>
-<td>
-0.923<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.127)
-</td>
-<td>
-(0.127)
-</td>
-<td>
-(0.127)
-</td>
-<td>
-(0.127)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Wholesale (% of workers)
-</td>
-<td>
-0.708<sup>***</sup>
-</td>
-<td>
-0.707<sup>***</sup>
-</td>
-<td>
-0.620<sup>***</sup>
-</td>
-<td>
-0.665<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
+(0.192)
 </td>
 <td>
 (0.196)
-</td>
-<td>
-(0.196)
-</td>
-<td>
-(0.210)
-</td>
-<td>
-(0.213)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Retail (% of workers)
-</td>
-<td>
-0.390<sup>***</sup>
-</td>
-<td>
-0.384<sup>***</sup>
-</td>
-<td>
-0.381<sup>***</sup>
-</td>
-<td>
-0.360<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.130)
-</td>
-<td>
-(0.131)
-</td>
-<td>
-(0.131)
-</td>
-<td>
-(0.132)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Transportation (% of workers)
-</td>
-<td>
-0.371<sup>**</sup>
-</td>
-<td>
-0.374<sup>**</sup>
-</td>
-<td>
-0.386<sup>**</sup>
-</td>
-<td>
-0.381<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.153)
-</td>
-<td>
-(0.153)
-</td>
-<td>
-(0.153)
-</td>
-<td>
-(0.153)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-IT (% of workers)
-</td>
-<td>
-2.016<sup>***</sup>
-</td>
-<td>
-2.026<sup>***</sup>
-</td>
-<td>
-1.995<sup>***</sup>
-</td>
-<td>
-1.977<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.478)
-</td>
-<td>
-(0.479)
-</td>
-<td>
-(0.480)
-</td>
-<td>
-(0.479)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Finance (% of workers)
-</td>
-<td>
--0.256
-</td>
-<td>
--0.228
-</td>
-<td>
--0.290
-</td>
-<td>
--0.248
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.220)
-</td>
-<td>
-(0.226)
-</td>
-<td>
-(0.232)
-</td>
-<td>
-(0.235)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Professional (% of workers)
-</td>
-<td>
-0.260
-</td>
-<td>
-0.264
-</td>
-<td>
-0.231
-</td>
-<td>
-0.246
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.182)
-</td>
-<td>
-(0.183)
-</td>
-<td>
-(0.185)
-</td>
-<td>
-(0.185)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education (% of workers)
-</td>
-<td>
-0.345<sup>***</sup>
-</td>
-<td>
-0.346<sup>***</sup>
-</td>
-<td>
-0.360<sup>***</sup>
-</td>
-<td>
-0.351<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.092)
-</td>
-<td>
-(0.092)
-</td>
-<td>
-(0.093)
-</td>
-<td>
-(0.093)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Other occupation (% of workers)
-</td>
-<td>
-0.591<sup>***</sup>
-</td>
-<td>
-0.603<sup>***</sup>
-</td>
-<td>
-0.623<sup>***</sup>
-</td>
-<td>
-0.625<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.201)
-</td>
-<td>
-(0.203)
-</td>
-<td>
-(0.203)
-</td>
-<td>
-(0.203)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Public (% of workers)
-</td>
-<td>
--0.060
-</td>
-<td>
--0.057
-</td>
-<td>
--0.065
-</td>
-<td>
--0.085
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.121)
-</td>
-<td>
-(0.122)
-</td>
-<td>
-(0.122)
-</td>
-<td>
-(0.123)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education Less than Highschool
-</td>
-<td>
--0.049
-</td>
-<td>
--0.056
-</td>
-<td>
--0.062
-</td>
-<td>
--0.058
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.057)
-</td>
-<td>
-(0.058)
-</td>
-<td>
-(0.059)
-</td>
-<td>
-(0.059)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Bachelors Degree
-</td>
-<td>
-0.361<sup>***</sup>
-</td>
-<td>
-0.378<sup>***</sup>
-</td>
-<td>
-0.379<sup>***</sup>
-</td>
-<td>
-0.377<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.129)
-</td>
-<td>
-(0.133)
-</td>
-<td>
-(0.132)
-</td>
-<td>
-(0.132)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Graduate Degree
-</td>
-<td>
--0.015
-</td>
-<td>
--0.0003
-</td>
-<td>
--0.058
-</td>
-<td>
--0.022
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.186)
-</td>
-<td>
-(0.188)
 </td>
 <td>
 (0.194)
 </td>
 <td>
-(0.196)
+(0.190)
+</td>
+<td>
+(0.192)
+</td>
+<td>
+(0.194)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Millenials
+Millennial
 </td>
 <td>
-0.009
+0.116
 </td>
 <td>
-0.013
+0.052
 </td>
 <td>
-0.013
+0.064
 </td>
 <td>
-0.028
+0.116
+</td>
+<td>
+-0.023
+</td>
+<td>
+0.172
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.133)
+(0.150)
 </td>
 <td>
-(0.134)
+(0.152)
 </td>
 <td>
-(0.133)
+(0.151)
 </td>
 <td>
-(0.134)
+(0.149)
+</td>
+<td>
+(0.148)
+</td>
+<td>
+(0.155)
 </td>
 </tr>
 <tr>
@@ -1102,305 +544,412 @@ Millenials
 GenX
 </td>
 <td>
-0.664<sup>***</sup>
+0.442<sup>***</sup>
 </td>
 <td>
-0.663<sup>***</sup>
+0.392<sup>**</sup>
 </td>
 <td>
-0.684<sup>***</sup>
+0.424<sup>***</sup>
 </td>
 <td>
-0.711<sup>***</sup>
+0.504<sup>***</sup>
+</td>
+<td>
+0.390<sup>***</sup>
+</td>
+<td>
+0.460<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.182)
+(0.151)
 </td>
 <td>
-(0.182)
+(0.152)
 </td>
 <td>
-(0.183)
-</td>
-<td>
-(0.184)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Babyboomer
-</td>
-<td>
-0.776<sup>***</sup>
-</td>
-<td>
-0.756<sup>***</sup>
-</td>
-<td>
-0.780<sup>***</sup>
-</td>
-<td>
-0.790<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
+(0.150)
 </td>
 <td>
 (0.149)
 </td>
 <td>
-(0.153)
+(0.146)
 </td>
 <td>
-(0.154)
-</td>
-<td>
-(0.154)
+(0.150)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Constant
+Boomers
 </td>
 <td>
--0.438<sup>***</sup>
+0.994<sup>***</sup>
 </td>
 <td>
--0.429<sup>***</sup>
+0.934<sup>***</sup>
 </td>
 <td>
--0.440<sup>***</sup>
+0.970<sup>***</sup>
 </td>
 <td>
--0.460<sup>***</sup>
+1.006<sup>***</sup>
+</td>
+<td>
+0.740<sup>***</sup>
+</td>
+<td>
+1.032<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+</td>
+<td>
+(0.167)
+</td>
+<td>
+(0.167)
+</td>
+<td>
+(0.166)
+</td>
+<td>
+(0.165)
+</td>
+<td>
+(0.169)
+</td>
+<td>
+(0.169)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Less than high school
+</td>
+<td>
+0.132<sup>**</sup>
+</td>
+<td>
+0.171<sup>***</sup>
+</td>
+<td>
+0.167<sup>***</sup>
+</td>
+<td>
+0.141<sup>**</sup>
+</td>
+<td>
+0.173<sup>***</sup>
+</td>
+<td>
+0.105<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.059)
+</td>
+<td>
+(0.059)
+</td>
+<td>
+(0.058)
+</td>
+<td>
+(0.056)
+</td>
+<td>
+(0.056)
+</td>
+<td>
+(0.057)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelors degree
+</td>
+<td>
+0.392<sup>***</sup>
+</td>
+<td>
+0.447<sup>***</sup>
+</td>
+<td>
+0.463<sup>***</sup>
+</td>
+<td>
+0.401<sup>***</sup>
+</td>
+<td>
+0.483<sup>***</sup>
+</td>
+<td>
+0.348<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.114)
 </td>
 <td>
 (0.115)
 </td>
 <td>
-(0.116)
+(0.115)
 </td>
 <td>
-(0.117)
+(0.113)
 </td>
 <td>
-(0.118)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Observations
+(0.112)
 </td>
 <td>
-254
-</td>
-<td>
-254
-</td>
-<td>
-254
-</td>
-<td>
-254
+(0.121)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-R<sup>2</sup>
+Graduate degree
 </td>
 <td>
-0.554
+-0.188
 </td>
 <td>
-0.554
+-0.176
 </td>
 <td>
-0.557
+-0.201
 </td>
 <td>
-0.560
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Adjusted R<sup>2</sup>
+-0.199
 </td>
 <td>
-0.517
+-0.099
 </td>
 <td>
-0.516
-</td>
-<td>
-0.517
-</td>
-<td>
-0.518
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Residual Std. Error
-</td>
-<td>
-0.048 (df = 234)
-</td>
-<td>
-0.049 (df = 233)
-</td>
-<td>
-0.049 (df = 232)
-</td>
-<td>
-0.048 (df = 231)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-F Statistic
-</td>
-<td>
-15.282<sup>***</sup> (df = 19; 234)
-</td>
-<td>
-14.489<sup>***</sup> (df = 20; 233)
-</td>
-<td>
-13.883<sup>***</sup> (df = 21; 232)
-</td>
-<td>
-13.342<sup>***</sup> (df = 22; 231)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-<em>Note:</em>
-</td>
-<td colspan="4" style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
-</td>
-</tr>
-</table>
-</div>
-<div id="change-in-nonfarm-proprietors-share-2012-2018" class="section level2">
-<h2>Change in Nonfarm Proprietors Share (2012-2018)</h2>
-<ul>
-<li>DV: Change in Nonfarm Proprietors Share (2012-2018)</li>
-<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
-<li>Control: Rurality, Industry structure, Education, Age</li>
-</ul>
-<table style="text-align:center">
-<caption>
-<strong>Change in Nonfarm Proprietors Share Regression Results</strong>
-</caption>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="4">
-<em>Dependent variable:</em>
-</td>
-</tr>
-<tr>
-<td>
-</td>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="4">
-Change in Nonfarm Proprietors Share (2012-2018)
+-0.215
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(1)
+(0.153)
 </td>
 <td>
-(2)
+(0.152)
 </td>
 <td>
-(3)
+(0.152)
 </td>
 <td>
-(4)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-FCC Broadband Availability (%, 2019)
+(0.152)
 </td>
 <td>
-0.002
+(0.153)
 </td>
 <td>
-0.007
-</td>
-<td>
-0.010
-</td>
-<td>
-0.009
+(0.155)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+Industry diversity
 </td>
 <td>
-(0.007)
+0.427<sup>***</sup>
 </td>
 <td>
-(0.007)
+0.335<sup>**</sup>
 </td>
 <td>
-(0.007)
+0.315<sup>**</sup>
 </td>
 <td>
-(0.007)
+0.390<sup>***</sup>
+</td>
+<td>
+0.288<sup>**</sup>
+</td>
+<td>
+0.461<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-ACS Broadband Subscription (% of people with fixed broadband subscription)
 </td>
 <td>
+(0.146)
+</td>
+<td>
+(0.150)
+</td>
+<td>
+(0.145)
+</td>
+<td>
+(0.139)
+</td>
+<td>
+(0.137)
+</td>
+<td>
+(0.142)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Unemployment
+</td>
+<td>
+0.141
+</td>
+<td>
+0.163
+</td>
+<td>
+0.160
+</td>
+<td>
+0.141
+</td>
+<td>
+0.189
+</td>
+<td>
+0.156
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.128)
+</td>
+<td>
+(0.126)
+</td>
+<td>
+(0.126)
+</td>
+<td>
+(0.126)
+</td>
+<td>
+(0.123)
+</td>
+<td>
+(0.127)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Digital distress
+</td>
+<td>
+-0.001<sup>**</sup>
 </td>
 <td>
 -0.001<sup>***</sup>
 </td>
 <td>
--0.0005<sup>**</sup>
+-0.001<sup>**</sup>
 </td>
 <td>
--0.0005<sup>**</sup>
+-0.001<sup>**</sup>
+</td>
+<td>
+-0.003<sup>***</sup>
+</td>
+<td>
+-0.001<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0004)
+</td>
+<td>
+(0.0003)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.0004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (25/3)
+</td>
+<td>
+-0.170
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.159)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (100/10)
+</td>
+<td>
+</td>
+<td>
+-0.233<sup>**</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
@@ -1409,56 +958,33 @@ ACS Broadband Subscription (% of people with fixed broadband subscription)
 <td>
 </td>
 <td>
-(0.0002)
+(0.094)
 </td>
 <td>
-(0.0002)
 </td>
 <td>
-(0.0002)
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband (%, 2019)
+FCC BBnd (250/25)
 </td>
 <td>
 </td>
 <td>
 </td>
 <td>
--0.054<sup>***</sup>
-</td>
-<td>
--0.065<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
+-0.171<sup>**</sup>
 </td>
 <td>
 </td>
 <td>
 </td>
 <td>
-(0.018)
-</td>
-<td>
-(0.021)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-M-Lab Broadband (% of testers with 25/3 Mbps speed)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-0.021
 </td>
 </tr>
 <tr>
@@ -1469,9 +995,118 @@ M-Lab Broadband (% of testers with 25/3 Mbps speed)
 <td>
 </td>
 <td>
+(0.066)
 </td>
 <td>
-(0.019)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (1000/100)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.121<sup>*</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.070)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS BBnd Sbscr
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.483<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.166)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+BBnd QoS
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.084
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.106)
 </td>
 </tr>
 <tr>
@@ -1479,277 +1114,19 @@ M-Lab Broadband (% of testers with 25/3 Mbps speed)
 Rurality Index (2010)
 </td>
 <td>
--0.041
+-0.227
 </td>
 <td>
--0.045
+-0.307<sup>**</sup>
 </td>
 <td>
--0.066<sup>*</sup>
+-0.205<sup>**</sup>
 </td>
 <td>
--0.060
+-0.051
 </td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.038)
-</td>
-<td>
-(0.037)
-</td>
-<td>
-(0.038)
-</td>
-<td>
-(0.038)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Agriculture (% of workers)
-</td>
-<td>
-0.094<sup>**</sup>
-</td>
-<td>
-0.121<sup>***</sup>
-</td>
-<td>
-0.110<sup>***</sup>
-</td>
-<td>
-0.110<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.038)
-</td>
-<td>
-(0.038)
-</td>
-<td>
-(0.037)
-</td>
-<td>
-(0.037)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Construction (% of workers)
-</td>
-<td>
-0.135<sup>**</sup>
-</td>
-<td>
-0.139<sup>**</sup>
-</td>
-<td>
-0.135<sup>**</sup>
-</td>
-<td>
-0.137<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.066)
-</td>
-<td>
-(0.065)
-</td>
-<td>
-(0.064)
-</td>
-<td>
-(0.064)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Wholesale (% of workers)
-</td>
-<td>
--0.109
-</td>
-<td>
--0.111
-</td>
-<td>
-0.001
-</td>
-<td>
-0.022
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.102)
-</td>
-<td>
-(0.100)
-</td>
-<td>
-(0.106)
-</td>
-<td>
-(0.107)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Retail (% of workers)
-</td>
-<td>
-0.102
-</td>
-<td>
-0.082
-</td>
-<td>
-0.086
-</td>
-<td>
-0.077
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.068)
-</td>
-<td>
-(0.067)
-</td>
-<td>
-(0.066)
-</td>
-<td>
-(0.066)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Transportation (% of workers)
-</td>
-<td>
--0.070
-</td>
-<td>
--0.063
-</td>
-<td>
--0.078
-</td>
-<td>
--0.080
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.080)
-</td>
-<td>
-(0.078)
-</td>
-<td>
-(0.077)
-</td>
-<td>
-(0.077)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-IT (% of workers)
-</td>
-<td>
-0.464<sup>*</sup>
-</td>
-<td>
-0.495<sup>**</sup>
-</td>
-<td>
-0.535<sup>**</sup>
-</td>
-<td>
-0.526<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.250)
-</td>
-<td>
-(0.245)
-</td>
-<td>
-(0.241)
-</td>
-<td>
-(0.241)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Finance (% of workers)
-</td>
-<td>
--0.242<sup>**</sup>
-</td>
-<td>
--0.155
-</td>
-<td>
--0.076
-</td>
-<td>
--0.057
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.115)
-</td>
-<td>
-(0.115)
-</td>
-<td>
-(0.117)
-</td>
-<td>
-(0.118)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Professional (% of workers)
-</td>
-<td>
-0.027
-</td>
-<td>
-0.040
-</td>
 <td>
-0.081
+-0.228
 </td>
 <td>
 0.088
@@ -1759,313 +1136,232 @@ Professional (% of workers)
 <td style="text-align:left">
 </td>
 <td>
-(0.095)
+(0.257)
 </td>
 <td>
-(0.093)
+(0.144)
 </td>
 <td>
-(0.093)
-</td>
-<td>
-(0.093)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education (% of workers)
-</td>
-<td>
-0.076
-</td>
-<td>
-0.078<sup>*</sup>
-</td>
-<td>
-0.059
-</td>
-<td>
-0.055
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.048)
-</td>
-<td>
-(0.047)
-</td>
-<td>
-(0.047)
-</td>
-<td>
-(0.047)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Other occupation (% of workers)
-</td>
-<td>
--0.033
-</td>
-<td>
-0.006
-</td>
-<td>
--0.021
-</td>
-<td>
--0.020
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.105)
-</td>
-<td>
-(0.103)
-</td>
-<td>
-(0.102)
-</td>
-<td>
-(0.102)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Public (% of workers)
-</td>
-<td>
-0.190<sup>***</sup>
-</td>
-<td>
-0.198<sup>***</sup>
-</td>
-<td>
-0.208<sup>***</sup>
-</td>
-<td>
-0.199<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
+(0.101)
 </td>
 <td>
 (0.063)
 </td>
 <td>
-(0.062)
+(0.177)
 </td>
 <td>
-(0.061)
-</td>
-<td>
-(0.062)
+(0.108)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Education Less than Highschool
+FCC BBnd (25/3) x Rurality
 </td>
 <td>
--0.021
+0.255
 </td>
 <td>
--0.044
 </td>
 <td>
--0.036
 </td>
 <td>
--0.034
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
 </td>
 <td>
-(0.030)
 </td>
 <td>
-(0.030)
-</td>
-<td>
-(0.029)
-</td>
-<td>
-(0.029)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Bachelors Degree
-</td>
-<td>
-0.072
-</td>
-<td>
-0.124<sup>*</sup>
-</td>
-<td>
-0.122<sup>*</sup>
-</td>
-<td>
-0.121<sup>*</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.067)
+(0.265)
 </td>
 <td>
-(0.068)
 </td>
 <td>
-(0.067)
 </td>
 <td>
-(0.067)
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Graduate Degree
+FCC BBnd (100/10) x Rurality
 </td>
 <td>
--0.056
 </td>
 <td>
--0.011
+0.369<sup>**</sup>
 </td>
 <td>
-0.063
 </td>
 <td>
-0.080
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
 </td>
 <td>
-(0.097)
 </td>
 <td>
-(0.096)
-</td>
-<td>
-(0.098)
-</td>
-<td>
-(0.099)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Millenials
-</td>
-<td>
--0.114
-</td>
-<td>
--0.102
-</td>
-<td>
--0.101
-</td>
-<td>
--0.094
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.070)
 </td>
 <td>
-(0.068)
+(0.157)
 </td>
 <td>
-(0.067)
 </td>
 <td>
-(0.067)
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-GenX
+FCC BBnd (250/25) x Rurality
 </td>
 <td>
-0.247<sup>***</sup>
 </td>
 <td>
-0.244<sup>***</sup>
 </td>
 <td>
-0.216<sup>**</sup>
+0.286<sup>**</sup>
 </td>
 <td>
-0.229<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
 </td>
 <td>
-(0.095)
 </td>
 <td>
-(0.093)
-</td>
-<td>
-(0.092)
-</td>
-<td>
-(0.093)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Babyboomer
-</td>
-<td>
-0.024
-</td>
-<td>
--0.036
-</td>
-<td>
--0.067
-</td>
-<td>
--0.062
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.078)
 </td>
 <td>
-(0.078)
 </td>
 <td>
-(0.077)
+(0.114)
 </td>
 <td>
-(0.078)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (1000/100) x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.253<sup>**</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.125)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS BBnd Sbscr x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.431
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.293)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+BBnd QoS x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-0.178
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.182)
 </td>
 </tr>
 <tr>
@@ -2073,36 +1369,48 @@ Babyboomer
 Constant
 </td>
 <td>
--0.048
+-0.459<sup>*</sup>
 </td>
 <td>
--0.020
+-0.299
 </td>
 <td>
--0.004
+-0.375<sup>*</sup>
 </td>
 <td>
--0.013
+-0.583<sup>***</sup>
+</td>
+<td>
+-0.071
+</td>
+<td>
+-0.707<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.060)
+(0.256)
 </td>
 <td>
-(0.059)
+(0.224)
 </td>
 <td>
-(0.059)
+(0.202)
 </td>
 <td>
-(0.059)
+(0.177)
+</td>
+<td>
+(0.213)
+</td>
+<td>
+(0.198)
 </td>
 </tr>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
@@ -2110,16 +1418,22 @@ Constant
 Observations
 </td>
 <td>
-254
+375
 </td>
 <td>
-254
+375
 </td>
 <td>
-254
+375
 </td>
 <td>
-254
+375
+</td>
+<td>
+375
+</td>
+<td>
+375
 </td>
 </tr>
 <tr>
@@ -2127,16 +1441,22 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.195
+0.323
 </td>
 <td>
-0.232
+0.332
 </td>
 <td>
-0.260
+0.331
 </td>
 <td>
-0.264
+0.332
+</td>
+<td>
+0.367
+</td>
+<td>
+0.322
 </td>
 </tr>
 <tr>
@@ -2144,99 +1464,132 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.129
+0.299
 </td>
 <td>
-0.166
+0.308
 </td>
 <td>
-0.193
+0.307
 </td>
 <td>
-0.194
+0.308
+</td>
+<td>
+0.344
+</td>
+<td>
+0.297
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Residual Std. Error
+Residual Std. Error (df = 361)
 </td>
 <td>
-0.025 (df = 234)
+0.056
 </td>
 <td>
-0.025 (df = 233)
+0.055
 </td>
 <td>
-0.024 (df = 232)
+0.055
 </td>
 <td>
-0.024 (df = 231)
+0.055
+</td>
+<td>
+0.054
+</td>
+<td>
+0.056
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-F Statistic
+F Statistic (df = 13; 361)
 </td>
 <td>
-2.981<sup>***</sup> (df = 19; 234)
+13.244<sup>***</sup>
 </td>
 <td>
-3.525<sup>***</sup> (df = 20; 233)
+13.778<sup>***</sup>
 </td>
 <td>
-3.883<sup>***</sup> (df = 21; 232)
+13.762<sup>***</sup>
 </td>
 <td>
-3.764<sup>***</sup> (df = 22; 231)
+13.788<sup>***</sup>
+</td>
+<td>
+16.102<sup>***</sup>
+</td>
+<td>
+13.174<sup>***</sup>
 </td>
 </tr>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 <em>Note:</em>
 </td>
-<td colspan="4" style="text-align:right">
+<td colspan="6" style="text-align:right">
 <sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
 </td>
 </tr>
 </table>
 </div>
-<div id="venture-density" class="section level2">
-<h2>Venture Density</h2>
+<div id="venture-density-2020" class="section level3">
+<h3>Venture Density (2020)</h3>
 <ul>
-<li>DV: Venture Density (average over the period 2018-2019)</li>
-<li>IV: FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
-<li>Control: Rurality, Industry structure, Education, Age</li>
+<li>DV: Average Venture Density (2020)</li>
+<li>Key IV
+<ul>
+<li>Model 1: FCC availability of broadband at 25/3 Mbps (Dec 2019)</li>
+<li>Model 2: FCC availability of broadband at 100/10 Mbps (Dec 2019)</li>
+<li>Model 3: FCC availability of broadband at 250/25 Mbps (Dec 2019)</li>
+<li>Model 4: FCC availability of broadband at 1000/100 Mbps (Dec 2019)</li>
+<li>Model 5: ACS Broadband Subscription (2018)</li>
+<li>Model 6: Broadband Quality of Service</li>
+</ul></li>
+<li>Other IVs: Rurality, Industry diversity, Digital distress, Unemployment, Education, Age</li>
+<li>Interaction: Rurality x Broadband</li>
 </ul>
+<p>The models are fitted using the codes below</p>
+<pre class="r"><code># Model 2 with FCC 25/3 %
+mod.2.FCC.25.3 &lt;- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
+                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
+                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+                       pct25_3_dec_2019_fcc * IRR2010, data = d)</code></pre>
 <table style="text-align:center">
 <caption>
-<strong>Venture Density Regression Results</strong>
+<strong>Average Venture Density Regression Results</strong>
 </caption>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
-<td colspan="4">
+<td colspan="6">
 <em>Dependent variable:</em>
 </td>
 </tr>
 <tr>
 <td>
 </td>
-<td colspan="4" style="border-bottom: 1px solid black">
+<td colspan="6" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
-<td colspan="4">
-Venture Density (2018-2019)
+<td colspan="6">
+Average Venture Density (2020)
 </td>
 </tr>
 <tr>
@@ -2254,129 +1607,675 @@ Venture Density (2018-2019)
 <td>
 (4)
 </td>
+<td>
+(5)
+</td>
+<td>
+(6)
+</td>
 </tr>
 <tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-FCC Broadband Availability (%, 2019)
-</td>
-<td>
-0.199
-</td>
-<td>
-0.127
-</td>
-<td>
-0.001
-</td>
-<td>
-0.026
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+GenZ
 </td>
 <td>
-(0.322)
+-2.482
 </td>
 <td>
-(0.331)
+-2.671
 </td>
 <td>
-(0.334)
+-4.718
 </td>
 <td>
-(0.335)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-ACS Broadband Subscription (% of people with fixed broadband subscription)
+-4.499
 </td>
 <td>
+-4.023
 </td>
 <td>
-0.009
-</td>
-<td>
-0.001
-</td>
-<td>
-0.002
+1.679
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
+(8.564)
 </td>
 <td>
-(0.010)
+(8.727)
 </td>
 <td>
-(0.010)
+(8.621)
 </td>
 <td>
-(0.010)
+(8.601)
+</td>
+<td>
+(8.900)
+</td>
+<td>
+(8.579)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-MS Broadband (%, 2019)
+Millennial
 </td>
 <td>
+-0.584
 </td>
 <td>
+1.517
 </td>
 <td>
-1.956<sup>**</sup>
+0.065
 </td>
 <td>
-2.505<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
+-1.488
 </td>
 <td>
+-2.327
 </td>
 <td>
-</td>
-<td>
-(0.920)
-</td>
-<td>
-(1.090)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-M-Lab Broadband (% of testers with 25/3 Mbps speed)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
--0.881
+3.893
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
+(6.683)
+</td>
+<td>
+(6.745)
+</td>
+<td>
+(6.667)
+</td>
+<td>
+(6.679)
+</td>
+<td>
+(6.769)
+</td>
+<td>
+(6.774)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GenX
+</td>
+<td>
+18.971<sup>***</sup>
+</td>
+<td>
+19.269<sup>***</sup>
+</td>
+<td>
+16.821<sup>**</sup>
+</td>
+<td>
+16.463<sup>**</sup>
+</td>
+<td>
+15.125<sup>**</sup>
+</td>
+<td>
+18.883<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(6.693)
+</td>
+<td>
+(6.748)
+</td>
+<td>
+(6.654)
+</td>
+<td>
+(6.730)
+</td>
+<td>
+(6.768)
+</td>
+<td>
+(6.612)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Boomers
+</td>
+<td>
+19.075<sup>**</sup>
+</td>
+<td>
+20.277<sup>***</sup>
+</td>
+<td>
+19.269<sup>***</sup>
+</td>
+<td>
+20.187<sup>***</sup>
+</td>
+<td>
+17.632<sup>**</sup>
+</td>
+<td>
+25.160<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(7.422)
+</td>
+<td>
+(7.472)
+</td>
+<td>
+(7.338)
+</td>
+<td>
+(7.396)
+</td>
+<td>
+(7.681)
+</td>
+<td>
+(7.432)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Less than high school
+</td>
+<td>
+8.667<sup>***</sup>
+</td>
+<td>
+8.429<sup>***</sup>
+</td>
+<td>
+8.795<sup>***</sup>
+</td>
+<td>
+10.095<sup>***</sup>
+</td>
+<td>
+9.628<sup>***</sup>
+</td>
+<td>
+8.139<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.618)
+</td>
+<td>
+(2.635)
+</td>
+<td>
+(2.593)
+</td>
+<td>
+(2.501)
+</td>
+<td>
+(2.598)
+</td>
+<td>
+(2.544)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelors degree
+</td>
+<td>
+18.564<sup>***</sup>
+</td>
+<td>
+17.330<sup>***</sup>
+</td>
+<td>
+18.011<sup>***</sup>
+</td>
+<td>
+21.124<sup>***</sup>
+</td>
+<td>
+18.788<sup>***</sup>
+</td>
+<td>
+14.869<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(5.099)
+</td>
+<td>
+(5.100)
+</td>
+<td>
+(5.086)
+</td>
+<td>
+(5.018)
+</td>
+<td>
+(5.141)
+</td>
+<td>
+(5.274)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Graduate degree
+</td>
+<td>
+8.639
+</td>
+<td>
+9.755
+</td>
+<td>
+9.935
+</td>
+<td>
+9.386
+</td>
+<td>
+5.516
+</td>
+<td>
+6.131
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(6.699)
+</td>
+<td>
+(6.664)
+</td>
+<td>
+(6.591)
+</td>
+<td>
+(6.678)
+</td>
+<td>
+(6.915)
+</td>
+<td>
+(6.678)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Industry diversity
+</td>
+<td>
+-16.111<sup>**</sup>
+</td>
+<td>
+-11.060
+</td>
+<td>
+-14.920<sup>**</sup>
+</td>
+<td>
+-19.521<sup>***</sup>
+</td>
+<td>
+-20.684<sup>***</sup>
+</td>
+<td>
+-15.752<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(6.781)
+</td>
+<td>
+(7.110)
+</td>
+<td>
+(6.775)
+</td>
+<td>
+(6.552)
+</td>
+<td>
+(6.677)
+</td>
+<td>
+(6.625)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Unemployment
+</td>
+<td>
+12.053<sup>**</sup>
+</td>
+<td>
+10.881<sup>*</sup>
+</td>
+<td>
+10.800<sup>*</sup>
+</td>
+<td>
+9.875<sup>*</sup>
+</td>
+<td>
+10.349<sup>*</sup>
+</td>
+<td>
+9.142<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(5.630)
+</td>
+<td>
+(5.556)
+</td>
+<td>
+(5.511)
+</td>
+<td>
+(5.579)
+</td>
+<td>
+(5.559)
+</td>
+<td>
+(5.536)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Digital distress
+</td>
+<td>
+-0.051<sup>***</sup>
+</td>
+<td>
+-0.048<sup>***</sup>
+</td>
+<td>
+-0.054<sup>***</sup>
+</td>
+<td>
+-0.053<sup>***</sup>
+</td>
+<td>
+-0.080<sup>***</sup>
+</td>
+<td>
+-0.041<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.017)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.016)
+</td>
+<td>
+(0.025)
+</td>
+<td>
+(0.016)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (25/3)
+</td>
+<td>
+15.924<sup>**</sup>
 </td>
 <td>
 </td>
 <td>
 </td>
 <td>
-(0.939)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(7.152)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (100/10)
+</td>
+<td>
+</td>
+<td>
+11.470<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(4.123)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (250/25)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+7.077<sup>**</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(2.898)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (1000/100)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+3.646
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(3.058)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS BBnd Sbscr
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+14.615<sup>*</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(7.498)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+BBnd QoS
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+16.077<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(4.533)
 </td>
 </tr>
 <tr>
@@ -2384,1660 +2283,448 @@ M-Lab Broadband (% of testers with 25/3 Mbps speed)
 Rurality Index (2010)
 </td>
 <td>
--0.444
+18.410
 </td>
 <td>
--0.381
+9.477
 </td>
 <td>
-0.566
+1.161
 </td>
 <td>
-0.444
+-5.424<sup>**</sup>
+</td>
+<td>
+10.980
+</td>
+<td>
+7.308
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(1.791)
+(11.472)
 </td>
 <td>
-(1.792)
+(6.330)
 </td>
 <td>
-(1.834)
+(4.396)
 </td>
 <td>
-(1.839)
+(2.753)
+</td>
+<td>
+(7.977)
+</td>
+<td>
+(4.645)
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Agriculture (% of workers)
+FCC BBnd (25/3) x Rurality
 </td>
 <td>
--1.254
+-27.848<sup>**</sup>
 </td>
 <td>
--1.613
 </td>
 <td>
--1.186
 </td>
 <td>
--1.164
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
 </td>
 <td>
-(1.749)
 </td>
 <td>
-(1.789)
-</td>
-<td>
-(1.787)
-</td>
-<td>
-(1.787)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Construction (% of workers)
-</td>
-<td>
-6.376<sup>**</sup>
-</td>
-<td>
-6.308<sup>**</sup>
-</td>
-<td>
-6.047<sup>*</sup>
-</td>
-<td>
-5.847<sup>*</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(3.112)
+(11.972)
 </td>
 <td>
-(3.113)
 </td>
 <td>
-(3.092)
 </td>
 <td>
-(3.100)
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Wholesale (% of workers)
+FCC BBnd (100/10) x Rurality
 </td>
 <td>
--7.920
 </td>
 <td>
--7.695
+-20.450<sup>***</sup>
 </td>
 <td>
--7.546
 </td>
 <td>
--6.946
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
 </td>
 <td>
-(7.500)
 </td>
 <td>
-(7.505)
-</td>
-<td>
-(7.449)
-</td>
-<td>
-(7.479)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Retail (% of workers)
-</td>
-<td>
--0.174
-</td>
-<td>
-0.080
-</td>
-<td>
--0.387
-</td>
-<td>
--0.120
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(3.179)
 </td>
 <td>
-(3.191)
+(6.906)
 </td>
 <td>
-(3.174)
 </td>
 <td>
-(3.188)
+</td>
+<td>
+</td>
+<td>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Transportation (% of workers)
+FCC BBnd (250/25) x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-14.266<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(5.018)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+FCC BBnd (1000/100) x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-8.126
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(5.434)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACS BBnd Sbscr x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-32.045<sup>**</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(13.242)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+BBnd QoS x Rurality
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-25.494<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(7.821)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-6.079
+</td>
+<td>
+-5.902
+</td>
+<td>
+3.963
+</td>
+<td>
+11.136
+</td>
+<td>
+7.010
+</td>
+<td>
+-2.764
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(11.160)
+</td>
+<td>
+(9.979)
+</td>
+<td>
+(8.934)
+</td>
+<td>
+(7.998)
+</td>
+<td>
+(9.825)
+</td>
+<td>
+(8.798)
+</td>
+</tr>
+<tr>
+<td colspan="7" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+363
+</td>
+<td>
+363
+</td>
+<td>
+363
+</td>
+<td>
+363
+</td>
+<td>
+363
+</td>
+<td>
+363
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.366
+</td>
+<td>
+0.373
+</td>
+<td>
+0.380
+</td>
+<td>
+0.364
+</td>
+<td>
+0.368
+</td>
+<td>
+0.378
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.342
+</td>
+<td>
+0.350
+</td>
+<td>
+0.357
 </td>
 <td>
 0.340
 </td>
 <td>
-0.218
+0.344
 </td>
 <td>
-0.290
-</td>
-<td>
-0.208
+0.355
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+Residual Std. Error (df = 349)
 </td>
 <td>
-(3.749)
+2.380
 </td>
 <td>
-(3.752)
+2.366
 </td>
 <td>
-(3.724)
+2.353
 </td>
 <td>
-(3.726)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-IT (% of workers)
+2.384
 </td>
 <td>
-28.256<sup>**</sup>
+2.376
 </td>
 <td>
-27.808<sup>**</sup>
-</td>
-<td>
-25.573<sup>**</sup>
-</td>
-<td>
-25.561<sup>**</sup>
+2.356
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
+F Statistic (df = 13; 349)
 </td>
 <td>
-(11.588)
+15.469<sup>***</sup>
 </td>
 <td>
-(11.599)
+15.966<sup>***</sup>
 </td>
 <td>
-(11.560)
+16.447<sup>***</sup>
 </td>
 <td>
-(11.563)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Finance (% of workers)
+15.338<sup>***</sup>
 </td>
 <td>
-7.798
+15.602<sup>***</sup>
 </td>
 <td>
-6.699
-</td>
-<td>
-5.351
-</td>
-<td>
-5.001
+16.322<sup>***</sup>
 </td>
 </tr>
 <tr>
-<td style="text-align:left">
-</td>
-<td>
-(5.722)
-</td>
-<td>
-(5.837)
-</td>
-<td>
-(5.828)
-</td>
-<td>
-(5.841)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Professional (% of workers)
-</td>
-<td>
-7.961<sup>*</sup>
-</td>
-<td>
-7.797<sup>*</sup>
-</td>
-<td>
-6.490
-</td>
-<td>
-6.227
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.407)
-</td>
-<td>
-(4.411)
-</td>
-<td>
-(4.421)
-</td>
-<td>
-(4.431)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education (% of workers)
-</td>
-<td>
--2.473
-</td>
-<td>
--2.510
-</td>
-<td>
--2.004
-</td>
-<td>
--1.862
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.232)
-</td>
-<td>
-(2.233)
-</td>
-<td>
-(2.229)
-</td>
-<td>
-(2.234)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Other occupation (% of workers)
-</td>
-<td>
--10.949<sup>**</sup>
-</td>
-<td>
--11.462<sup>**</sup>
-</td>
-<td>
--10.306<sup>**</sup>
-</td>
-<td>
--10.224<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.858)
-</td>
-<td>
-(4.888)
-</td>
-<td>
-(4.882)
-</td>
-<td>
-(4.884)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Public (% of workers)
-</td>
-<td>
--1.895
-</td>
-<td>
--2.000
-</td>
-<td>
--2.231
-</td>
-<td>
--1.793
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.934)
-</td>
-<td>
-(2.936)
-</td>
-<td>
-(2.916)
-</td>
-<td>
-(2.954)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education Less than Highschool
-</td>
-<td>
-4.263<sup>***</sup>
-</td>
-<td>
-4.573<sup>***</sup>
-</td>
-<td>
-4.354<sup>***</sup>
-</td>
-<td>
-4.284<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.372)
-</td>
-<td>
-(1.410)
-</td>
-<td>
-(1.403)
-</td>
-<td>
-(1.406)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Bachelors Degree
-</td>
-<td>
-17.554<sup>***</sup>
-</td>
-<td>
-16.841<sup>***</sup>
-</td>
-<td>
-16.452<sup>***</sup>
-</td>
-<td>
-16.330<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.170)
-</td>
-<td>
-(3.257)
-</td>
-<td>
-(3.238)
-</td>
-<td>
-(3.241)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Graduate Degree
-</td>
-<td>
-10.123<sup>**</sup>
-</td>
-<td>
-9.537<sup>**</sup>
-</td>
-<td>
-7.137
-</td>
-<td>
-6.431
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.504)
-</td>
-<td>
-(4.546)
-</td>
-<td>
-(4.651)
-</td>
-<td>
-(4.713)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Millenials
-</td>
-<td>
-4.385
-</td>
-<td>
-4.233
-</td>
-<td>
-4.577
-</td>
-<td>
-4.411
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.253)
-</td>
-<td>
-(3.258)
-</td>
-<td>
-(3.237)
-</td>
-<td>
-(3.243)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-GenX
-</td>
-<td>
-22.812<sup>***</sup>
-</td>
-<td>
-22.828<sup>***</sup>
-</td>
-<td>
-23.181<sup>***</sup>
-</td>
-<td>
-22.450<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.477)
-</td>
-<td>
-(4.478)
-</td>
-<td>
-(4.447)
-</td>
-<td>
-(4.516)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Babyboomer
-</td>
-<td>
-13.996<sup>***</sup>
-</td>
-<td>
-14.816<sup>***</sup>
-</td>
-<td>
-16.109<sup>***</sup>
-</td>
-<td>
-16.030<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.594)
-</td>
-<td>
-(3.695)
-</td>
-<td>
-(3.717)
-</td>
-<td>
-(3.719)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Constant
-</td>
-<td>
--10.972<sup>***</sup>
-</td>
-<td>
--11.353<sup>***</sup>
-</td>
-<td>
--12.015<sup>***</sup>
-</td>
-<td>
--11.693<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.781)
-</td>
-<td>
-(2.810)
-</td>
-<td>
-(2.806)
-</td>
-<td>
-(2.828)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Observations
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-R<sup>2</sup>
-</td>
-<td>
-0.659
-</td>
-<td>
-0.661
-</td>
-<td>
-0.667
-</td>
-<td>
-0.668
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Adjusted R<sup>2</sup>
-</td>
-<td>
-0.632
-</td>
-<td>
-0.631
-</td>
-<td>
-0.637
-</td>
-<td>
-0.637
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Residual Std. Error
-</td>
-<td>
-1.170 (df = 233)
-</td>
-<td>
-1.170 (df = 232)
-</td>
-<td>
-1.161 (df = 231)
-</td>
-<td>
-1.162 (df = 230)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-F Statistic
-</td>
-<td>
-23.730<sup>***</sup> (df = 19; 233)
-</td>
-<td>
-22.582<sup>***</sup> (df = 20; 232)
-</td>
-<td>
-22.048<sup>***</sup> (df = 21; 231)
-</td>
-<td>
-21.075<sup>***</sup> (df = 22; 230)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
+<td colspan="7" style="border-bottom: 1px solid black">
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 <em>Note:</em>
 </td>
-<td colspan="4" style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
-</td>
-</tr>
-</table>
-<div id="models-with-proprietornonemp-as-iv" class="section level3">
-<h3>Models with Proprietor/Nonemp as IV</h3>
-<p>Below, I explore regression models that consider <strong>proprietors share as independent variables</strong> representing overall industry characteristics of the county. Dependent variables are <strong>venture density</strong> measures as representations of entrepreneurial activities online.</p>
-<ul>
-<li>DV: Venture Density (2018-2019)</li>
-<li>IV: Nonfarm Proprietor Share (2018), FCC Broadband availability (2019), MS Broadband (2019), ACS Broadband Subscription (2018), M-Lab Broadband Usage (2019)</li>
-<li>Control: Rurality, Education, Age</li>
-</ul>
-<table style="text-align:center">
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="4">
-<em>Dependent variable:</em>
-</td>
-</tr>
-<tr>
-<td>
-</td>
-<td colspan="4" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="4">
-Venture Density (2018-2019)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1)
-</td>
-<td>
-(2)
-</td>
-<td>
-(3)
-</td>
-<td>
-(4)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Nonfarm Proprietor (%, 2018)
-</td>
-<td>
-2.942<sup>*</sup>
-</td>
-<td>
-2.934<sup>*</sup>
-</td>
-<td>
-2.988<sup>*</sup>
-</td>
-<td>
-2.749<sup>*</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.571)
-</td>
-<td>
-(1.574)
-</td>
-<td>
-(1.574)
-</td>
-<td>
-(1.576)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-FCC Broadband Availability (%, 2017)
-</td>
-<td>
-</td>
-<td>
-0.194
-</td>
-<td>
-0.117
-</td>
-<td>
-0.030
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-(0.321)
-</td>
-<td>
-(0.329)
-</td>
-<td>
-(0.334)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-ACS Broadband Subscription (% of people with fixed broadband subscription)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-0.010
-</td>
-<td>
-0.003
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-(0.010)
-</td>
-<td>
-(0.010)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-MS Broadband (%, 2019)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-2.387<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-(1.088)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-M-Lab Broadband Use (% of testers with 25/3 Mbps speed)
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
--0.966
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-(0.936)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Rurality Index (2010)
-</td>
-<td>
--0.538
-</td>
-<td>
--0.496
-</td>
-<td>
--0.430
-</td>
-<td>
-0.305
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.778)
-</td>
-<td>
-(1.782)
-</td>
-<td>
-(1.783)
-</td>
-<td>
-(1.833)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Agriculture (% of workers)
-</td>
-<td>
--2.369
-</td>
-<td>
--2.190
-</td>
-<td>
--2.590
-</td>
-<td>
--2.097
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.783)
-</td>
-<td>
-(1.810)
-</td>
-<td>
-(1.852)
-</td>
-<td>
-(1.858)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Construction (% of workers)
-</td>
-<td>
-3.656
-</td>
-<td>
-3.759
-</td>
-<td>
-3.639
-</td>
-<td>
-3.395
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.390)
-</td>
-<td>
-(3.398)
-</td>
-<td>
-(3.400)
-</td>
-<td>
-(3.391)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Wholesale (% of workers)
-</td>
-<td>
--10.885
-</td>
-<td>
--10.813
-</td>
-<td>
--10.627
-</td>
-<td>
--9.599
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(7.609)
-</td>
-<td>
-(7.620)
-</td>
-<td>
-(7.622)
-</td>
-<td>
-(7.599)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Retail (% of workers)
-</td>
-<td>
--1.244
-</td>
-<td>
--1.255
-</td>
-<td>
--1.003
-</td>
-<td>
--1.050
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.210)
-</td>
-<td>
-(3.215)
-</td>
-<td>
-(3.224)
-</td>
-<td>
-(3.218)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Transportation (% of workers)
-</td>
-<td>
--0.953
-</td>
-<td>
--0.653
-</td>
-<td>
--0.802
-</td>
-<td>
--0.744
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.729)
-</td>
-<td>
-(3.767)
-</td>
-<td>
-(3.769)
-</td>
-<td>
-(3.749)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-IT (% of workers)
-</td>
-<td>
-21.811<sup>*</sup>
-</td>
-<td>
-22.492<sup>*</sup>
-</td>
-<td>
-21.909<sup>*</sup>
-</td>
-<td>
-20.327<sup>*</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(11.865)
-</td>
-<td>
-(11.934)
-</td>
-<td>
-(11.946)
-</td>
-<td>
-(11.896)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Finance (% of workers)
-</td>
-<td>
-8.544
-</td>
-<td>
-8.249
-</td>
-<td>
-7.087
-</td>
-<td>
-5.441
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(5.669)
-</td>
-<td>
-(5.697)
-</td>
-<td>
-(5.808)
-</td>
-<td>
-(5.821)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Professional (% of workers)
-</td>
-<td>
-7.172
-</td>
-<td>
-7.157
-</td>
-<td>
-6.968
-</td>
-<td>
-5.553
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.399)
-</td>
-<td>
-(4.405)
-</td>
-<td>
-(4.408)
-</td>
-<td>
-(4.428)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education (% of workers)
-</td>
-<td>
--3.612
-</td>
-<td>
--3.451
-</td>
-<td>
--3.509
-</td>
-<td>
--2.811
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.263)
-</td>
-<td>
-(2.281)
-</td>
-<td>
-(2.282)
-</td>
-<td>
-(2.290)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Other occupation (% of workers)
-</td>
-<td>
--12.783<sup>***</sup>
-</td>
-<td>
--12.724<sup>**</sup>
-</td>
-<td>
--13.304<sup>***</sup>
-</td>
-<td>
--12.011<sup>**</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.917)
-</td>
-<td>
-(4.925)
-</td>
-<td>
-(4.957)
-</td>
-<td>
-(4.969)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Public (% of workers)
-</td>
-<td>
--1.798
-</td>
-<td>
--1.746
-</td>
-<td>
--1.855
-</td>
-<td>
--1.597
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.914)
-</td>
-<td>
-(2.919)
-</td>
-<td>
-(2.921)
-</td>
-<td>
-(2.943)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Education Less than Highschool
-</td>
-<td>
-4.409<sup>***</sup>
-</td>
-<td>
-4.394<sup>***</sup>
-</td>
-<td>
-4.726<sup>***</sup>
-</td>
-<td>
-4.438<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(1.365)
-</td>
-<td>
-(1.367)
-</td>
-<td>
-(1.405)
-</td>
-<td>
-(1.402)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Bachelors Degree
-</td>
-<td>
-16.697<sup>***</sup>
-</td>
-<td>
-16.580<sup>***</sup>
-</td>
-<td>
-15.802<sup>***</sup>
-</td>
-<td>
-15.396<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.187)
-</td>
-<td>
-(3.197)
-</td>
-<td>
-(3.285)
-</td>
-<td>
-(3.271)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Graduate Degree
-</td>
-<td>
-10.082<sup>**</sup>
-</td>
-<td>
-10.105<sup>**</sup>
-</td>
-<td>
-9.480<sup>**</sup>
-</td>
-<td>
-6.520
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.474)
-</td>
-<td>
-(4.480)
-</td>
-<td>
-(4.521)
-</td>
-<td>
-(4.692)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Millenials
-</td>
-<td>
-4.323
-</td>
-<td>
-4.286
-</td>
-<td>
-4.122
-</td>
-<td>
-4.263
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.232)
-</td>
-<td>
-(3.237)
-</td>
-<td>
-(3.240)
-</td>
-<td>
-(3.230)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-GenX
-</td>
-<td>
-20.598<sup>***</sup>
-</td>
-<td>
-20.988<sup>***</sup>
-</td>
-<td>
-20.971<sup>***</sup>
-</td>
-<td>
-20.641<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(4.507)
-</td>
-<td>
-(4.559)
-</td>
-<td>
-(4.559)
-</td>
-<td>
-(4.614)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Babyboomer
-</td>
-<td>
-11.419<sup>***</sup>
-</td>
-<td>
-11.687<sup>***</sup>
-</td>
-<td>
-12.519<sup>***</sup>
-</td>
-<td>
-13.796<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(3.752)
-</td>
-<td>
-(3.783)
-</td>
-<td>
-(3.868)
-</td>
-<td>
-(3.918)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Constant
-</td>
-<td>
--9.286<sup>***</sup>
-</td>
-<td>
--9.669<sup>***</sup>
-</td>
-<td>
--10.051<sup>***</sup>
-</td>
-<td>
--10.407<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(2.779)
-</td>
-<td>
-(2.854)
-</td>
-<td>
-(2.878)
-</td>
-<td>
-(2.911)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Observations
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-<td>
-253
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-R<sup>2</sup>
-</td>
-<td>
-0.664
-</td>
-<td>
-0.664
-</td>
-<td>
-0.666
-</td>
-<td>
-0.673
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Adjusted R<sup>2</sup>
-</td>
-<td>
-0.636
-</td>
-<td>
-0.635
-</td>
-<td>
-0.635
-</td>
-<td>
-0.640
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Residual Std. Error
-</td>
-<td>
-1.162 (df = 233)
-</td>
-<td>
-1.164 (df = 232)
-</td>
-<td>
-1.164 (df = 231)
-</td>
-<td>
-1.156 (df = 229)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-F Statistic
-</td>
-<td>
-24.212<sup>***</sup> (df = 19; 233)
-</td>
-<td>
-22.958<sup>***</sup> (df = 20; 232)
-</td>
-<td>
-21.919<sup>***</sup> (df = 21; 231)
-</td>
-<td>
-20.470<sup>***</sup> (df = 23; 229)
-</td>
-</tr>
-<tr>
-<td colspan="5" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-<em>Note:</em>
-</td>
-<td colspan="4" style="text-align:right">
+<td colspan="6" style="text-align:right">
 <sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
 </td>
 </tr>
 </table>
 </div>
+</div>
+<div id="interaction-plots" class="section level2">
+<h2>Interaction Plots</h2>
+<p>Several models indicate statistically significant interaction effects happening between broadband and rurality. Here, I will examine how the significant interaction terms predict entrepreneurship measures.</p>
+<div id="nonfarm-proprietors-share-2018-1" class="section level3">
+<h3>Nonfarm Proprietors Share (2018)</h3>
+<p>For nonfarm proprietors share, the models show significant interaction effects of faster broadband availability and rurality. Using <code>sjPlot</code> package’s <code>plot_model</code> function, I will plot interaction effects below.</p>
+<p><img src="regression-analyses_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-17-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-17-3.png" width="672" /></p>
+<p>Generally, the interaction results indicate that the effect of broadband availability becomes significantly positive for more rural areas of Texas, Maine, and Kansas. In addition, the magnitude of positive effect becomes greater for faster broadband availability. That is, having broadband faster than 100/10 Mbps level available is positively related to nonfarm proprietors share in more rural areas.</p>
+</div>
+<div id="average-venture-density-2020" class="section level3">
+<h3>Average Venture Density (2020)</h3>
+<p>For venture density, broadband measures except availability of 1000/100 Mbps level broadband showed significant interaction with rurality. However, the results are confounding as the direction of the effects are opposite to initial hypotheses.</p>
+<p><img src="regression-analyses_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-3.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-4.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-5.png" width="672" /></p>
 </div>
 </div>
 
@@ -4069,7 +2756,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
