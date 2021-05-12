@@ -128,7 +128,8 @@ mod.1.QoS <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
 
 ## Generate Table
 stargazer(mod.1.FCC.25.3, mod.1.FCC.100.10, mod.1.FCC.250.25, mod.1.FCC.1000.100, mod.1.ACS, mod.1.QoS, title = "Nonfarm Proprietors Share Regression Results", type = "html",
-          align = TRUE, dep.var.labels = c("Nonfarm Proprietors Share (2018)"),
+          digits = 3, dep.var.caption = "Nonfarm Proprietors Share (2018)",
+          align = TRUE, dep.var.labels.include = F, intercept.bottom = F, intercept.top = T,
           covariate.labels = c("GenZ", "Millennial", "GenX", "Boomers",
                                "Less than high school", "Bachelors degree", "Graduate degree",
                                "Industry diversity", "Unemployment", "Digital distress",
@@ -213,7 +214,8 @@ mod.2.QoS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
 
 ## Generate Table
 stargazer(mod.2.FCC.25.3, mod.2.FCC.100.10, mod.2.FCC.250.25, mod.2.FCC.1000.100, mod.2.ACS, mod.2.QoS, title = "Average Venture Density Regression Results", type = "html",
-          align = TRUE, dep.var.labels = c("Average Venture Density (2020)"),
+          digits = 3, dep.var.caption = "Average Venture Density (2020)",
+          align = TRUE, dep.var.labels.include = F, intercept.bottom = F, intercept.top = T,
           covariate.labels = c("GenZ", "Millennial", "GenX", "Boomers",
                                "Less than high school", "Bachelors degree", "Graduate degree",
                                "Industry diversity", "Unemployment", "Digital distress",
@@ -242,20 +244,32 @@ Several models indicate statistically significant interaction effects happening 
 For nonfarm proprietors share, the models show significant interaction effects of faster broadband availability and rurality. Using `sjPlot` package's `plot_model` function, I will plot interaction effects below.
 
 ```{r echo=FALSE}
-plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
-           title = "",
+p1_m1 <- plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") +
+  legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
 
-plot_model(mod.1.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
-           title = "",
+p1_m1
+
+p2_m1 <- plot_model(mod.1.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
 
-plot_model(mod.1.FCC.1000.100, type = "pred", terms = c("pct1000_100_dec_2019_fcc", "IRR2010"),
-           title = "",
+p2_m1
+
+p3_m1 <- plot_model(mod.1.FCC.1000.100, type = "pred", terms = c("pct1000_100_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (1000/100Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+
+p3_m1
 ```
 
 Generally, the interaction results indicate that the effect of broadband availability becomes significantly positive for more rural areas of Texas, Maine, and Kansas. In addition, the magnitude of positive effect becomes greater for faster broadband availability. That is, having broadband faster than 100/10 Mbps level available is positively related to nonfarm proprietors share in more rural areas.
@@ -265,30 +279,50 @@ Generally, the interaction results indicate that the effect of broadband availab
 For venture density, broadband measures except availability of 1000/100 Mbps level broadband showed significant interaction with rurality. However, the results are confounding as the direction of the effects are opposite to initial hypotheses.
 
 ```{r echo=FALSE}
-plot_model(mod.2.FCC.25.3, type = "pred", terms = c("pct25_3_dec_2019_fcc", "IRR2010"),
-           title = "",
+p1_m2 <- plot_model(mod.2.FCC.25.3, type = "pred", terms = c("pct25_3_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (25/3Mbps, 2019)", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+  
+p1_m2
 
-plot_model(mod.2.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
-           title = "",
+p2_m2 <- plot_model(mod.2.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+  
+p2_m2
 
-plot_model(mod.2.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
-           title = "",
+p3_m2 <- plot_model(mod.2.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+  
+p3_m2
 
-plot_model(mod.2.ACS, type = "pred", terms = c("pct_fixed_acs_2018", "IRR2010"),
-           title = "",
+p4_m2 <- plot_model(mod.2.ACS, type = "pred", terms = c("pct_fixed_acs_2018", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("ACS Fixed Broadband Subscription (%, 2018)", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+  
+p4_m2
 
-plot_model(mod.2.QoS, type = "pred", terms = c("pct_bb_qos", "IRR2010"),
-           title = "",
+p5_m2 <- plot_model(mod.2.QoS, type = "pred", terms = c("pct_bb_qos", "IRR2010"),
+           title = "", ci.lvl = NA,
            axis.title = c("Broadband Quality of Service", "Venture Density (2020)"),
-           legend.title = "Rurality Index (IRR)") + theme_sjplot()
+           legend.title = "Rurality Index (IRR)") + 
+  legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
+  scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
+  
+p5_m2
 ```
 
 

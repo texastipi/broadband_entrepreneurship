@@ -25,7 +25,7 @@ library(ggplot2)
 Clean the worksapce and import raw dataset from GitHub repository.
 
 ```{r import dataset, results='hide'}
-rm(list = ls())     # Clean workspace
+#rm(list = ls())     # Clean workspace
 
 d <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 glimpse(d)

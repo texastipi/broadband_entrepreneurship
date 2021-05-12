@@ -407,20 +407,13 @@ mod.1.FCC.25.3 &lt;- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_20
 <td style="text-align:left">
 </td>
 <td colspan="6">
-<em>Dependent variable:</em>
+Nonfarm Proprietors Share (2018)
 </td>
 </tr>
 <tr>
 <td>
 </td>
 <td colspan="6" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="6">
-Nonfarm Proprietors Share (2018)
 </td>
 </tr>
 <tr>
@@ -452,6 +445,51 @@ Nonfarm Proprietors Share (2018)
 <tr>
 <td style="text-align:left">
 GenZ
+</td>
+<td>
+-0.459<sup>*</sup>
+</td>
+<td>
+-0.299
+</td>
+<td>
+-0.375<sup>*</sup>
+</td>
+<td>
+-0.583<sup>***</sup>
+</td>
+<td>
+-0.071
+</td>
+<td>
+-0.707<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.256)
+</td>
+<td>
+(0.224)
+</td>
+<td>
+(0.202)
+</td>
+<td>
+(0.177)
+</td>
+<td>
+(0.213)
+</td>
+<td>
+(0.198)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millennial
 </td>
 <td>
 0.658<sup>***</sup>
@@ -496,7 +534,7 @@ GenZ
 </tr>
 <tr>
 <td style="text-align:left">
-Millennial
+GenX
 </td>
 <td>
 0.116
@@ -541,7 +579,7 @@ Millennial
 </tr>
 <tr>
 <td style="text-align:left">
-GenX
+Boomers
 </td>
 <td>
 0.442<sup>***</sup>
@@ -586,7 +624,7 @@ GenX
 </tr>
 <tr>
 <td style="text-align:left">
-Boomers
+Less than high school
 </td>
 <td>
 0.994<sup>***</sup>
@@ -631,7 +669,7 @@ Boomers
 </tr>
 <tr>
 <td style="text-align:left">
-Less than high school
+Bachelors degree
 </td>
 <td>
 0.132<sup>**</sup>
@@ -676,7 +714,7 @@ Less than high school
 </tr>
 <tr>
 <td style="text-align:left">
-Bachelors degree
+Graduate degree
 </td>
 <td>
 0.392<sup>***</sup>
@@ -721,7 +759,7 @@ Bachelors degree
 </tr>
 <tr>
 <td style="text-align:left">
-Graduate degree
+Industry diversity
 </td>
 <td>
 -0.188
@@ -766,7 +804,7 @@ Graduate degree
 </tr>
 <tr>
 <td style="text-align:left">
-Industry diversity
+Unemployment
 </td>
 <td>
 0.427<sup>***</sup>
@@ -811,7 +849,7 @@ Industry diversity
 </tr>
 <tr>
 <td style="text-align:left">
-Unemployment
+Digital distress
 </td>
 <td>
 0.141
@@ -856,7 +894,7 @@ Unemployment
 </tr>
 <tr>
 <td style="text-align:left">
-Digital distress
+FCC BBnd (25/3)
 </td>
 <td>
 -0.001<sup>**</sup>
@@ -901,7 +939,7 @@ Digital distress
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (25/3)
+FCC BBnd (100/10)
 </td>
 <td>
 -0.170
@@ -936,7 +974,7 @@ FCC BBnd (25/3)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (100/10)
+FCC BBnd (250/25)
 </td>
 <td>
 </td>
@@ -971,7 +1009,7 @@ FCC BBnd (100/10)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (250/25)
+FCC BBnd (1000/100)
 </td>
 <td>
 </td>
@@ -1006,7 +1044,7 @@ FCC BBnd (250/25)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (1000/100)
+ACS BBnd Sbscr
 </td>
 <td>
 </td>
@@ -1041,7 +1079,7 @@ FCC BBnd (1000/100)
 </tr>
 <tr>
 <td style="text-align:left">
-ACS BBnd Sbscr
+BBnd QoS
 </td>
 <td>
 </td>
@@ -1076,7 +1114,7 @@ ACS BBnd Sbscr
 </tr>
 <tr>
 <td style="text-align:left">
-BBnd QoS
+Rurality Index (2010)
 </td>
 <td>
 </td>
@@ -1111,7 +1149,7 @@ BBnd QoS
 </tr>
 <tr>
 <td style="text-align:left">
-Rurality Index (2010)
+FCC BBnd (25/3) x Rurality
 </td>
 <td>
 -0.227
@@ -1156,7 +1194,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (25/3) x Rurality
+FCC BBnd (100/10) x Rurality
 </td>
 <td>
 0.255
@@ -1191,7 +1229,7 @@ FCC BBnd (25/3) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (100/10) x Rurality
+FCC BBnd (250/25) x Rurality
 </td>
 <td>
 </td>
@@ -1226,7 +1264,7 @@ FCC BBnd (100/10) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (250/25) x Rurality
+FCC BBnd (1000/100) x Rurality
 </td>
 <td>
 </td>
@@ -1261,7 +1299,7 @@ FCC BBnd (250/25) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (1000/100) x Rurality
+ACS BBnd Sbscr x Rurality
 </td>
 <td>
 </td>
@@ -1296,7 +1334,7 @@ FCC BBnd (1000/100) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-ACS BBnd Sbscr x Rurality
+BBnd QoS x Rurality
 </td>
 <td>
 </td>
@@ -1331,7 +1369,7 @@ ACS BBnd Sbscr x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-BBnd QoS x Rurality
+pct_bb_qos:IRR2010
 </td>
 <td>
 </td>
@@ -1362,51 +1400,6 @@ BBnd QoS x Rurality
 </td>
 <td>
 (0.182)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Constant
-</td>
-<td>
--0.459<sup>*</sup>
-</td>
-<td>
--0.299
-</td>
-<td>
--0.375<sup>*</sup>
-</td>
-<td>
--0.583<sup>***</sup>
-</td>
-<td>
--0.071
-</td>
-<td>
--0.707<sup>***</sup>
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(0.256)
-</td>
-<td>
-(0.224)
-</td>
-<td>
-(0.202)
-</td>
-<td>
-(0.177)
-</td>
-<td>
-(0.213)
-</td>
-<td>
-(0.198)
 </td>
 </tr>
 <tr>
@@ -1576,20 +1569,13 @@ mod.2.FCC.25.3 &lt;- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
 <td style="text-align:left">
 </td>
 <td colspan="6">
-<em>Dependent variable:</em>
+Average Venture Density (2020)
 </td>
 </tr>
 <tr>
 <td>
 </td>
 <td colspan="6" style="border-bottom: 1px solid black">
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td colspan="6">
-Average Venture Density (2020)
 </td>
 </tr>
 <tr>
@@ -1621,6 +1607,51 @@ Average Venture Density (2020)
 <tr>
 <td style="text-align:left">
 GenZ
+</td>
+<td>
+-6.079
+</td>
+<td>
+-5.902
+</td>
+<td>
+3.963
+</td>
+<td>
+11.136
+</td>
+<td>
+7.010
+</td>
+<td>
+-2.764
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(11.160)
+</td>
+<td>
+(9.979)
+</td>
+<td>
+(8.934)
+</td>
+<td>
+(7.998)
+</td>
+<td>
+(9.825)
+</td>
+<td>
+(8.798)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Millennial
 </td>
 <td>
 -2.482
@@ -1665,7 +1696,7 @@ GenZ
 </tr>
 <tr>
 <td style="text-align:left">
-Millennial
+GenX
 </td>
 <td>
 -0.584
@@ -1710,7 +1741,7 @@ Millennial
 </tr>
 <tr>
 <td style="text-align:left">
-GenX
+Boomers
 </td>
 <td>
 18.971<sup>***</sup>
@@ -1755,7 +1786,7 @@ GenX
 </tr>
 <tr>
 <td style="text-align:left">
-Boomers
+Less than high school
 </td>
 <td>
 19.075<sup>**</sup>
@@ -1800,7 +1831,7 @@ Boomers
 </tr>
 <tr>
 <td style="text-align:left">
-Less than high school
+Bachelors degree
 </td>
 <td>
 8.667<sup>***</sup>
@@ -1845,7 +1876,7 @@ Less than high school
 </tr>
 <tr>
 <td style="text-align:left">
-Bachelors degree
+Graduate degree
 </td>
 <td>
 18.564<sup>***</sup>
@@ -1890,7 +1921,7 @@ Bachelors degree
 </tr>
 <tr>
 <td style="text-align:left">
-Graduate degree
+Industry diversity
 </td>
 <td>
 8.639
@@ -1935,7 +1966,7 @@ Graduate degree
 </tr>
 <tr>
 <td style="text-align:left">
-Industry diversity
+Unemployment
 </td>
 <td>
 -16.111<sup>**</sup>
@@ -1980,7 +2011,7 @@ Industry diversity
 </tr>
 <tr>
 <td style="text-align:left">
-Unemployment
+Digital distress
 </td>
 <td>
 12.053<sup>**</sup>
@@ -2025,7 +2056,7 @@ Unemployment
 </tr>
 <tr>
 <td style="text-align:left">
-Digital distress
+FCC BBnd (25/3)
 </td>
 <td>
 -0.051<sup>***</sup>
@@ -2070,7 +2101,7 @@ Digital distress
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (25/3)
+FCC BBnd (100/10)
 </td>
 <td>
 15.924<sup>**</sup>
@@ -2105,7 +2136,7 @@ FCC BBnd (25/3)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (100/10)
+FCC BBnd (250/25)
 </td>
 <td>
 </td>
@@ -2140,7 +2171,7 @@ FCC BBnd (100/10)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (250/25)
+FCC BBnd (1000/100)
 </td>
 <td>
 </td>
@@ -2175,7 +2206,7 @@ FCC BBnd (250/25)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (1000/100)
+ACS BBnd Sbscr
 </td>
 <td>
 </td>
@@ -2210,7 +2241,7 @@ FCC BBnd (1000/100)
 </tr>
 <tr>
 <td style="text-align:left">
-ACS BBnd Sbscr
+BBnd QoS
 </td>
 <td>
 </td>
@@ -2245,7 +2276,7 @@ ACS BBnd Sbscr
 </tr>
 <tr>
 <td style="text-align:left">
-BBnd QoS
+Rurality Index (2010)
 </td>
 <td>
 </td>
@@ -2280,7 +2311,7 @@ BBnd QoS
 </tr>
 <tr>
 <td style="text-align:left">
-Rurality Index (2010)
+FCC BBnd (25/3) x Rurality
 </td>
 <td>
 18.410
@@ -2325,7 +2356,7 @@ Rurality Index (2010)
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (25/3) x Rurality
+FCC BBnd (100/10) x Rurality
 </td>
 <td>
 -27.848<sup>**</sup>
@@ -2360,7 +2391,7 @@ FCC BBnd (25/3) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (100/10) x Rurality
+FCC BBnd (250/25) x Rurality
 </td>
 <td>
 </td>
@@ -2395,7 +2426,7 @@ FCC BBnd (100/10) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (250/25) x Rurality
+FCC BBnd (1000/100) x Rurality
 </td>
 <td>
 </td>
@@ -2430,7 +2461,7 @@ FCC BBnd (250/25) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-FCC BBnd (1000/100) x Rurality
+ACS BBnd Sbscr x Rurality
 </td>
 <td>
 </td>
@@ -2465,7 +2496,7 @@ FCC BBnd (1000/100) x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-ACS BBnd Sbscr x Rurality
+BBnd QoS x Rurality
 </td>
 <td>
 </td>
@@ -2500,7 +2531,7 @@ ACS BBnd Sbscr x Rurality
 </tr>
 <tr>
 <td style="text-align:left">
-BBnd QoS x Rurality
+pct_bb_qos:IRR2010
 </td>
 <td>
 </td>
@@ -2531,51 +2562,6 @@ BBnd QoS x Rurality
 </td>
 <td>
 (7.821)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Constant
-</td>
-<td>
--6.079
-</td>
-<td>
--5.902
-</td>
-<td>
-3.963
-</td>
-<td>
-11.136
-</td>
-<td>
-7.010
-</td>
-<td>
--2.764
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-</td>
-<td>
-(11.160)
-</td>
-<td>
-(9.979)
-</td>
-<td>
-(8.934)
-</td>
-<td>
-(7.998)
-</td>
-<td>
-(9.825)
-</td>
-<td>
-(8.798)
 </td>
 </tr>
 <tr>
@@ -2718,13 +2704,13 @@ F Statistic (df = 13; 349)
 <div id="nonfarm-proprietors-share-2018-1" class="section level3">
 <h3>Nonfarm Proprietors Share (2018)</h3>
 <p>For nonfarm proprietors share, the models show significant interaction effects of faster broadband availability and rurality. Using <code>sjPlot</code> package’s <code>plot_model</code> function, I will plot interaction effects below.</p>
-<p><img src="regression-analyses_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-17-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-17-3.png" width="672" /></p>
+<p><img src="regression-analyses_files/figure-html/unnamed-chunk-49-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-49-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-49-3.png" width="672" /></p>
 <p>Generally, the interaction results indicate that the effect of broadband availability becomes significantly positive for more rural areas of Texas, Maine, and Kansas. In addition, the magnitude of positive effect becomes greater for faster broadband availability. That is, having broadband faster than 100/10 Mbps level available is positively related to nonfarm proprietors share in more rural areas.</p>
 </div>
 <div id="average-venture-density-2020" class="section level3">
 <h3>Average Venture Density (2020)</h3>
 <p>For venture density, broadband measures except availability of 1000/100 Mbps level broadband showed significant interaction with rurality. However, the results are confounding as the direction of the effects are opposite to initial hypotheses.</p>
-<p><img src="regression-analyses_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-3.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-4.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-18-5.png" width="672" /></p>
+<p><img src="regression-analyses_files/figure-html/unnamed-chunk-50-1.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-50-2.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-50-3.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-50-4.png" width="672" /><img src="regression-analyses_files/figure-html/unnamed-chunk-50-5.png" width="672" /></p>
 </div>
 </div>
 
