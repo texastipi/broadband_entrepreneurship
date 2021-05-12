@@ -127,7 +127,7 @@ mod.1.QoS <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
                   pct_bb_qos * IRR2010, data = d)
 
 ## Generate Table
-stargazer(mod.1.FCC.25.3, mod.1.FCC.100.10, mod.1.FCC.250.25, mod.1.FCC.1000.100, mod.1.ACS, mod.1.QoS, title = "Nonfarm Proprietors Share Regression Results", type = "html",
+stargazer(mod.1.FCC.25.3, mod.1.FCC.100.10, mod.1.FCC.250.25, mod.1.FCC.1000.100, mod.1.ACS, mod.1.QoS, title = "Nonfarm Proprietors Share Regression Results", type = "html", style = "ajs",
           digits = 3, dep.var.caption = "Nonfarm Proprietors Share (2018)",
           align = TRUE, dep.var.labels.include = F, intercept.bottom = F, intercept.top = T,
           covariate.labels = c("(Intercept)","GenZ", "Millennial", "GenX", "Boomers",
@@ -213,7 +213,7 @@ mod.2.QoS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
                   pct_bb_qos * IRR2010, data = d)
 
 ## Generate Table
-stargazer(mod.2.FCC.25.3, mod.2.FCC.100.10, mod.2.FCC.250.25, mod.2.FCC.1000.100, mod.2.ACS, mod.2.QoS, title = "Average Venture Density Regression Results", type = "html",
+stargazer(mod.2.FCC.25.3, mod.2.FCC.100.10, mod.2.FCC.250.25, mod.2.FCC.1000.100, mod.2.ACS, mod.2.QoS, title = "Average Venture Density Regression Results", type = "html", style = "ajs",
           digits = 3, dep.var.caption = "Average Venture Density (2020)",
           align = TRUE, dep.var.labels.include = F, intercept.bottom = F, intercept.top = T,
           covariate.labels = c("(Intercept)","GenZ", "Millennial", "GenX", "Boomers",
