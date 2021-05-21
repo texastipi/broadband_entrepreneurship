@@ -141,23 +141,30 @@ table(d2$BB_adoption_high)
 table(d2$BB_qos_high)
 
 ## Set cut points for each covariate
-popcut <- hist(d2$LNpop_2018, br=seq(min(d2$LNpop_2018, na.rm = T), max(d2$LNpop_2018, na.rm = T), length.out = 4), plot = F)$breaks
-indstrycut <- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 4), plot = F)$breaks
-educut <- hist(d2$pctbachelors_2018, br=seq(min(d2$pctbachelors_2018), max(d2$pctbachelors_2018), length.out = 4), plot = F)$breaks
-unempcut <- hist(d2$pct_unemployment_2018, br=seq(min(d2$pct_unemployment_2018), max(d2$pct_unemployment_2018), length.out = 4), plot = F)$breaks
+popcut <- hist(d2$LNpop_2018, br=seq(min(d2$LNpop_2018, na.rm = T), max(d2$LNpop_2018, na.rm = T), length.out = 5), plot = F)$breaks
 
-mycp <- list(LNpop_2018 = popcut, indstry_diversity = indstrycut, pctbachelors_2018 = educut, pct_unemployment_2018 = unempcut)
+indstrycut <- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 5), plot = F)$breaks
+
+educut <- hist(d2$pctbachelors_2018, br=seq(min(d2$pctbachelors_2018), max(d2$pctbachelors_2018), length.out = 5), plot = F)$breaks
+
+unempcut <- hist(d2$pct_unemployment_2018, br=seq(min(d2$pct_unemployment_2018), max(d2$pct_unemployment_2018), length.out = 5), plot = F)$breaks
+
+# Ruralities
+irrcut <- hist(d2$IRR2010, br = seq(min(d2$IRR2010), max(d2$IRR2010), length.out = 5), plot = F)$breaks
+
+
+mycp <- list(LNpop_2018 = popcut, indstry_diversity = indstrycut, pctbachelors_2018 = educut, pct_unemployment_2018 = unempcut, IRR2010 = irrcut)
 
 ## List of covariates
-vars <- c("LNpop_2018", "indstry_diversity", "pctbachelors_2018", "pct_unemployment_2018")
-droplst <- c("pct_nonfarm_bea_2018", "vd_mean_20", "havd_mean_20", "nonfarmprop_percapita", "RUCC_2013", "metro_f", "IRR2010")
+vars <- c("LNpop_2018", "indstry_diversity", "pctbachelors_2018", "pct_unemployment_2018", "IRR2010")
+
+droplst <- c("pct_nonfarm_bea_2018", "vd_mean_20", "havd_mean_20", "nonfarmprop_percapita", "metro_f")
 
 #### Treatment: BB_25_3_high ####
 
 d25_3 <- d2 %>% select(BB_25_3_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 d25_3 <- data.frame(na.omit(d25_3))
 
 ## Overall imbalance check
@@ -176,8 +183,7 @@ match_fcc_25_3
 
 d100_10 <- d2 %>% select(BB_100_10_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 d100_10 <- data.frame(na.omit(d100_10))
 
 ## Overall imbalance check
@@ -196,8 +202,7 @@ match_fcc_100_10
 
 d250_25 <- d2 %>% select(BB_250_25_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 d250_25 <- data.frame(na.omit(d250_25))
 
 ## Overall imbalance check
@@ -216,8 +221,7 @@ match_fcc_250_25
 
 d1000_100 <- d2 %>% select(BB_1000_100_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 d1000_100 <- data.frame(na.omit(d1000_100))
 
 ## Overall imbalance check
@@ -236,8 +240,7 @@ match_fcc_1000_100
 
 dadoption <- d2 %>% select(BB_adoption_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 dadoption <- data.frame(na.omit(dadoption))
 
 ## Overall imbalance check
@@ -256,8 +259,7 @@ match_fcc_adoption
 
 dqos <- d2 %>% select(BB_qos_high,
                     pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
 dqos <- data.frame(na.omit(dqos))
 
 ## Overall imbalance check
@@ -284,22 +286,22 @@ In this section, I will use linear model to estimate the sample average treatmen
 
 #### Treatment: BB_25_3_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_25_3_nonfarm <- att(match_fcc_25_3, pct_nonfarm_bea_2018 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_nonfarm <- att(match_fcc_25_3, pct_nonfarm_bea_2018 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_nonfarm)
 
 #### Treatment: BB_25_3_high & Outcome: vd_mean_20 ####
 
-mod_25_3_vd <- att(match_fcc_25_3, vd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_vd <- att(match_fcc_25_3, vd_mean_20 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_vd)
 
 #### Treatment: BB_25_3_high & Outcome: havd_mean_20 ####
 
-mod_25_3_havd <- att(match_fcc_25_3, havd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_havd <- att(match_fcc_25_3, havd_mean_20 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_havd)
 
 #### Treatment: BB_25_3_high & Outcome: nonfarmprop_percapita ####
 
-mod_25_3_nonfarmpc <- att(match_fcc_25_3, nonfarmprop_percapita ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_nonfarmpc <- att(match_fcc_25_3, nonfarmprop_percapita ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_nonfarmpc)
 
 ```
@@ -310,22 +312,22 @@ summary(mod_25_3_nonfarmpc)
 
 #### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_100_10_nonfarm <- att(match_fcc_100_10, pct_nonfarm_bea_2018 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_nonfarm <- att(match_fcc_100_10, pct_nonfarm_bea_2018 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
 
-mod_100_10_vd <- att(match_fcc_100_10, vd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_vd <- att(match_fcc_100_10, vd_mean_20 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_vd)
 
 #### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
 
-mod_100_10_havd <- att(match_fcc_100_10, havd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_havd <- att(match_fcc_100_10, havd_mean_20 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_havd)
 
 #### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
 
-mod_100_10_nonfarmpc <- att(match_fcc_100_10, nonfarmprop_percapita ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_nonfarmpc <- att(match_fcc_100_10, nonfarmprop_percapita ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_nonfarmpc)
 
 ```
@@ -336,22 +338,22 @@ summary(mod_100_10_nonfarmpc)
 
 #### Treatment: BB_250_25_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_250_25_nonfarm <- att(match_fcc_250_25, pct_nonfarm_bea_2018 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_nonfarm <- att(match_fcc_250_25, pct_nonfarm_bea_2018 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_nonfarm)
 
 #### Treatment: BB_250_25_high & Outcome: vd_mean_20 ####
 
-mod_250_25_vd <- att(match_fcc_250_25, vd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_vd <- att(match_fcc_250_25, vd_mean_20 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_vd)
 
 #### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
 
-mod_250_25_havd <- att(match_fcc_250_25, havd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_havd <- att(match_fcc_250_25, havd_mean_20 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_havd)
 
 #### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
 
-mod_250_25_nonfarmpc <- att(match_fcc_250_25, nonfarmprop_percapita ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_nonfarmpc <- att(match_fcc_250_25, nonfarmprop_percapita ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_nonfarmpc)
 
 ```
@@ -362,22 +364,22 @@ summary(mod_250_25_nonfarmpc)
 
 #### Treatment: BB_1000_100_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_1000_100_nonfarm <- att(match_fcc_1000_100, pct_nonfarm_bea_2018 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_nonfarm <- att(match_fcc_1000_100, pct_nonfarm_bea_2018 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
 
-mod_1000_100_vd <- att(match_fcc_1000_100, vd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_vd <- att(match_fcc_1000_100, vd_mean_20 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_vd)
 
 #### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
 
-mod_1000_100_havd <- att(match_fcc_1000_100, havd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_havd <- att(match_fcc_1000_100, havd_mean_20 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_havd)
 
 #### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
 
-mod_1000_100_nonfarmpc <- att(match_fcc_1000_100, nonfarmprop_percapita ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_nonfarmpc <- att(match_fcc_1000_100, nonfarmprop_percapita ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_nonfarmpc)
 
 ```
@@ -388,22 +390,22 @@ summary(mod_1000_100_nonfarmpc)
 
 #### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_adoption_nonfarm <- att(match_fcc_adoption, pct_nonfarm_bea_2018 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_nonfarm <- att(match_fcc_adoption, pct_nonfarm_bea_2018 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
 
-mod_adoption_vd <- att(match_fcc_adoption, vd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_vd <- att(match_fcc_adoption, vd_mean_20 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_vd)
 
 #### Treatment: BB_100_10_high & Outcome: havd_mean_20 ####
 
-mod_adoption_havd <- att(match_fcc_adoption, havd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_havd <- att(match_fcc_adoption, havd_mean_20 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_havd)
 
 #### Treatment: BB_100_10_high & Outcome: nonfarmprop_percapita ####
 
-mod_adoption_nonfarmpc <- att(match_fcc_adoption, nonfarmprop_percapita ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_nonfarmpc <- att(match_fcc_adoption, nonfarmprop_percapita ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_nonfarmpc)
 
 ```
@@ -414,22 +416,22 @@ summary(mod_adoption_nonfarmpc)
 
 #### Treatment: BB_qos_high & Outcome: pct_nonfarm_bea_2018 ####
 
-mod_qos_nonfarm <- att(match_fcc_qos, pct_nonfarm_bea_2018 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_nonfarm <- att(match_fcc_qos, pct_nonfarm_bea_2018 ~ BB_qos_high, data = dqos)
 summary(mod_qos_nonfarm)
 
 #### Treatment: BB_qos_high & Outcome: vd_mean_20 ####
 
-mod_qos_vd <- att(match_fcc_qos, vd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_vd <- att(match_fcc_qos, vd_mean_20 ~ BB_qos_high, data = dqos)
 summary(mod_qos_vd)
 
 #### Treatment: BB_qos_high & Outcome: havd_mean_20 ####
 
-mod_qos_havd <- att(match_fcc_qos, havd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_havd <- att(match_fcc_qos, havd_mean_20 ~ BB_qos_high, data = dqos)
 summary(mod_qos_havd)
 
 #### Treatment: BB_qos_high & Outcome: nonfarmprop_percapita ####
 
-mod_qos_nonfarmpc <- att(match_fcc_qos, nonfarmprop_percapita ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_nonfarmpc <- att(match_fcc_qos, nonfarmprop_percapita ~ BB_qos_high, data = dqos)
 summary(mod_qos_nonfarmpc)
 
 ```
