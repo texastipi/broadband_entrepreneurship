@@ -1,5 +1,5 @@
 #### Regression with only rural counties ####
-
+set.seed(5000)
 library(tidyverse)
 library(ggplot2)
 

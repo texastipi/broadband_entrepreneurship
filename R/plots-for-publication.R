@@ -5,6 +5,14 @@ rm(list = ls())
 d <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv")
 names(d)
 
+## For state breakdown
+# TX
+d <- d %>% filter(ST == "TX")
+# KS
+d <- d %>% filter(ST == "KS")
+# ME
+d <- d %>% filter(ST == "ME")
+
 #### Distribution histograms of variables ####
 # Broadband 25/3
 hist_fcc25_3 <- ggplot(d) +
@@ -107,11 +115,6 @@ hist_rucc <- ggplot(d) +
   theme(axis.title = element_text(size = 11, face = "bold"),
         axis.text = element_text(size = 11))
 
-
-histogram_grid <- gridExtra::grid.arrange(hist_fcc25_3, hist_fcc100_10, hist_fcc250_25, hist_fcc1000_100,
-                        hist_nfprop, hist_vd, hist_irr, hist_rucc,
-                        ncol = 2 , nrow = 4, top = "Distribution Histograms")
-
 #### Scatter plots of broadband & entrepreneurship measures ####
 ## Nonfarm proprietors share ##
 # Broadband 25/3
@@ -169,10 +172,6 @@ scat_bbqos_nfprop <- ggplot(d, aes(x = pct_bb_qos, y = pct_nonfarm_bea_2018)) +
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::percent)
 
-bb_nfprop_grid <- gridExtra::grid.arrange(scat_fcc25_3_nfprop, scat_fcc100_10_nfprop, scat_fcc250_25_nfprop, scat_fcc1000_100_nfprop,
-                                          scat_bbadopt_nfprop, scat_bbqos_nfprop,
-                                          nrow = 3, ncol = 2, top = "Broadband & Nonfarm Proprietor Share")
-
 ## Average Venture Density ##
 # Broadband 25/3
 scat_bb25_3_vd <- ggplot(d, aes(x = pct25_3_dec_2019_fcc, y = vd_mean_20)) +
@@ -222,10 +221,6 @@ scat_bbqos_vd <- ggplot(d, aes(x = pct_bb_qos, y = vd_mean_20)) +
   theme_minimal() + theme(axis.title = element_text(size = 11, face = "bold"),
                           axis.text = element_text(size = 11)) +
   scale_x_continuous(labels = scales::percent)
-
-bb_vd_grid <- gridExtra::grid.arrange(scat_bb25_3_vd, scat_bb100_10_vd, scat_bb250_25_vd, scat_bb1000_100_vd,
-                                          scat_bbadopt_vd, scat_bbqos_vd,
-                                          nrow = 3, ncol = 2, top = "Broadband & Average Venture Density")
 
 #### Scatter plots of Broadband / Entrepreneurship measures with rurality measures ####
 ## IRR 2010 ##
@@ -295,11 +290,6 @@ scat_vd_irr <- ggplot(d, aes(x = IRR2010, y = vd_mean_20)) +
                           axis.text = element_text(size = 11)) +
   scale_y_continuous(labels = scales::percent)
 
-bb_ent_irr_grid <- gridExtra::grid.arrange(scat_bb25_3_irr, scat_bb100_10_irr, scat_bb250_25_irr, scat_bb1000_100_irr,
-                                          scat_bbadopt_irr, scat_bbqos_irr,
-                                          scat_nfprop_irr, scat_vd_irr,
-                                          nrow = 4, ncol = 2, top = "Broadband, Entreprenuership & IRR")
-
 ## RUCC (2013) ##
 # Broadband 25/3
 scat_bb25_3_rucc <- ggplot(d, aes(x = RUCC_cat, y = pct25_3_dec_2019_fcc)) +
@@ -368,15 +358,9 @@ scat_vd_rucc <- ggplot(d, aes(x = RUCC_cat, y = vd_mean_20)) +
   theme_minimal() + theme(axis.title = element_text(size = 11, face = "bold"),
                           axis.text = element_text(size = 11)) +
   scale_y_continuous(labels = scales::percent)
-  
-bb_ent_rucc_grid <- gridExtra::grid.arrange(scat_bb25_3_rucc, scat_bb100_10_rucc, scat_bb250_25_rucc, scat_bb1000_100_rucc,
-                                       scat_bbadopt_rucc, scat_bbqos_rucc,
-                                       scat_nfprop_rucc, scat_vd_rucc,
-                                       nrow = 4, ncol = 2, top = "Broadband, Entrepreneurship & RUCC")
-
 
 # Save as pdf file
-pdf(file = "variable-plots.pdf", paper = "letter")
+pdf(file = "variable-plots-ME.pdf", paper = "letter")
 
 gridExtra::grid.arrange(hist_fcc25_3, hist_fcc100_10, hist_fcc250_25, hist_fcc1000_100,
                         hist_nfprop, hist_vd, hist_irr, hist_rucc,
@@ -400,5 +384,8 @@ gridExtra::grid.arrange(scat_bb25_3_rucc, scat_bb100_10_rucc, scat_bb250_25_rucc
                         scat_nfprop_rucc, scat_vd_rucc,
                         nrow = 4, ncol = 2, top = "Broadband, Entrepreneurship & RUCC")
 dev.off()
+
+
+
 
 
