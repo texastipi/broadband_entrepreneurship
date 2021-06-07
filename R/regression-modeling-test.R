@@ -28,19 +28,19 @@ colnames(d)
 
 ## First I want to see whether we could integrate M-Lab and Microsoft
 bb_qos <- d %>% select(pct_broadband_MS, pct_broadband_mlab)
-alpha(bb_qos)
+psych::alpha(bb_qos)
 # Alpha is 0.82, the correlation is 0.7. I'll create a composite score of the two
 bb_qos_score <- scoreItems(keys = c(1:length(bb_qos)), impute = "mean", items = bb_qos)
 # Add the score to the dataset
 d$pct_bb_qos <- bb_qos_score$scores[,]
 # Another indexing strategy: Standardize each, add the two, and normalize
-d <- d %>% mutate(pct_bb_qos_2 = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
+d <- d %>% mutate(pct_bb_qos = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
                                       range = c(0,100))/100)
 # Explore the distribution
 grid.arrange(ggplot(d, aes(x = pct_broadband_MS)) + geom_histogram(),
              ggplot(d, aes(x = pct_broadband_mlab)) + geom_histogram(),
              ggplot(d, aes(x = pct_bb_qos)) + geom_histogram(),
-             ggplot(d, aes(x = pct_bb_qos_2)) + geom_histogram(),
+             ggplot(d, aes(x = pct_bb_qos)) + geom_histogram(),
              nrow = 2, ncol = 2)
 # Explore the correlation b/w M-Lab, MS, and the composite score
 grid.arrange(ggscatter(d, x = "pct_broadband_MS", y = "pct_broadband_mlab",
@@ -49,46 +49,45 @@ grid.arrange(ggscatter(d, x = "pct_broadband_MS", y = "pct_broadband_mlab",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              ggscatter(d, x = "pct_broadband_mlab", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             ggscatter(d, x = "pct_broadband_MS", y = "pct_bb_qos_2",
+             ggscatter(d, x = "pct_broadband_MS", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             ggscatter(d, x = "pct_broadband_mlab", y = "pct_bb_qos_2",
+             ggscatter(d, x = "pct_broadband_mlab", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             ggscatter(d, x = "pct_bb_qos", y = "pct_bb_qos_2",
+             ggscatter(d, x = "pct_bb_qos", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              nrow = 3, ncol = 3)
 # Descriptive statistics
 describe(select(d, pct_broadband_MS, pct_broadband_mlab, pct_bb_qos))
 
 ## Secondly I'll explore correlation b/w availability (FCC), adoption (Subscription), and QoS (composite score) in general
-describe(select(d, pct_bb_fcc_2019, pct_fixed_acs_2018, pct_bb_qos))
+describe(select(d, pct25_3_dec_2019_fcc, pct_fixed_acs_2018, pct_bb_qos))
 
-grid.arrange(ggscatter(d, x = "pct_bb_fcc_2019", y = "pct_fixed_acs_2018",
+grid.arrange(ggscatter(d, x = "pct25_3_dec_2019_fcc", y = "pct_fixed_acs_2018",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             ggscatter(d, x = "pct_bb_fcc_2019", y = "pct_bb_qos",
+             ggscatter(d, x = "pct25_3_dec_2019_fcc", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              ggscatter(d, x = "pct_fixed_acs_2018", y = "pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              nrow = 1, ncol = 3)
 
 # Standardizing the broadband measures
-d <- d %>% mutate(s.pct_bb_fcc_2019 = scale(pct_bb_fcc_2019)[,],
+d <- d %>% mutate(s.pct25_3_dec_2019_fcc = scale(pct25_3_dec_2019_fcc)[,],
              s.pct_fixed_acs_2018 = scale(pct_fixed_acs_2018)[,],
-             s.pct_bb_qos = scale(pct_bb_qos)[,],
-             s.pct_bb_qos_2 = scale(pct_bb_qos_2)[,])
+             s.pct_bb_qos = scale(pct_bb_qos)[,])
 
-grid.arrange(ggscatter(d, x = "s.pct_bb_fcc_2019", y = "s.pct_fixed_acs_2018",
+grid.arrange(ggscatter(d, x = "s.pct25_3_dec_2019_fcc", y = "s.pct_fixed_acs_2018",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
-             ggscatter(d, x = "s.pct_bb_fcc_2019", y = "s.pct_bb_qos",
+             ggscatter(d, x = "s.pct25_3_dec_2019_fcc", y = "s.pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              ggscatter(d, x = "s.pct_fixed_acs_2018", y = "s.pct_bb_qos",
                        add = "reg.line", conf.int = T, cor.coef = T, cor.method = "pearson"),
              nrow = 1, ncol = 3)
 
 # Create an index averaging broadband measures
-d <- d %>% mutate(bb_composite = (pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos)/3,
-                  bb_composite_w = (pct_bb_fcc_2019*.25) + (pct_fixed_acs_2018*.25) + (pct_bb_qos*.5))
+d <- d %>% mutate(bb_composite = (pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos)/3,
+                  bb_composite_w = (pct25_3_dec_2019_fcc*.25) + (pct_fixed_acs_2018*.25) + (pct_bb_qos*.5))
 
-describe(select(d, pct_bb_fcc_2019, pct_fixed_acs_2018, pct_bb_qos, s.pct_bb_fcc_2019, s.pct_fixed_acs_2018, s.pct_bb_qos,
+describe(select(d, pct25_3_dec_2019_fcc, pct_fixed_acs_2018, pct_bb_qos, s.pct25_3_dec_2019_fcc, s.pct_fixed_acs_2018, s.pct_bb_qos,
                 bb_composite, bb_composite_w))
 
 ## Although significant correlations, there seems to be quite a discrepencies b/w the measures
@@ -97,15 +96,15 @@ describe(select(d, pct_bb_fcc_2019, pct_fixed_acs_2018, pct_bb_qos, s.pct_bb_fcc
 ## I calculate first the raw difference by simply substracting the two numbers
 ## Secondly, I calculate percentage difference b/w the two measures by dividing the absolute difference by their average
 
-d <- d %>% mutate(bb_avail_adopt.raw = (pct_bb_fcc_2019 - pct_fixed_acs_2018),
-                  bb_avail_qos.raw = (pct_bb_fcc_2019 - pct_bb_qos_2),
-                  bb_adopt_qos.raw = (pct_fixed_acs_2018 - pct_bb_qos_2),
-                  bb_avail_adopt.rs = scales::rescale((s.pct_bb_fcc_2019 - s.pct_fixed_acs_2018)),
-                  bb_avail_qos.rs = scales::rescale((s.pct_bb_fcc_2019 - s.pct_bb_qos_2)),
-                  bb_adopt_qos.rs = scales::rescale((s.pct_fixed_acs_2018 - s.pct_bb_qos_2)),
-                  bb_avail_adopt.pct = abs((pct_bb_fcc_2019 - pct_fixed_acs_2018))/((pct_bb_fcc_2019 + pct_fixed_acs_2018)/2),
-                  bb_avail_qos.pct = abs((pct_bb_fcc_2019 - pct_bb_qos_2))/((pct_bb_fcc_2019 + pct_bb_qos_2)/2),
-                  bb_adopt_qos.pct = abs((pct_fixed_acs_2018 - pct_bb_qos_2))/((pct_fixed_acs_2018 + pct_bb_qos_2)/2))
+d <- d %>% mutate(bb_avail_adopt.raw = (pct25_3_dec_2019_fcc - pct_fixed_acs_2018),
+                  bb_avail_qos.raw = (pct25_3_dec_2019_fcc - pct_bb_qos),
+                  bb_adopt_qos.raw = (pct_fixed_acs_2018 - pct_bb_qos),
+                  bb_avail_adopt.rs = scales::rescale((s.pct25_3_dec_2019_fcc - s.pct_fixed_acs_2018)),
+                  bb_avail_qos.rs = scales::rescale((s.pct25_3_dec_2019_fcc - s.pct_bb_qos)),
+                  bb_adopt_qos.rs = scales::rescale((s.pct_fixed_acs_2018 - s.pct_bb_qos)),
+                  bb_avail_adopt.pct = abs((pct25_3_dec_2019_fcc - pct_fixed_acs_2018))/((pct25_3_dec_2019_fcc + pct_fixed_acs_2018)/2),
+                  bb_avail_qos.pct = abs((pct25_3_dec_2019_fcc - pct_bb_qos))/((pct25_3_dec_2019_fcc + pct_bb_qos)/2),
+                  bb_adopt_qos.pct = abs((pct_fixed_acs_2018 - pct_bb_qos))/((pct_fixed_acs_2018 + pct_bb_qos)/2))
 # Descriptive statistics
 describe(select(d, bb_avail_adopt.raw, bb_avail_qos.raw, bb_adopt_qos.raw,
                 bb_avail_adopt.pct, bb_avail_qos.pct, bb_adopt_qos.pct,
@@ -160,7 +159,7 @@ ggscatter(d, x = "bb_adopt_qos.rs", y = "vd_mean_20",
 #### Regression Modeling ####
 ## See whether the composite QoS variables work inside our previous models ##
 
-mod1.1 <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
+mod1.1 <- lm(pct_nonfarm_bea_2018 ~ pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
              pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + 
              pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + 
              pctpublic_admin_2019 + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + 
@@ -168,7 +167,7 @@ mod1.1 <- lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_b
            data = d)
 summary(mod1.1)
 
-mod2.1 <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
+mod2.1 <- lm(pct_chg_bea_2012_2018 ~ pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
              pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + 
              pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + 
              pctpublic_admin_2019 + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + 
@@ -176,7 +175,7 @@ mod2.1 <- lm(pct_chg_bea_2012_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_
            data = d)
 summary(mod2.1)
 
-mod3.1 <- lm(venturedensity_mean ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
+mod3.1 <- lm(venturedensity_mean ~ pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos + IRR2010 + 
                pctagriculture_2019 + pctconstruction_2019 + pctwholesale_2019 + pctretail_2019 + pcttransportation_2019 + 
                pctinformation_2019 + pctfinance_2019 + pctprofessional_2019 + pctedu_healthcare_social_2019 + pctother_occupation_2019 + 
                pctpublic_admin_2019 + indstry_diversity + pctlessthanhigh_2019 + pctbachelors_2019 + pctgraduate_2019 + pctmilennial_2019 + 
@@ -306,10 +305,10 @@ d %>% dplyr::group_by(cluster) %>% summarize(obs = n(),
                                              milennial = mean(pctmilennial_2019),
                                              agriculture = mean(pctagriculture_2019))
 # Try whether different clusters show different results for the regression analysis
-test <- d %>% filter(cluster == 3) %>% lm(pct_nonfarm_bea_2018 ~ pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos,
+test <- d %>% filter(cluster == 3) %>% lm(pct_nonfarm_bea_2018 ~ pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos,
                                           data = .)
 summary(test)
 
-summary(lm(pct_nonfarm_bea_2018 ~ IRR2010 + pct_bb_fcc_2019 + pct_fixed_acs_2018 + pct_bb_qos, data = d))
+summary(lm(pct_nonfarm_bea_2018 ~ IRR2010 + pct25_3_dec_2019_fcc + pct_fixed_acs_2018 + pct_bb_qos, data = d))
 
 

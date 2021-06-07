@@ -1,5 +1,5 @@
 #### Regression Outlier Detection ####
-
+set.seed(5000)
 library(tidyverse)
 library(car)
 
@@ -284,16 +284,12 @@ plot_model(mod.1.QoS_noout, type = "pred", terms = c("pct_bb_qos", "IRR2010"),
   legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
 
-
-
 plot_model(mod.2.ACS_noout, type = "pred", terms = c("pct_fixed_acs_2018", "IRR2010"),
                     title = "", ci.lvl = NA,
                     axis.title = c("ACS Fixed Broadband Subscription (%, 2018)", "Venture Density (2020)"),
                     legend.title = "Rurality Index (IRR)") + 
   legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
-
-
 
 plot_model(mod.2.QoS_noout, type = "pred", terms = c("pct_bb_qos", "IRR2010"),
                     title = "", ci.lvl = NA,
