@@ -321,7 +321,7 @@ library(tidyverse)
 library(cem)
 library(ggplot2)</code></pre>
 <p>Clean the worksapce and import raw dataset from GitHub repository.</p>
-<pre class="r"><code>rm(list = ls())     # Clean workspace
+<pre class="r"><code>#rm(list = ls())     # Clean workspace
 
 d &lt;- read_csv(&quot;https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/Broadband-Entrepreneurship-TXKSME.csv&quot;)
 glimpse(d)</code></pre>
@@ -336,28 +336,28 @@ glimpse(d)</code></pre>
 <li><code>pct_100_10_dec_2019_fcc</code>: FCC 477 availability of broadband at 100/10Mbps per county (%, data as of Dec 2019)</li>
 <li><code>pct_250_25_dec_2019_fcc</code>: FCC 477 availability of broadband at 250/25Mbps per county (%, data as of Dec 2019)</li>
 <li><code>pct_1000_100_dec_2019_fcc</code>: FCC 477 availability of broadband at 1000/100Mbps per county (%, data as of Dec 2019)</li>
-<li><code>pct_fixed_acs_2018</code>: Fixed broadband service subscription according to ACS 5-year estimates (%, 2018)</li>
-<li><code>pct_bb_qos</code>: Compostive broadband quality of service (QoS) measure based on Microsoft’s broadband through-put data (2019) and Mlab’s broadband test data (2018-2019) (%)</li>
+<li><code>pct_fixed_acs_2019</code>: Fixed broadband service subscription according to ACS 5-year estimates (%, 2019)</li>
+<li><code>pct_bb_qos</code>: Compostive broadband quality of service (QoS) measure based on Microsoft’s broadband through-put data (2020) and Mlab’s broadband test data (2018-2019) (%)</li>
 </ul>
 </div>
 <div id="outcome" class="section level4">
 <h4>Outcome</h4>
 <p>For the entrepreneurial outcome variables, we investigate several measures of entrepreneurship that were used in the traditional multiple regression analysis. In addition, we explore non-farm proprietorship per capita as a new possible representation of entrepreneurship in a county.</p>
 <ul>
-<li><code>pct_nonfarm_bea_2018</code>: Share of non-farm proprietors over total employment of a county (%, 2018; Source: BEA)</li>
+<li><code>pct_nonfarm_bea_2019</code>: Share of non-farm proprietors over total employment of a county (%, 2019; Source: BEA)</li>
 <li><code>vd_mean_20</code>: Average venture density (2020; Source: GoDaddy)</li>
 <li><code>havd_mean_20</code>: Average highly active venture density (2020; Source: GoDaddy)</li>
-<li><code>nonfarmprop_percapita</code>: Number of non-farm proprietors per capita (2018; Source: BEA)</li>
+<li><code>nonfarmprop_percapita</code>: Number of non-farm proprietors per capita (2019; Source: BEA)</li>
 </ul>
 </div>
 <div id="covariates" class="section level4">
 <h4>Covariates</h4>
 <p>For covariates, we include several economic and demographic variables that could be closely related to the imbalance within the sample. To give an example, Gallardo et al. (2021) used natural log of population, % of people with bachelor’s degree, unemployment rate, and industry diversity index. Our full regression models used industry characteristics, education, age, and rurality as control variables. Here, we will use log of population, % of people with bachelor’s degree, unemployment rate, industry diversity index as covariates for matching. Rurality measures will be investigated in relation to the broadband treatments in the following regression models.</p>
 <ul>
-<li>Log of <code>population_2018</code>: Natural log of county population (2018)</li>
+<li>Log of <code>population_2019</code>: Natural log of county population (2019)</li>
 <li><code>indstry_diversity</code>: Industry diversty index calculated based on methods described by Gallardo et al. (2021)</li>
-<li><code>pctbachelors_2018</code>: % of people with Bachelor’s degree (2018; Source: ACS 5-year estimates)</li>
-<li><code>pct_unemployment_2018</code>: Unemployment rate (2018; Source: ACS 5-year estimates)</li>
+<li><code>pctbachelors_2019</code>: % of people with Bachelor’s degree (2019; Source: ACS 5-year estimates)</li>
+<li><code>pct_unemployment_2019</code>: Unemployment rate (2019; Source: ACS 5-year estimates)</li>
 </ul>
 </div>
 <div id="rurality-measures-as-additional-independent-variable" class="section level4">
@@ -365,33 +365,33 @@ glimpse(d)</code></pre>
 <ul>
 <li><code>RUCC_2013</code>: Rural-Urban Continuum Codes developed by <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">USDA (2013)</a></li>
 <li><code>metro_f</code>: Metro/Non-Metro categories based on the RUCC documentation</li>
-<li><code>IRR2010</code>: Rurality index created by <a href="https://purr.purdue.edu/publications/2960/1">Waldorf &amp; Kim (2018)</a>. Continuous measure ranging from 0 to 1</li>
+<li><code>IRR2010</code>: Rurality index created by <a href="https://purr.purdue.edu/publications/2960/1">Waldorf &amp; Kim (2019)</a>. Continuous measure ranging from 0 to 1</li>
 </ul>
 </div>
 </div>
 <div id="data-preparation-and-matching" class="section level3">
 <h3>Data Preparation and Matching</h3>
 <p>Let’s first create a subset of data with only the variables we need and some basic identities.</p>
-<pre class="r"><code>## Subset data with the aforementioned variables, create NLpop_2018 (natural log of population)
+<pre class="r"><code>## Subset data with the aforementioned variables, create NLpop_2019 (natural log of population)
 
 d2 &lt;- d %&gt;% select(county_FIPS, county.x,
                    pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
-                   pct_fixed_acs_2018, pct_bb_qos,
-                   pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                   population_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, RUCC_2013, metro_f, IRR2010) %&gt;% 
-  mutate(LNpop_2018 = log(population_2018))</code></pre>
+                   pct_fixed_acs_2019, pct_bb_qos,
+                   pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                   population_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, RUCC_2013, metro_f, IRR2010) %&gt;% 
+  mutate(LNpop_2019 = log(population_2019))</code></pre>
 <p>Let’s create treatment variables by recoding the original variables. First, we’ll take a look at the variables distribution and create categories. For matching to work and be useful in the final analysis, we create categories based on average.</p>
 <pre class="r"><code>## Take a look at the broadband variable summaries
 
 d2 %&gt;% select(pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
-             pct_fixed_acs_2018, pct_bb_qos) %&gt;% summary()</code></pre>
-<pre><code>##  pct25_3_dec_2019_fcc pct100_10_dec_2019_fcc pct250_25_dec_2019_fcc pct1000_100_dec_2019_fcc pct_fixed_acs_2018   pct_bb_qos    
-##  Min.   :0.0009918    Min.   :0.0000         Min.   :0.00000        Min.   :0.00000          Min.   :0.1390     Min.   :0.0000  
-##  1st Qu.:0.7885686    1st Qu.:0.4003         1st Qu.:0.04303        1st Qu.:0.00000          1st Qu.:0.4190     1st Qu.:0.1735  
-##  Median :0.9193920    Median :0.6730         Median :0.44859        Median :0.02025          Median :0.5050     Median :0.2876  
-##  Mean   :0.8468896    Mean   :0.6052         Mean   :0.44310        Mean   :0.16860          Mean   :0.5066     Mean   :0.3207  
-##  3rd Qu.:0.9910699    3rd Qu.:0.8776         3rd Qu.:0.78722        3rd Qu.:0.24036          3rd Qu.:0.5895     3rd Qu.:0.4581  
-##  Max.   :1.0000000    Max.   :1.0000         Max.   :1.00000        Max.   :1.00000          Max.   :0.8340     Max.   :1.0000</code></pre>
+             pct_fixed_acs_2019, pct_bb_qos) %&gt;% summary()</code></pre>
+<pre><code>##  pct25_3_dec_2019_fcc pct100_10_dec_2019_fcc pct250_25_dec_2019_fcc pct1000_100_dec_2019_fcc pct_fixed_acs_2019   pct_bb_qos    
+##  Min.   :0.0009918    Min.   :0.0000         Min.   :0.00000        Min.   :0.00000          Min.   :0.0960     Min.   :0.0000  
+##  1st Qu.:0.7885686    1st Qu.:0.4003         1st Qu.:0.04303        1st Qu.:0.00000          1st Qu.:0.4280     1st Qu.:0.2158  
+##  Median :0.9193920    Median :0.6730         Median :0.44859        Median :0.02025          Median :0.5190     Median :0.3572  
+##  Mean   :0.8468896    Mean   :0.6052         Mean   :0.44310        Mean   :0.16860          Mean   :0.5176     Mean   :0.3930  
+##  3rd Qu.:0.9910699    3rd Qu.:0.8776         3rd Qu.:0.78722        3rd Qu.:0.24036          3rd Qu.:0.6025     3rd Qu.:0.5643  
+##  Max.   :1.0000000    Max.   :1.0000         Max.   :1.00000        Max.   :1.00000          Max.   :0.8410     Max.   :1.0000</code></pre>
 <pre class="r"><code>## Use first and third quartile for creating categories
 ## For the 1000/100 Mbps measure, the 1st quartile is 0. Therefore, we will use mean split as an alternative
 
@@ -408,8 +408,8 @@ d2 &lt;- d2 %&gt;%
          BB_1000_100_high = case_when(pct1000_100_dec_2019_fcc &lt; mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 0,
                                   pct1000_100_dec_2019_fcc &gt; mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 1,
                                   TRUE ~ NA_real_),
-         BB_adoption_high = case_when(pct_fixed_acs_2018 &lt; mean(pct_fixed_acs_2018, na.rm = T) ~ 0,
-                                  pct_fixed_acs_2018 &gt; mean(pct_fixed_acs_2018, na.rm = T) ~ 1,
+         BB_adoption_high = case_when(pct_fixed_acs_2019 &lt; mean(pct_fixed_acs_2019, na.rm = T) ~ 0,
+                                  pct_fixed_acs_2019 &gt; mean(pct_fixed_acs_2019, na.rm = T) ~ 1,
                                   TRUE ~ NA_real_),
          BB_qos_high = case_when(pct_bb_qos &lt; mean(pct_bb_qos, na.rm = T) ~ 0,
                                   pct_bb_qos &gt; mean(pct_bb_qos, na.rm = T) ~ 1,
@@ -423,25 +423,25 @@ str(d2)</code></pre>
 ##  $ pct100_10_dec_2019_fcc  : num [1:375] 0.746 0.382 0.765 0.835 0.931 ...
 ##  $ pct250_25_dec_2019_fcc  : num [1:375] 0.6507 0 0.0748 0.7789 0.7619 ...
 ##  $ pct1000_100_dec_2019_fcc: num [1:375] 0.00509 0 0.07478 0.77886 0.02444 ...
-##  $ pct_fixed_acs_2018      : num [1:375] 0.55 0.445 0.537 0.634 0.587 0.499 0.555 0.586 0.426 0.359 ...
-##  $ pct_bb_qos              : num [1:375] 0.439 0.101 0.324 0.243 0.411 ...
-##  $ pct_nonfarm_bea_2018    : num [1:375] 0.188 0.269 0.175 0.366 0.277 ...
+##  $ pct_fixed_acs_2019      : num [1:375] 0.568 0.45 0.531 0.641 0.622 0.548 0.571 0.59 0.411 0.366 ...
+##  $ pct_bb_qos              : num [1:375] 0.618 0.161 0.419 0.334 0.476 ...
+##  $ pct_nonfarm_bea_2019    : num [1:375] 0.186 0.268 0.181 0.366 0.271 ...
 ##  $ vd_mean_20              : num [1:375] 0.148 2.255 1.288 2.123 1.492 ...
 ##  $ havd_mean_20            : num [1:375] 0.0249 0.4723 0.2745 0.7061 0.4667 ...
-##  $ nonfarmprop_percapita   : num [1:375] 0.117 0.1332 0.0867 0.2575 0.1895 ...
-##  $ population_2018         : num [1:375] 12951 7858 16557 4831 27214 ...
-##  $ indstry_diversity       : num [1:375] 0.849 0.871 0.86 0.871 0.895 ...
-##  $ pctbachelors_2018       : num [1:375] 0.128 0.111 0.14 0.107 0.125 0.137 0.15 0.193 0.156 0.126 ...
-##  $ pct_unemployment_2018   : num [1:375] 0.046 0.029 0.046 0.017 0.039 0.025 0.036 0.042 0.045 0.074 ...
+##  $ nonfarmprop_percapita   : num [1:375] 0.122 0.1367 0.0909 0.2634 0.1918 ...
+##  $ population_2019         : num [1:375] 12556 7835 16268 4624 26453 ...
+##  $ indstry_diversity       : num [1:375] 0.85 0.872 0.872 0.865 0.895 ...
+##  $ pctbachelors_2019       : num [1:375] 0.203 0.181 0.22 0.207 0.209 0.217 0.212 0.298 0.255 0.159 ...
+##  $ pct_unemployment_2019   : num [1:375] 0.046 0.034 0.028 0.025 0.039 0.023 0.034 0.038 0.045 0.068 ...
 ##  $ RUCC_2013               : num [1:375] 7 6 6 9 7 6 6 2 9 8 ...
 ##  $ metro_f                 : chr [1:375] &quot;Nonmetro&quot; &quot;Nonmetro&quot; &quot;Nonmetro&quot; &quot;Nonmetro&quot; ...
 ##  $ IRR2010                 : num [1:375] 0.55 0.57 0.53 0.61 0.54 0.55 0.56 0.5 0.62 0.6 ...
-##  $ LNpop_2018              : num [1:375] 9.47 8.97 9.71 8.48 10.21 ...
+##  $ LNpop_2019              : num [1:375] 9.44 8.97 9.7 8.44 10.18 ...
 ##  $ BB_25_3_high            : num [1:375] 1 1 0 1 1 1 0 1 0 0 ...
 ##  $ BB_100_10_high          : num [1:375] 1 0 1 1 1 0 0 1 0 0 ...
 ##  $ BB_250_25_high          : num [1:375] 1 0 0 1 1 0 0 1 0 0 ...
 ##  $ BB_1000_100_high        : num [1:375] 0 0 0 1 0 0 0 0 0 0 ...
-##  $ BB_adoption_high        : num [1:375] 1 0 1 1 1 0 1 1 0 0 ...
+##  $ BB_adoption_high        : num [1:375] 1 0 1 1 1 1 1 1 0 0 ...
 ##  $ BB_qos_high             : num [1:375] 1 0 1 0 1 1 0 1 0 0 ...</code></pre>
 <p>We’ll now use <code>cem</code> package to match the sample to treatment based on the covariates we mentioned above.</p>
 <p>Note that the package does not allow <code>NA</code>s in the treatment variable. Therefore, we have to create separate datasets for each treatment variable of interest.</p>
@@ -466,45 +466,53 @@ table(d2$BB_25_3_high)</code></pre>
 <pre class="r"><code>table(d2$BB_adoption_high)</code></pre>
 <pre><code>## 
 ##   0   1 
-## 189 186</code></pre>
+## 185 190</code></pre>
 <pre class="r"><code>table(d2$BB_qos_high)</code></pre>
 <pre><code>## 
 ##   0   1 
-## 216 159</code></pre>
+## 208 167</code></pre>
 <pre class="r"><code>## Set cut points for each covariate
-popcut &lt;- hist(d2$LNpop_2018, br=seq(min(d2$LNpop_2018, na.rm = T), max(d2$LNpop_2018, na.rm = T), length.out = 4), plot = F)$breaks
-indstrycut &lt;- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 4), plot = F)$breaks
-educut &lt;- hist(d2$pctbachelors_2018, br=seq(min(d2$pctbachelors_2018), max(d2$pctbachelors_2018), length.out = 4), plot = F)$breaks
-unempcut &lt;- hist(d2$pct_unemployment_2018, br=seq(min(d2$pct_unemployment_2018), max(d2$pct_unemployment_2018), length.out = 4), plot = F)$breaks
+popcut &lt;- hist(d2$LNpop_2019, br=seq(min(d2$LNpop_2019, na.rm = T), max(d2$LNpop_2019, na.rm = T), length.out = 5), plot = F)$breaks
 
-mycp &lt;- list(LNpop_2018 = popcut, indstry_diversity = indstrycut, pctbachelors_2018 = educut, pct_unemployment_2018 = unempcut)
+indstrycut &lt;- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 5), plot = F)$breaks
+
+educut &lt;- hist(d2$pctbachelors_2019, br=seq(min(d2$pctbachelors_2019), max(d2$pctbachelors_2019), length.out = 5), plot = F)$breaks
+
+unempcut &lt;- hist(d2$pct_unemployment_2019, br=seq(min(d2$pct_unemployment_2019), max(d2$pct_unemployment_2019), length.out = 5), plot = F)$breaks
+
+# Ruralities
+irrcut &lt;- hist(d2$IRR2010, br = seq(min(d2$IRR2010), max(d2$IRR2010), length.out = 5), plot = F)$breaks
+
+
+mycp &lt;- list(LNpop_2019 = popcut, indstry_diversity = indstrycut, pctbachelors_2019 = educut, pct_unemployment_2019 = unempcut, IRR2010 = irrcut)
 
 ## List of covariates
-vars &lt;- c(&quot;LNpop_2018&quot;, &quot;indstry_diversity&quot;, &quot;pctbachelors_2018&quot;, &quot;pct_unemployment_2018&quot;)
-droplst &lt;- c(&quot;pct_nonfarm_bea_2018&quot;, &quot;vd_mean_20&quot;, &quot;havd_mean_20&quot;, &quot;nonfarmprop_percapita&quot;, &quot;RUCC_2013&quot;, &quot;metro_f&quot;, &quot;IRR2010&quot;)
+vars &lt;- c(&quot;LNpop_2019&quot;, &quot;indstry_diversity&quot;, &quot;pctbachelors_2019&quot;, &quot;pct_unemployment_2019&quot;, &quot;IRR2010&quot;)
+
+droplst &lt;- c(&quot;pct_nonfarm_bea_2019&quot;, &quot;vd_mean_20&quot;, &quot;havd_mean_20&quot;, &quot;nonfarmprop_percapita&quot;, &quot;metro_f&quot;)
 
 #### Treatment: BB_25_3_high ####
 
 d25_3 &lt;- d2 %&gt;% select(BB_25_3_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d25_3 &lt;- data.frame(na.omit(d25_3))
 
 ## Overall imbalance check
 
 imbalance(group = d25_3$BB_25_3_high, data = d25_3[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.938
-## Percentage of local common support: LCS=4.0%
+## Multivariate Imbalance Measure: L1=0.918
+## Percentage of local common support: LCS=5.5%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                         statistic   type        L1      min       25%      50%       75%      max
-## LNpop_2018            1.257457377 (diff) 0.2822016 0.895641 0.9580383 1.141795  1.357849 4.024975
-## indstry_diversity     0.011025775 (diff) 0.0000000 0.060969 0.0137550 0.008823  0.006654 0.006581
-## pctbachelors_2018     0.017091770 (diff) 0.0000000 0.023000 0.0140000 0.013000  0.016000 0.091000
-## pct_unemployment_2018 0.001901543 (diff) 0.0000000 0.009000 0.0090000 0.004000 -0.007000 0.015000</code></pre>
+##                          statistic   type        L1       min        25%       50%       75%       max
+## LNpop_2019             1.277501460 (diff) 0.2739712  1.183512  0.9751537  1.116906  1.361330  4.016635
+## indstry_diversity      0.012741687 (diff) 0.0000000  0.124313  0.0134820  0.009668  0.004612  0.009159
+## pctbachelors_2019      0.036170988 (diff) 0.0000000  0.063000  0.0220000  0.026000  0.035000  0.160000
+## pct_unemployment_2019  0.001061008 (diff) 0.0000000  0.000000  0.0100000  0.004000 -0.008000  0.010000
+## IRR2010               -0.066790123 (diff) 0.0000000 -0.340000 -0.0600000 -0.040000 -0.050000 -0.030000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_25_3 &lt;- cem(treatment = &quot;BB_25_3_high&quot;, data = d25_3,
@@ -515,30 +523,30 @@ match_fcc_25_3 &lt;- cem(treatment = &quot;BB_25_3_high&quot;, data = d25_3,
 <pre class="r"><code>match_fcc_25_3</code></pre>
 <pre><code>##            G0  G1
 ## All       120 243
-## Matched   113 208
-## Unmatched   7  35</code></pre>
+## Matched    92 172
+## Unmatched  28  71</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high ####
 
 d100_10 &lt;- d2 %&gt;% select(BB_100_10_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d100_10 &lt;- data.frame(na.omit(d100_10))
 
 ## Overall imbalance check
 
 imbalance(group = d100_10$BB_100_10_high, data = d100_10[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.895
-## Percentage of local common support: LCS=6.2%
+## Multivariate Imbalance Measure: L1=0.914
+## Percentage of local common support: LCS=5.2%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                           statistic   type       L1      min       25%       50%       75%       max
-## LNpop_2018             1.2922472691 (diff) 0.295197 1.043598 0.9134192  1.265216  1.445232  3.680135
-## indstry_diversity      0.0062888246 (diff) 0.000000 0.060969 0.0095460  0.002286 -0.001687  0.003605
-## pctbachelors_2018      0.0226612993 (diff) 0.000000 0.023000 0.0140000  0.017000  0.029000  0.096000
-## pct_unemployment_2018 -0.0003874076 (diff) 0.000000 0.012000 0.0050000 -0.005000 -0.007000 -0.015000</code></pre>
+##                           statistic   type       L1       min        25%       50%       75%       max
+## LNpop_2019             1.3064855207 (diff) 0.295197  1.329880  0.9158668  1.251601  1.431673  3.625198
+## indstry_diversity      0.0067618034 (diff) 0.000000  0.124313  0.0080830  0.003234  0.000789  0.005202
+## pctbachelors_2019      0.0409810961 (diff) 0.000000  0.063000  0.0170000  0.035000  0.053000  0.165000
+## pct_unemployment_2019 -0.0002424261 (diff) 0.000000  0.008000  0.0040000 -0.005000 -0.007000  0.010000
+## IRR2010               -0.0645649631 (diff) 0.000000 -0.320000 -0.0800000 -0.040000 -0.040000 -0.020000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_100_10 &lt;- cem(treatment = &quot;BB_100_10_high&quot;, data = d100_10,
@@ -549,30 +557,30 @@ match_fcc_100_10 &lt;- cem(treatment = &quot;BB_100_10_high&quot;, data = d100_1
 <pre class="r"><code>match_fcc_100_10</code></pre>
 <pre><code>##            G0  G1
 ## All       160 203
-## Matched   141 163
-## Unmatched  19  40</code></pre>
+## Matched   131 132
+## Unmatched  29  71</code></pre>
 <pre class="r"><code>#### Treatment: BB_250_25_high ####
 
 d250_25 &lt;- d2 %&gt;% select(BB_250_25_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d250_25 &lt;- data.frame(na.omit(d250_25))
 
 ## Overall imbalance check
 
 imbalance(group = d250_25$BB_250_25_high, data = d250_25[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.892
-## Percentage of local common support: LCS=5.9%
+## Multivariate Imbalance Measure: L1=0.875
+## Percentage of local common support: LCS=7.1%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                          statistic   type        L1      min      25%       50%      75%       max
-## LNpop_2018            1.3331633880 (diff) 0.2958093 0.895641 1.008220  1.301526  1.51781  3.582633
-## indstry_diversity     0.0042842067 (diff) 0.0000000 0.060969 0.006374  0.003013  0.00001 -0.002810
-## pctbachelors_2018     0.0253626480 (diff) 0.0000000 0.023000 0.018000  0.018000  0.03000  0.082000
-## pct_unemployment_2018 0.0007253265 (diff) 0.0000000 0.012000 0.003000 -0.004000 -0.00500  0.024000</code></pre>
+##                           statistic   type        L1       min       25%       50%       75%       max
+## LNpop_2019             1.3464351904 (diff) 0.2958093  1.183512  1.039657  1.313773  1.504972  3.625198
+## indstry_diversity      0.0051863933 (diff) 0.0000000  0.124313  0.007628  0.003009  0.001200  0.005202
+## pctbachelors_2019      0.0458836623 (diff) 0.0000000  0.063000  0.024000  0.037000  0.063000  0.064000
+## pct_unemployment_2019  0.0008724264 (diff) 0.0000000  0.012000  0.005000 -0.001000 -0.006000  0.010000
+## IRR2010               -0.0707904646 (diff) 0.0000000 -0.220000 -0.080000 -0.050000 -0.050000 -0.030000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_250_25 &lt;- cem(treatment = &quot;BB_250_25_high&quot;, data = d250_25,
@@ -583,30 +591,30 @@ match_fcc_250_25 &lt;- cem(treatment = &quot;BB_250_25_high&quot;, data = d250_2
 <pre class="r"><code>match_fcc_250_25</code></pre>
 <pre><code>##            G0  G1
 ## All       178 185
-## Matched   159 141
-## Unmatched  19  44</code></pre>
+## Matched   145 127
+## Unmatched  33  58</code></pre>
 <pre class="r"><code>#### Treatment: BB_1000_100_high ####
 
 d1000_100 &lt;- d2 %&gt;% select(BB_1000_100_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d1000_100 &lt;- data.frame(na.omit(d1000_100))
 
 ## Overall imbalance check
 
 imbalance(group = d1000_100$BB_1000_100_high, data = d1000_100[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.948
-## Percentage of local common support: LCS=4.0%
+## Multivariate Imbalance Measure: L1=0.940
+## Percentage of local common support: LCS=4.6%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                          statistic   type        L1       min        25%        50%        75%       max
-## LNpop_2018            -0.398724573 (diff) 0.1664522 -0.895641  0.1553128  0.1970333 -0.8983005 -1.677699
-## indstry_diversity     -0.002450210 (diff) 0.0000000 -0.062888 -0.0006280  0.0003740  0.0009330  0.003378
-## pctbachelors_2018     -0.027668597 (diff) 0.0000000 -0.023000 -0.0250000 -0.0190000 -0.0240000 -0.043000
-## pct_unemployment_2018  0.007001502 (diff) 0.0000000 -0.011000  0.0050000  0.0080000  0.0110000 -0.015000</code></pre>
+##                          statistic   type       L1       min        25%        50%       75%       max
+## LNpop_2019            -0.406529632 (diff) 0.207529 -1.183512  0.1440635  0.1948011 -0.899226 -1.692590
+## indstry_diversity     -0.003547718 (diff) 0.000000 -0.132666 -0.0032300  0.0000140 -0.001878 -0.005202
+## pctbachelors_2019     -0.047284427 (diff) 0.000000 -0.063000 -0.0400000 -0.0470000 -0.054000 -0.084000
+## pct_unemployment_2019  0.007024775 (diff) 0.000000 -0.012000  0.0060000  0.0070000  0.011000  0.008000
+## IRR2010                0.031886529 (diff) 0.000000  0.190000  0.0500000 -0.0100000  0.000000  0.030000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_1000_100 &lt;- cem(treatment = &quot;BB_1000_100_high&quot;, data = d1000_100,
@@ -617,30 +625,30 @@ match_fcc_1000_100 &lt;- cem(treatment = &quot;BB_1000_100_high&quot;, data = d1
 <pre class="r"><code>match_fcc_1000_100</code></pre>
 <pre><code>##            G0  G1
 ## All       252 111
-## Matched   229 109
-## Unmatched  23   2</code></pre>
+## Matched   189  90
+## Unmatched  63  21</code></pre>
 <pre class="r"><code>#### Treatment: BB_adoption_high ####
 
 dadoption &lt;- d2 %&gt;% select(BB_adoption_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 dadoption &lt;- data.frame(na.omit(dadoption))
 
 ## Overall imbalance check
 
 imbalance(group = dadoption$BB_adoption_high, data = dadoption[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.918
-## Percentage of local common support: LCS=4.7%
+## Multivariate Imbalance Measure: L1=0.934
+## Percentage of local common support: LCS=3.7%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                          statistic   type        L1        min         25%        50%       75%       max
-## LNpop_2018             0.758826959 (diff) 0.2820412 -0.7112309  0.04664148  0.6189352  1.291094  1.677699
-## indstry_diversity     -0.003862414 (diff) 0.0000000 -0.0609690 -0.00551300 -0.0031730 -0.005324  0.002810
-## pctbachelors_2018      0.043374112 (diff) 0.0000000  0.0350000  0.03200000  0.0380000  0.048000  0.100000
-## pct_unemployment_2018 -0.012887621 (diff) 0.0000000  0.0000000 -0.00400000 -0.0110000 -0.017000 -0.024000</code></pre>
+##                          statistic   type        L1        min        25%        50%       75%       max
+## LNpop_2019             0.541803129 (diff) 0.3163024 -0.8740613 -0.3496337  0.5117201  1.243733  1.692590
+## indstry_diversity     -0.005348927 (diff) 0.0000000 -0.0618870 -0.0049480 -0.0055430 -0.006334  0.005582
+## pctbachelors_2019      0.071844627 (diff) 0.0000000  0.0950000  0.0470000  0.0590000  0.082000  0.255000
+## pct_unemployment_2019 -0.012052095 (diff) 0.0000000  0.0000000 -0.0070000 -0.0100000 -0.014000 -0.037000
+## IRR2010               -0.031935337 (diff) 0.0000000 -0.2000000 -0.0600000 -0.0200000  0.020000  0.010000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_adoption &lt;- cem(treatment = &quot;BB_adoption_high&quot;, data = dadoption,
@@ -650,31 +658,31 @@ match_fcc_adoption &lt;- cem(treatment = &quot;BB_adoption_high&quot;, data = da
 ## Using &#39;BB_adoption_high&#39;=&#39;1&#39; as baseline group</code></pre>
 <pre class="r"><code>match_fcc_adoption</code></pre>
 <pre><code>##            G0  G1
-## All       182 181
-## Matched   163 148
-## Unmatched  19  33</code></pre>
+## All       180 183
+## Matched   148 130
+## Unmatched  32  53</code></pre>
 <pre class="r"><code>#### Treatment: BB_qos_high ####
 
 dqos &lt;- d2 %&gt;% select(BB_qos_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018,
-                    RUCC_2013, metro_f, IRR2010)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 dqos &lt;- data.frame(na.omit(dqos))
 
 ## Overall imbalance check
 
 imbalance(group = dqos$BB_qos_high, data = dqos[vars])</code></pre>
 <pre><code>## 
-## Multivariate Imbalance Measure: L1=0.917
-## Percentage of local common support: LCS=5.0%
+## Multivariate Imbalance Measure: L1=0.920
+## Percentage of local common support: LCS=4.9%
 ## 
 ## Univariate Imbalance Measures:
 ## 
-##                         statistic   type        L1       min      25%      50%       75%       max
-## LNpop_2018            1.948323416 (diff) 0.4514268 0.8896619 1.835670 1.828290  2.008049  4.024975
-## indstry_diversity     0.008577540 (diff) 0.0000000 0.0609690 0.011297 0.007242  0.004181 -0.002810
-## pctbachelors_2018     0.025480397 (diff) 0.0000000 0.0230000 0.018000 0.013000  0.027000  0.091000
-## pct_unemployment_2018 0.003414237 (diff) 0.0000000 0.0230000 0.012000 0.005000 -0.003000 -0.036000</code></pre>
+##                          statistic   type      L1       min       25%       50%       75%       max
+## LNpop_2019             1.840290979 (diff) 0.40363  1.004286  1.800797  1.664870  2.026217  4.048585
+## indstry_diversity      0.009116683 (diff) 0.00000  0.124313  0.009933  0.007255  0.004501  0.005202
+## pctbachelors_2019      0.051348535 (diff) 0.00000  0.063000  0.025000  0.043000  0.061000  0.160000
+## pct_unemployment_2019  0.002502580 (diff) 0.00000  0.012000  0.011000  0.003000 -0.004000  0.010000
+## IRR2010               -0.097286715 (diff) 0.00000 -0.340000 -0.100000 -0.080000 -0.070000 -0.040000</code></pre>
 <pre class="r"><code>## CEM match using user-choice coarsening
 
 match_fcc_qos &lt;- cem(treatment = &quot;BB_qos_high&quot;, data = dqos,
@@ -684,556 +692,508 @@ match_fcc_qos &lt;- cem(treatment = &quot;BB_qos_high&quot;, data = dqos,
 ## Using &#39;BB_qos_high&#39;=&#39;1&#39; as baseline group</code></pre>
 <pre class="r"><code>match_fcc_qos</code></pre>
 <pre><code>##            G0  G1
-## All       208 155
-## Matched   183 125
-## Unmatched  25  30</code></pre>
+## All       201 162
+## Matched   159 106
+## Unmatched  42  56</code></pre>
 </div>
 <div id="causal-inference-on-the-matched-data" class="section level3">
 <h3>Causal Inference on the Matched Data</h3>
 <p>In this section, I will use linear model to estimate the sample average treatment effect on the treated (SATT) using weights produced by CEM stored in the matched dataset. Each subsection is laid out based on different broadband measures (i.e., treatment measures). There will be four models fitted for each treatment broadband variable. The model will estimate broadband treatment effect on the dependent variable. Additionally, the models estimate main effect of metro/non-metro classification and interaction effect as well.</p>
 <div id="broadband-253mbps-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband 25/3Mbps on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_25_3_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_25_3_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_25_3_nonfarm &lt;- att(match_fcc_25_3, pct_nonfarm_bea_2018 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_nonfarm &lt;- att(match_fcc_25_3, pct_nonfarm_bea_2019 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       120 243
-## Matched   113 208
-## Unmatched   7  35
+## Matched    92 172
+## Unmatched  28  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                Estimate Std. Error t value p-value    
-## (Intercept)                   0.2686157  0.0179578 14.9582  &lt;2e-16 ***
-## BB_25_3_high                  0.0090944  0.0197949  0.4594  0.6462    
-## metro_fNonmetro              -0.0201168  0.0191420 -1.0509  0.2941    
-## BB_25_3_high:metro_fNonmetro -0.0106397  0.0215848 -0.4929  0.6224    
+##                 Estimate  Std. Error t value p-value    
+## (Intercept)   2.5925e-01  6.6685e-03 38.8769  &lt;2e-16 ***
+## BB_25_3_high -2.3791e-06  8.2617e-03 -0.0003  0.9998    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_25_3_high &amp; Outcome: vd_mean_20 ####
 
-mod_25_3_vd &lt;- att(match_fcc_25_3, vd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_vd &lt;- att(match_fcc_25_3, vd_mean_20 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       120 243
-## Matched   113 208
-## Unmatched   7  35
+## Matched    92 172
+## Unmatched  28  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                              Estimate Std. Error t value  p-value   
-## (Intercept)                   1.69827    0.63007  2.6954 0.007406 **
-## BB_25_3_high                  1.65246    0.69452  2.3793 0.017938 * 
-## metro_fNonmetro               0.78236    0.67161  1.1649 0.244935   
-## BB_25_3_high:metro_fNonmetro -2.35959    0.75732 -3.1157 0.002003 **
+##               Estimate Std. Error t value p-value    
+## (Intercept)   1.866618   0.179017 10.4270  &lt;2e-16 ***
+## BB_25_3_high -0.068463   0.221785 -0.3087  0.7578    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_25_3_high &amp; Outcome: havd_mean_20 ####
 
-mod_25_3_havd &lt;- att(match_fcc_25_3, havd_mean_20 ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_havd &lt;- att(match_fcc_25_3, havd_mean_20 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       120 243
-## Matched   113 208
-## Unmatched   7  35
+## Matched    92 172
+## Unmatched  28  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                              Estimate Std. Error t value  p-value   
-## (Intercept)                   0.37023    0.13616  2.7191 0.006906 **
-## BB_25_3_high                  0.32161    0.15009  2.1428 0.032888 * 
-## metro_fNonmetro               0.19186    0.14514  1.3220 0.187136   
-## BB_25_3_high:metro_fNonmetro -0.49339    0.16366 -3.0148 0.002779 **
+##               Estimate Std. Error t value p-value    
+## (Intercept)   0.412808   0.038318 10.7732  &lt;2e-16 ***
+## BB_25_3_high -0.033474   0.047472 -0.7051  0.4814    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_25_3_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_25_3_nonfarmpc &lt;- att(match_fcc_25_3, nonfarmprop_percapita ~ BB_25_3_high * metro_f, data = d25_3)
+mod_25_3_nonfarmpc &lt;- att(match_fcc_25_3, nonfarmprop_percapita ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       120 243
-## Matched   113 208
-## Unmatched   7  35
+## Matched    92 172
+## Unmatched  28  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                               Estimate Std. Error t value p-value    
-## (Intercept)                   0.116957   0.012764  9.1629 &lt; 2e-16 ***
-## BB_25_3_high                  0.030100   0.014070  2.1393 0.03317 *  
-## metro_fNonmetro               0.022766   0.013606  1.6732 0.09527 .  
-## BB_25_3_high:metro_fNonmetro -0.020653   0.015342 -1.3462 0.17921    
+##               Estimate Std. Error t value p-value    
+## (Intercept)  0.1370498  0.0044947  30.492 &lt; 2e-16 ***
+## BB_25_3_high 0.0116661  0.0055684   2.095 0.03713 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 <div id="broadband-10010mbps-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband 100/10Mbps on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_100_10_nonfarm &lt;- att(match_fcc_100_10, pct_nonfarm_bea_2018 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_nonfarm &lt;- att(match_fcc_100_10, pct_nonfarm_bea_2019 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       160 203
-## Matched   141 163
-## Unmatched  19  40
+## Matched   131 132
+## Unmatched  29  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value p-value    
-## (Intercept)                     0.2799522  0.0111446 25.1201 &lt; 2e-16 ***
-## BB_100_10_high                 -0.0089092  0.0153000 -0.5823 0.56080    
-## metro_fNonmetro                -0.0239322  0.0128772 -1.8585 0.06408 .  
-## BB_100_10_high:metro_fNonmetro -0.0110609  0.0176479 -0.6268 0.53130    
+##                  Estimate Std. Error t value   p-value    
+## (Intercept)     0.2719920  0.0055761 48.7784 &lt; 2.2e-16 ***
+## BB_100_10_high -0.0216628  0.0078708 -2.7523  0.006333 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: vd_mean_20 ####
 
-mod_100_10_vd &lt;- att(match_fcc_100_10, vd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_vd &lt;- att(match_fcc_100_10, vd_mean_20 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       160 203
-## Matched   141 163
-## Unmatched  19  40
+## Matched   131 132
+## Unmatched  29  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                Estimate Std. Error t value   p-value    
-## (Intercept)                     2.26652    0.35272  6.4259 5.141e-10 ***
-## BB_100_10_high                  1.33373    0.48424  2.7543  0.006241 ** 
-## metro_fNonmetro                -0.24875    0.40755 -0.6103  0.542092    
-## BB_100_10_high:metro_fNonmetro -1.60095    0.55854 -2.8663  0.004447 ** 
+##                Estimate Std. Error t value p-value    
+## (Intercept)     1.87589    0.16258 11.5381  &lt;2e-16 ***
+## BB_100_10_high  0.05917    0.22949  0.2578  0.7967    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: havd_mean_20 ####
 
-mod_100_10_havd &lt;- att(match_fcc_100_10, havd_mean_20 ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_havd &lt;- att(match_fcc_100_10, havd_mean_20 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       160 203
-## Matched   141 163
-## Unmatched  19  40
+## Matched   131 132
+## Unmatched  29  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                 Estimate Std. Error t value   p-value    
-## (Intercept)                     0.485470   0.077283  6.2817 1.175e-09 ***
-## BB_100_10_high                  0.248317   0.106100  2.3404  0.019917 *  
-## metro_fNonmetro                -0.026041   0.089298 -0.2916  0.770784    
-## BB_100_10_high:metro_fNonmetro -0.322251   0.122381 -2.6332  0.008897 ** 
+##                  Estimate Std. Error t value p-value    
+## (Intercept)     0.4190124  0.0350774 11.9454  &lt;2e-16 ***
+## BB_100_10_high -0.0089793  0.0495129 -0.1814  0.8562    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_100_10_nonfarmpc &lt;- att(match_fcc_100_10, nonfarmprop_percapita ~ BB_100_10_high * metro_f, data = d100_10)
+mod_100_10_nonfarmpc &lt;- att(match_fcc_100_10, nonfarmprop_percapita ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       160 203
-## Matched   141 163
-## Unmatched  19  40
+## Matched   131 132
+## Unmatched  29  71
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value p-value    
-## (Intercept)                     0.1325356  0.0077075 17.1957  &lt;2e-16 ***
-## BB_100_10_high                  0.0137660  0.0105814  1.3010  0.1943    
-## metro_fNonmetro                 0.0110796  0.0089058  1.2441  0.2144    
-## BB_100_10_high:metro_fNonmetro -0.0126256  0.0122051 -1.0345  0.3018    
+##                 Estimate Std. Error t value p-value    
+## (Intercept)    0.1431262  0.0040739 35.1329  &lt;2e-16 ***
+## BB_100_10_high 0.0060978  0.0057504  1.0604  0.2899    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 <div id="broadband-250_25mbps-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband 250_25Mbps on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_250_25_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_250_25_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_250_25_nonfarm &lt;- att(match_fcc_250_25, pct_nonfarm_bea_2018 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_nonfarm &lt;- att(match_fcc_250_25, pct_nonfarm_bea_2019 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       178 185
-## Matched   159 141
-## Unmatched  19  44
+## Matched   145 127
+## Unmatched  33  58
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value p-value    
-## (Intercept)                     0.2781441  0.0103017 26.9998  &lt;2e-16 ***
-## BB_250_25_high                  0.0055981  0.0142547  0.3927  0.6948    
-## metro_fNonmetro                -0.0192939  0.0118746 -1.6248  0.1053    
-## BB_250_25_high:metro_fNonmetro -0.0201477  0.0167531 -1.2026  0.2301    
+##                  Estimate Std. Error t value p-value    
+## (Intercept)     0.2629925  0.0054422 48.3249  &lt;2e-16 ***
+## BB_250_25_high -0.0091547  0.0079644 -1.1495  0.2514    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_250_25_high &amp; Outcome: vd_mean_20 ####
 
-mod_250_25_vd &lt;- att(match_fcc_250_25, vd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_vd &lt;- att(match_fcc_250_25, vd_mean_20 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       178 185
-## Matched   159 141
-## Unmatched  19  44
+## Matched   145 127
+## Unmatched  33  58
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                Estimate Std. Error t value  p-value    
-## (Intercept)                     2.33052    0.36456  6.3927 6.33e-10 ***
-## BB_250_25_high                  1.49529    0.50445  2.9642 0.003281 ** 
-## metro_fNonmetro                -0.19215    0.42022 -0.4572 0.647827    
-## BB_250_25_high:metro_fNonmetro -1.81602    0.59286 -3.0631 0.002392 ** 
+##                Estimate Std. Error t value p-value    
+## (Intercept)     1.93119    0.14340  13.467  &lt;2e-16 ***
+## BB_250_25_high  0.16580    0.20987   0.790  0.4302    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: havd_mean_20 ####
 
-mod_250_25_havd &lt;- att(match_fcc_250_25, havd_mean_20 ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_havd &lt;- att(match_fcc_250_25, havd_mean_20 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       178 185
-## Matched   159 141
-## Unmatched  19  44
+## Matched   145 127
+## Unmatched  33  58
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                 Estimate Std. Error t value   p-value    
-## (Intercept)                     0.493149   0.078524  6.2802 1.203e-09 ***
-## BB_250_25_high                  0.287884   0.108655  2.6495  0.008494 ** 
-## metro_fNonmetro                -0.011696   0.090513 -0.1292  0.897275    
-## BB_250_25_high:metro_fNonmetro -0.363872   0.127699 -2.8494  0.004687 ** 
+##                Estimate Std. Error t value p-value    
+## (Intercept)    0.416883   0.030422 13.7035  &lt;2e-16 ***
+## BB_250_25_high 0.031684   0.044521  0.7117  0.4773    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_250_25_nonfarmpc &lt;- att(match_fcc_250_25, nonfarmprop_percapita ~ BB_250_25_high * metro_f, data = d250_25)
+mod_250_25_nonfarmpc &lt;- att(match_fcc_250_25, nonfarmprop_percapita ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       178 185
-## Matched   159 141
-## Unmatched  19  44
+## Matched   145 127
+## Unmatched  33  58
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value p-value    
-## (Intercept)                     0.1329300  0.0076993 17.2651 &lt; 2e-16 ***
-## BB_250_25_high                  0.0217509  0.0106537  2.0416 0.04207 *  
-## metro_fNonmetro                 0.0149731  0.0088748  1.6871 0.09263 .  
-## BB_250_25_high:metro_fNonmetro -0.0163752  0.0125210 -1.3078 0.19195    
+##                 Estimate Std. Error t value p-value    
+## (Intercept)    0.1445050  0.0035511 40.6927  &lt;2e-16 ***
+## BB_250_25_high 0.0057432  0.0051970  1.1051  0.2701    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 <div id="broadband-1000_100mbps-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband 1000_100Mbps on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_1000_100_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_1000_100_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_1000_100_nonfarm &lt;- att(match_fcc_1000_100, pct_nonfarm_bea_2018 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_nonfarm &lt;- att(match_fcc_1000_100, pct_nonfarm_bea_2019 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       252 111
-## Matched   229 109
-## Unmatched  23   2
+## Matched   189  90
+## Unmatched  63  21
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                     Estimate  Std. Error t value p-value    
-## (Intercept)                       2.5230e-01  7.0495e-03 35.7896 &lt; 2e-16 ***
-## BB_1000_100_high                  2.7627e-02  1.2282e-02  2.2494 0.02514 *  
-## metro_fNonmetro                  -8.8477e-05  8.7811e-03 -0.0101 0.99197    
-## BB_1000_100_high:metro_fNonmetro -1.4798e-02  1.5391e-02 -0.9615 0.33702    
+##                   Estimate Std. Error t value   p-value    
+## (Intercept)      0.2490848  0.0045290 54.9973 &lt; 2.2e-16 ***
+## BB_1000_100_high 0.0284782  0.0079742  3.5713 0.0004187 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: vd_mean_20 ####
 
-mod_1000_100_vd &lt;- att(match_fcc_1000_100, vd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_vd &lt;- att(match_fcc_1000_100, vd_mean_20 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       252 111
-## Matched   229 109
-## Unmatched  23   2
+## Matched   189  90
+## Unmatched  63  21
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value   p-value    
-## (Intercept)                       4.48932    0.34236 13.1128 &lt; 2.2e-16 ***
-## BB_1000_100_high                  0.51468    0.59646  0.8629    0.3888    
-## metro_fNonmetro                  -2.17568    0.42646 -5.1017 5.656e-07 ***
-## BB_1000_100_high:metro_fNonmetro -0.86657    0.74747 -1.1593    0.2471    
+##                   Estimate Std. Error t value p-value    
+## (Intercept)      2.5377115  0.2281818 11.1214  &lt;2e-16 ***
+## BB_1000_100_high 0.0058091  0.4017556  0.0145  0.9885    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: havd_mean_20 ####
 
-mod_1000_100_havd &lt;- att(match_fcc_1000_100, havd_mean_20 ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_havd &lt;- att(match_fcc_1000_100, havd_mean_20 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       252 111
-## Matched   229 109
-## Unmatched  23   2
+## Matched   189  90
+## Unmatched  63  21
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                   Estimate Std. Error t value   p-value    
-## (Intercept)                       0.924639   0.072963 12.6726 &lt; 2.2e-16 ***
-## BB_1000_100_high                  0.104147   0.127117  0.8193    0.4132    
-## metro_fNonmetro                  -0.381496   0.090886 -4.1975 3.464e-05 ***
-## BB_1000_100_high:metro_fNonmetro -0.195337   0.159300 -1.2262    0.2210    
+##                  Estimate Std. Error t value p-value    
+## (Intercept)      0.528911   0.043642  12.119  &lt;2e-16 ***
+## BB_1000_100_high 0.024432   0.076840   0.318  0.7508    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_1000_100_nonfarmpc &lt;- att(match_fcc_1000_100, nonfarmprop_percapita ~ BB_1000_100_high * metro_f, data = d1000_100)
+mod_1000_100_nonfarmpc &lt;- att(match_fcc_1000_100, nonfarmprop_percapita ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
 ## All       252 111
-## Matched   229 109
-## Unmatched  23   2
+## Matched   189  90
+## Unmatched  63  21
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                   Estimate Std. Error t value p-value    
-## (Intercept)                      0.1441852  0.0051179 28.1725 &lt; 2e-16 ***
-## BB_1000_100_high                 0.0200494  0.0089165  2.2486 0.02519 *  
-## metro_fNonmetro                  0.0072092  0.0063751  1.1308 0.25893    
-## BB_1000_100_high:metro_fNonmetro 0.0021134  0.0111739  0.1891 0.85010    
+##                   Estimate Std. Error t value   p-value    
+## (Intercept)      0.1443165  0.0031085 46.4271 &lt; 2.2e-16 ***
+## BB_1000_100_high 0.0264142  0.0054730  4.8263 2.302e-06 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 <div id="broadband-adoption-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband Adoption on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_adoption_nonfarm &lt;- att(match_fcc_adoption, pct_nonfarm_bea_2018 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_nonfarm &lt;- att(match_fcc_adoption, pct_nonfarm_bea_2019 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       182 181
-## Matched   163 148
-## Unmatched  19  33
+## All       180 183
+## Matched   148 130
+## Unmatched  32  53
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                   Estimate Std. Error t value p-value    
-## (Intercept)                       0.289471   0.010702 27.0496 &lt; 2e-16 ***
-## BB_adoption_high                 -0.036788   0.014985 -2.4551 0.01464 *  
-## metro_fNonmetro                  -0.029634   0.012241 -2.4208 0.01606 *  
-## BB_adoption_high:metro_fNonmetro  0.020394   0.017338  1.1763 0.24040    
+##                    Estimate Std. Error t value   p-value    
+## (Intercept)       0.2774173  0.0050753 54.6602 &lt; 2.2e-16 ***
+## BB_adoption_high -0.0273098  0.0074219 -3.6796 0.0002808 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: vd_mean_20 ####
 
-mod_adoption_vd &lt;- att(match_fcc_adoption, vd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_vd &lt;- att(match_fcc_adoption, vd_mean_20 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       182 181
-## Matched   163 148
-## Unmatched  19  33
+## All       180 183
+## Matched   148 130
+## Unmatched  32  53
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                  Estimate Std. Error t value  p-value    
-## (Intercept)                       3.08478    0.40865  7.5487 5.05e-13 ***
-## BB_adoption_high                  0.28214    0.57221  0.4931   0.6223    
-## metro_fNonmetro                  -0.95787    0.46745 -2.0491   0.0413 *  
-## BB_adoption_high:metro_fNonmetro -0.27662    0.66209 -0.4178   0.6764    
+##                  Estimate Std. Error t value p-value    
+## (Intercept)       2.54842    0.19365 13.1599  &lt;2e-16 ***
+## BB_adoption_high -0.39157    0.28318 -1.3827  0.1679    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: havd_mean_20 ####
 
-mod_adoption_havd &lt;- att(match_fcc_adoption, havd_mean_20 ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_havd &lt;- att(match_fcc_adoption, havd_mean_20 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       182 181
-## Matched   163 148
-## Unmatched  19  33
+## All       180 183
+## Matched   148 130
+## Unmatched  32  53
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                   Estimate Std. Error t value   p-value    
-## (Intercept)                       0.615989   0.092672  6.6470 1.365e-10 ***
-## BB_adoption_high                  0.091652   0.129763  0.7063    0.4805    
-## metro_fNonmetro                  -0.140201   0.106006 -1.3226    0.1870    
-## BB_adoption_high:metro_fNonmetro -0.084200   0.150144 -0.5608    0.5753    
+##                   Estimate Std. Error t value p-value    
+## (Intercept)       0.551840   0.038837 14.2092  &lt;2e-16 ***
+## BB_adoption_high -0.085502   0.056793 -1.5055  0.1333    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_100_10_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_adoption_nonfarmpc &lt;- att(match_fcc_adoption, nonfarmprop_percapita ~ BB_adoption_high * metro_f, data = dadoption)
+mod_adoption_nonfarmpc &lt;- att(match_fcc_adoption, nonfarmprop_percapita ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       182 181
-## Matched   163 148
-## Unmatched  19  33
+## All       180 183
+## Matched   148 130
+## Unmatched  32  53
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                                    Estimate Std. Error t value p-value    
-## (Intercept)                       0.1387716  0.0083727 16.5743 &lt; 2e-16 ***
-## BB_adoption_high                  0.0054096  0.0117238  0.4614 0.64482    
-## metro_fNonmetro                   0.0178750  0.0095774  1.8664 0.06294 .  
-## BB_adoption_high:metro_fNonmetro -0.0056126  0.0135652 -0.4138 0.67934    
+##                   Estimate Std. Error t value p-value    
+## (Intercept)      0.1531600  0.0038335 39.9530  &lt;2e-16 ***
+## BB_adoption_high 0.0054691  0.0056059  0.9756  0.3301    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 <div id="broadband-quality-of-service-on-entrepreneurship-measures" class="section level4">
 <h4>Broadband Quality of Service on Entrepreneurship measures</h4>
-<pre class="r"><code>#### Treatment: BB_qos_high &amp; Outcome: pct_nonfarm_bea_2018 ####
+<pre class="r"><code>#### Treatment: BB_qos_high &amp; Outcome: pct_nonfarm_bea_2019 ####
 
-mod_qos_nonfarm &lt;- att(match_fcc_qos, pct_nonfarm_bea_2018 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_nonfarm &lt;- att(match_fcc_qos, pct_nonfarm_bea_2019 ~ BB_qos_high, data = dqos)
 summary(mod_qos_nonfarm)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       208 155
-## Matched   183 125
-## Unmatched  25  30
+## All       201 162
+## Matched   159 106
+## Unmatched  42  56
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                               Estimate Std. Error t value p-value    
-## (Intercept)                  0.2913467  0.0098831 29.4792 &lt; 2e-16 ***
-## BB_qos_high                 -0.0165689  0.0137588 -1.2042 0.22943    
-## metro_fNonmetro             -0.0286498  0.0113055 -2.5341 0.01177 *  
-## BB_qos_high:metro_fNonmetro -0.0196631  0.0165165 -1.1905 0.23477    
+##               Estimate Std. Error t value p-value    
+## (Intercept)  0.2688691  0.0054722  49.134 &lt; 2e-16 ***
+## BB_qos_high -0.0189655  0.0086523  -2.192 0.02926 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_qos_high &amp; Outcome: vd_mean_20 ####
 
-mod_qos_vd &lt;- att(match_fcc_qos, vd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_vd &lt;- att(match_fcc_qos, vd_mean_20 ~ BB_qos_high, data = dqos)
 summary(mod_qos_vd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       208 155
-## Matched   183 125
-## Unmatched  25  30
+## All       201 162
+## Matched   159 106
+## Unmatched  42  56
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                             Estimate Std. Error t value   p-value    
-## (Intercept)                  2.73576    0.36467  7.5020 6.973e-13 ***
-## BB_qos_high                  0.86841    0.50768  1.7106   0.08818 .  
-## metro_fNonmetro             -0.65102    0.41716 -1.5606   0.11965    
-## BB_qos_high:metro_fNonmetro -0.92618    0.60943 -1.5197   0.12962    
+##             Estimate Std. Error t value p-value    
+## (Intercept)  2.29425    0.17812 12.8801  &lt;2e-16 ***
+## BB_qos_high -0.19474    0.28164 -0.6914  0.4899    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_qos_high &amp; Outcome: havd_mean_20 ####
 
-mod_qos_havd &lt;- att(match_fcc_qos, havd_mean_20 ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_havd &lt;- att(match_fcc_qos, havd_mean_20 ~ BB_qos_high, data = dqos)
 summary(mod_qos_havd)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       208 155
-## Matched   183 125
-## Unmatched  25  30
+## All       201 162
+## Matched   159 106
+## Unmatched  42  56
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                              Estimate Std. Error t value   p-value    
-## (Intercept)                  0.562824   0.074835  7.5209 6.174e-13 ***
-## BB_qos_high                  0.178810   0.104181  1.7163   0.08712 .  
-## metro_fNonmetro             -0.086654   0.085605 -1.0123   0.31222    
-## BB_qos_high:metro_fNonmetro -0.210804   0.125062 -1.6856   0.09290 .  
+##              Estimate Std. Error t value p-value    
+## (Intercept)  0.490011   0.036515 13.4195  &lt;2e-16 ***
+## BB_qos_high -0.037635   0.057735 -0.6519  0.5151    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#### Treatment: BB_qos_high &amp; Outcome: nonfarmprop_percapita ####
 
-mod_qos_nonfarmpc &lt;- att(match_fcc_qos, nonfarmprop_percapita ~ BB_qos_high * metro_f, data = dqos)
+mod_qos_nonfarmpc &lt;- att(match_fcc_qos, nonfarmprop_percapita ~ BB_qos_high, data = dqos)
 summary(mod_qos_nonfarmpc)</code></pre>
 <pre><code>## 
 ## Treatment effect estimation for data:
 ## 
 ##            G0  G1
-## All       208 155
-## Matched   183 125
-## Unmatched  25  30
+## All       201 162
+## Matched   159 106
+## Unmatched  42  56
 ## 
 ## Linear regression model estimated on matched data only
 ## 
 ## Coefficients:
-##                               Estimate Std. Error t value p-value    
-## (Intercept)                  0.1342790  0.0066819 20.0959  &lt;2e-16 ***
-## BB_qos_high                  0.0151518  0.0093022  1.6288  0.1044    
-## metro_fNonmetro              0.0107564  0.0076436  1.4072  0.1604    
-## BB_qos_high:metro_fNonmetro -0.0254592  0.0111667 -2.2799  0.0233 *  
+##              Estimate Std. Error t value p-value    
+## (Intercept) 0.1384933  0.0032667  42.395  &lt;2e-16 ***
+## BB_qos_high 0.0056351  0.0051651   1.091  0.2763    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
