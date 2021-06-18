@@ -36,25 +36,25 @@ First, let's take another look at some of the key variables.
 
 ### Entrepreneurship (DV)
 
-* **Entrepreneurship (2018)**
-  + `pct_nonfarm_bea_2018`: % of nonfarm proprietors over total employment in 2018 (Source: BEA)
+* **Entrepreneurship (2019)**
+  + `pct_nonfarm_bea_2019`: % of nonfarm proprietors over total employment in 2019 (Source: BEA)
   + `vd_mean_20`: Average venture density from Jan 2020 to Sept 2020 (Source: GoDaddy)
 
->Nonfarm proprietors share is defined as the percentage of nonfarm proprietorships over total employment in the county in 2018. According to the Bureau of Economic Analysis (BEA), nonfarm proprietorship **"consists of the number of nonfarm sole proprietorships and the number of individual general partners in nonfarm partnerships."**. Change in the share of nonfarm proprietorship is a simple change measure calculated by substracting nonfarm proprietors share in 2012 from the same measure in 2018. 
+>Nonfarm proprietors share is defined as the percentage of nonfarm proprietorships over total employment in the county in 2019. According to the Bureau of Economic Analysis (BEA), nonfarm proprietorship **"consists of the number of nonfarm sole proprietorships and the number of individual general partners in nonfarm partnerships."**. Change in the share of nonfarm proprietorship is a simple change measure calculated by substracting nonfarm proprietors share in 2012 from the same measure in 2019. 
 
 ### Broadband
 
 * `pct[download speed_upload speed]_dec_2019_fcc`: FCC broadband availability in % (Data as of Dec 2019, multiple download and upload speed availability investigated)
-* `pct_fixed_acs_2018`: ACS broadband subscription in % (2018)
+* `pct_fixed_acs_2019`: ACS broadband subscription in % (2019)
 * `pct_bb_qos`: Broadband quality of service (composite variable of MS broadband and M-Lab broadband measure)
 
 ### Other Explanatory Variables
 * `IRR2010`: Rural index (larger = rural)
 * Age cohorts: % of people in the age groups of Gen Z, Millennial, Gen X, and Boomers
 * Education level: % of people with less than high school, Bachelor's degree, and graduate degree education
-* Unemployment rate (%, Source: ACS, 2018)
-* Digital Distress Index (based on [Gallardo & Geideman (2019)](https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b), Source: ACS, 2018)
-* Industry diversity (based on [Gallardo et al. (2020)](https://link.springer.com/article/10.1007/s00168-020-01015-0), Source: ACS, 2018)
+* Unemployment rate (%, Source: ACS, 2019)
+* Digital Distress Index (based on [Gallardo & Geideman (2019)](https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b), Source: ACS, 2019)
+* Industry diversity (based on [Gallardo et al. (2020)](https://link.springer.com/article/10.1007/s00168-020-01015-0), Source: ACS, 2019)
 
 ### Broadband's Effect on Entrepreneurial Outcome
 
@@ -64,15 +64,15 @@ Here I investigate **models that estimate broadband variables' effect on the ent
 
 ## Multiple Linear Regression Models
 
-### Nonfarm Proprietors Share (2018)
+### Nonfarm Proprietors Share (2019)
 
-* DV: Nonfarm Proprietor Share (2018)
+* DV: Nonfarm Proprietor Share (2019)
 * Key IV
   + Model 1: FCC availability of broadband at 25/3 Mbps (Dec 2019)
   + Model 2: FCC availability of broadband at 100/10 Mbps (Dec 2019)
   + Model 3: FCC availability of broadband at 250/25 Mbps (Dec 2019)
   + Model 4: FCC availability of broadband at 1000/100 Mbps (Dec 2019)
-  + Model 5: ACS Broadband Subscription (2018)
+  + Model 5: ACS Broadband Subscription (2019)
   + Model 6: Broadband Quality of Service
 * Other IVs: Rurality, Industry diversity, Digital distress, Unemployment, Education, Age
 * Interaction: Rurality x Broadband
@@ -81,9 +81,9 @@ The models are fitted using the codes below
 
 ```{r eval=FALSE}
 # Model 1 with FCC 25/3 %
-mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                   pct25_3_dec_2019_fcc * IRR2010, data = d)
 ```
 
@@ -91,44 +91,44 @@ mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 
 ## Model 1: DV is Nonfarm Proprietors Share
 
 # Model 1 with FCC 25/3 %
-mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019_2019 +
                   pct25_3_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with FCC 100/10 %
-mod.1.FCC.100.10 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.FCC.100.10 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019_2019 +
                        pct100_10_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with FCC 250/25 %
-mod.1.FCC.250.25 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.FCC.250.25 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct250_25_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with FCC 1000/100 %
-mod.1.FCC.1000.100 <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.FCC.1000.100 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct1000_100_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with ACS Bbnd adoption %
-mod.1.ACS <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                  pct_fixed_acs_2018 * IRR2010, data = d)
+mod.1.ACS <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
+                  pct_fixed_acs_2019 * IRR2010, data = d)
 
 # Model 1 with Bbnd QoS measure
-mod.1.QoS <- lm(pct_nonfarm_bea_2018 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.1.QoS <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                   pct_bb_qos * IRR2010, data = d)
 
 ## Generate Table
 stargazer(mod.1.FCC.25.3, mod.1.FCC.100.10, mod.1.FCC.250.25, mod.1.FCC.1000.100, mod.1.ACS, mod.1.QoS, title = "Nonfarm Proprietors Share Regression Results", type = "html", style = "ajs",
-          digits = 3, dep.var.caption = "Nonfarm Proprietors Share (2018)",
+          digits = 3, dep.var.caption = "Nonfarm Proprietors Share (2019)",
           align = TRUE, dep.var.labels.include = F, intercept.bottom = F, intercept.top = T,
           covariate.labels = c("(Intercept)","GenZ", "Millennial", "GenX", "Boomers",
                                "Less than high school", "Bachelors degree", "Graduate degree",
@@ -158,7 +158,7 @@ stargazer(mod.1.FCC.25.3, mod.1.FCC.100.10, mod.1.FCC.250.25, mod.1.FCC.1000.100
   + Model 2: FCC availability of broadband at 100/10 Mbps (Dec 2019)
   + Model 3: FCC availability of broadband at 250/25 Mbps (Dec 2019)
   + Model 4: FCC availability of broadband at 1000/100 Mbps (Dec 2019)
-  + Model 5: ACS Broadband Subscription (2018)
+  + Model 5: ACS Broadband Subscription (2019)
   + Model 6: Broadband Quality of Service
 * Other IVs: Rurality, Industry diversity, Digital distress, Unemployment, Education, Age
 * Interaction: Rurality x Broadband
@@ -167,9 +167,9 @@ The models are fitted using the codes below
 
 ```{r eval=FALSE}
 # Model 2 with FCC 25/3 %
-mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct25_3_dec_2019_fcc * IRR2010, data = d)
 ```
 
@@ -177,39 +177,39 @@ mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
 ## Model 2: DV is Venture Density
 
 # Model 2 with FCC 25/3 %
-mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.FCC.25.3 <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct25_3_dec_2019_fcc * IRR2010, data = d)
 
 # Model 2 with FCC 100/10 %
-mod.2.FCC.100.10 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                         pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                         pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.FCC.100.10 <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                         pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                         pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                          pct100_10_dec_2019_fcc * IRR2010, data = d)
 
 # Model 2 with FCC 250/25 %
-mod.2.FCC.250.25 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                         pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                         pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.FCC.250.25 <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                         pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                         pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                          pct250_25_dec_2019_fcc * IRR2010, data = d)
 
 # Model 2 with FCC 1000/100 %
-mod.2.FCC.1000.100 <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                       pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                       pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.FCC.1000.100 <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                       pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct1000_100_dec_2019_fcc * IRR2010, data = d)
 
 # Model 2 with ACS Bbnd adoption %
-mod.2.ACS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
-                  pct_fixed_acs_2018 * IRR2010, data = d)
+mod.2.ACS <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
+                  pct_fixed_acs_2019 * IRR2010, data = d)
 
 # Model 2 with Bbnd QoS measure
-mod.2.QoS <- lm(vd_mean_20 ~ pct_genz_2018 + pct_millennial_2018 +
-                  pct_genx_2018 + pct_boomers_2018 + pctlessthanhigh_2018 + pctbachelors_2018 +
-                  pctgraduate_2018 + indstry_diversity + pct_unemployment_2018 + digital_distress +
+mod.2.QoS <- lm(vd_mean_20 ~ pct_genz_2019 + pct_millennial_2019 +
+                  pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                   pct_bb_qos * IRR2010, data = d)
 
 ## Generate Table
@@ -239,14 +239,14 @@ stargazer(mod.2.FCC.25.3, mod.2.FCC.100.10, mod.2.FCC.250.25, mod.2.FCC.1000.100
 
 Several models indicate statistically significant interaction effects happening between broadband and rurality. Here, I will examine how the significant interaction terms predict entrepreneurship measures.
 
-### Nonfarm Proprietors Share (2018)
+### Nonfarm Proprietors Share (2019)
 
 For nonfarm proprietors share, the models show significant interaction effects of faster broadband availability and rurality. Using `sjPlot` package's `plot_model` function, I will plot interaction effects below.
 
 ```{r echo=FALSE}
 p1_m1 <- plot_model(mod.1.FCC.100.10, type = "pred", terms = c("pct100_10_dec_2019_fcc", "IRR2010"),
            title = "", ci.lvl = NA,
-           axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
+           axis.title = c("FCC Broadband Availability (100/10Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2019)"),
            legend.title = "Rurality Index (IRR)") +
   legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
@@ -255,7 +255,7 @@ p1_m1
 
 p2_m1 <- plot_model(mod.1.FCC.250.25, type = "pred", terms = c("pct250_25_dec_2019_fcc", "IRR2010"),
            title = "", ci.lvl = NA,
-           axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
+           axis.title = c("FCC Broadband Availability (250/25Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2019)"),
            legend.title = "Rurality Index (IRR)") + 
   legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
@@ -264,7 +264,7 @@ p2_m1
 
 p3_m1 <- plot_model(mod.1.FCC.1000.100, type = "pred", terms = c("pct1000_100_dec_2019_fcc", "IRR2010"),
            title = "", ci.lvl = NA,
-           axis.title = c("FCC Broadband Availability (1000/100Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2018)"),
+           axis.title = c("FCC Broadband Availability (1000/100Mbps, 2019)", "Share of Nonfarm Proprietorship (%, 2019)"),
            legend.title = "Rurality Index (IRR)") + 
   legend_style(inside = F, pos = "bottom",  base.theme = theme_sjplot()) + 
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))
@@ -306,9 +306,9 @@ p3_m2 <- plot_model(mod.2.FCC.250.25, type = "pred", terms = c("pct250_25_dec_20
   
 p3_m2
 
-p4_m2 <- plot_model(mod.2.ACS, type = "pred", terms = c("pct_fixed_acs_2018", "IRR2010"),
+p4_m2 <- plot_model(mod.2.ACS, type = "pred", terms = c("pct_fixed_acs_2019", "IRR2010"),
            title = "", ci.lvl = NA,
-           axis.title = c("ACS Fixed Broadband Subscription (%, 2018)", "Venture Density (2020)"),
+           axis.title = c("ACS Fixed Broadband Subscription (%, 2019)", "Venture Density (2020)"),
            legend.title = "Rurality Index (IRR)") + 
   legend_style(inside = F, pos = "bottom", base.theme = theme_sjplot()) +
   scale_color_sjplot(palette = "viridis", labels = c("-1SD", "Mean", "+1SD"))

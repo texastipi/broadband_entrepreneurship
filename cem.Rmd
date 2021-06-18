@@ -44,34 +44,34 @@ For the listed treatment braodband variables, we split each variable into two ca
 * `pct_100_10_dec_2019_fcc`: FCC 477 availability of broadband at 100/10Mbps per county (%, data as of Dec 2019)
 * `pct_250_25_dec_2019_fcc`: FCC 477 availability of broadband at 250/25Mbps per county (%, data as of Dec 2019)
 * `pct_1000_100_dec_2019_fcc`: FCC 477 availability of broadband at 1000/100Mbps per county (%, data as of Dec 2019)
-* `pct_fixed_acs_2018`: Fixed broadband service subscription according to ACS 5-year estimates (%, 2018)
-* `pct_bb_qos`: Compostive broadband quality of service (QoS) measure based on Microsoft's broadband through-put data (2019) and Mlab's broadband test data (2018-2019) (%)
+* `pct_fixed_acs_2019`: Fixed broadband service subscription according to ACS 5-year estimates (%, 2019)
+* `pct_bb_qos`: Compostive broadband quality of service (QoS) measure based on Microsoft's broadband through-put data (2020) and Mlab's broadband test data (2018-2019) (%)
 
 
 #### Outcome
 
 For the entrepreneurial outcome variables, we investigate several measures of entrepreneurship that were used in the traditional multiple regression analysis. In addition, we explore non-farm proprietorship per capita as a new possible representation of entrepreneurship in a county.
 
-* `pct_nonfarm_bea_2018`: Share of non-farm proprietors over total employment of a county (%, 2018; Source: BEA)
+* `pct_nonfarm_bea_2019`: Share of non-farm proprietors over total employment of a county (%, 2019; Source: BEA)
 * `vd_mean_20`: Average venture density (2020; Source: GoDaddy)
 * `havd_mean_20`: Average highly active venture density (2020; Source: GoDaddy)
-* `nonfarmprop_percapita`: Number of non-farm proprietors per capita (2018; Source: BEA)
+* `nonfarmprop_percapita`: Number of non-farm proprietors per capita (2019; Source: BEA)
 
 
 #### Covariates
 
 For covariates, we include several economic and demographic variables that could be closely related to the imbalance within the sample. To give an example, Gallardo et al. (2021) used natural log of population, % of people with bachelor's degree, unemployment rate, and industry diversity index. Our full regression models used industry characteristics, education, age, and rurality as control variables. Here, we will use log of population, % of people with bachelor's degree, unemployment rate, industry diversity index as covariates for matching. Rurality measures will be investigated in relation to the broadband treatments in the following  regression models.
 
-* Log of `population_2018`: Natural log of county population (2018)
+* Log of `population_2019`: Natural log of county population (2019)
 * `indstry_diversity`: Industry diversty index calculated based on methods described by Gallardo et al. (2021)
-* `pctbachelors_2018`: % of people with Bachelor's degree (2018; Source: ACS 5-year estimates)
-* `pct_unemployment_2018`: Unemployment rate (2018; Source: ACS 5-year estimates)
+* `pctbachelors_2019`: % of people with Bachelor's degree (2019; Source: ACS 5-year estimates)
+* `pct_unemployment_2019`: Unemployment rate (2019; Source: ACS 5-year estimates)
 
 #### Rurality measures as additional independent variable
 
 * `RUCC_2013`: Rural-Urban Continuum Codes developed by [USDA (2013)](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx)
 * `metro_f`: Metro/Non-Metro categories based on the RUCC documentation
-* `IRR2010`: Rurality index created by [Waldorf & Kim (2018)](https://purr.purdue.edu/publications/2960/1). Continuous measure ranging from 0 to 1
+* `IRR2010`: Rurality index created by [Waldorf & Kim (2019)](https://purr.purdue.edu/publications/2960/1). Continuous measure ranging from 0 to 1
 
 
 ### Data Preparation and Matching
@@ -79,14 +79,14 @@ For covariates, we include several economic and demographic variables that could
 Let's first create a subset of data with only the variables we need and some basic identities.
 
 ```{r subset data}
-## Subset data with the aforementioned variables, create NLpop_2018 (natural log of population)
+## Subset data with the aforementioned variables, create NLpop_2019 (natural log of population)
 
 d2 <- d %>% select(county_FIPS, county.x,
                    pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
-                   pct_fixed_acs_2018, pct_bb_qos,
-                   pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                   population_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, RUCC_2013, metro_f, IRR2010) %>% 
-  mutate(LNpop_2018 = log(population_2018))
+                   pct_fixed_acs_2019, pct_bb_qos,
+                   pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                   population_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, RUCC_2013, metro_f, IRR2010) %>% 
+  mutate(LNpop_2019 = log(population_2019))
 
 ```
 
@@ -96,7 +96,7 @@ Let's create treatment variables by recoding the original variables. First, we'l
 ## Take a look at the broadband variable summaries
 
 d2 %>% select(pct25_3_dec_2019_fcc, pct100_10_dec_2019_fcc, pct250_25_dec_2019_fcc, pct1000_100_dec_2019_fcc,
-             pct_fixed_acs_2018, pct_bb_qos) %>% summary()
+             pct_fixed_acs_2019, pct_bb_qos) %>% summary()
 
 ## Use first and third quartile for creating categories
 ## For the 1000/100 Mbps measure, the 1st quartile is 0. Therefore, we will use mean split as an alternative
@@ -114,8 +114,8 @@ d2 <- d2 %>%
          BB_1000_100_high = case_when(pct1000_100_dec_2019_fcc < mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 0,
                                   pct1000_100_dec_2019_fcc > mean(pct1000_100_dec_2019_fcc, na.rm = T) ~ 1,
                                   TRUE ~ NA_real_),
-         BB_adoption_high = case_when(pct_fixed_acs_2018 < mean(pct_fixed_acs_2018, na.rm = T) ~ 0,
-                                  pct_fixed_acs_2018 > mean(pct_fixed_acs_2018, na.rm = T) ~ 1,
+         BB_adoption_high = case_when(pct_fixed_acs_2019 < mean(pct_fixed_acs_2019, na.rm = T) ~ 0,
+                                  pct_fixed_acs_2019 > mean(pct_fixed_acs_2019, na.rm = T) ~ 1,
                                   TRUE ~ NA_real_),
          BB_qos_high = case_when(pct_bb_qos < mean(pct_bb_qos, na.rm = T) ~ 0,
                                   pct_bb_qos > mean(pct_bb_qos, na.rm = T) ~ 1,
@@ -141,30 +141,30 @@ table(d2$BB_adoption_high)
 table(d2$BB_qos_high)
 
 ## Set cut points for each covariate
-popcut <- hist(d2$LNpop_2018, br=seq(min(d2$LNpop_2018, na.rm = T), max(d2$LNpop_2018, na.rm = T), length.out = 5), plot = F)$breaks
+popcut <- hist(d2$LNpop_2019, br=seq(min(d2$LNpop_2019, na.rm = T), max(d2$LNpop_2019, na.rm = T), length.out = 5), plot = F)$breaks
 
 indstrycut <- hist(d2$indstry_diversity, br=seq(min(d2$indstry_diversity), max(d2$indstry_diversity), length.out = 5), plot = F)$breaks
 
-educut <- hist(d2$pctbachelors_2018, br=seq(min(d2$pctbachelors_2018), max(d2$pctbachelors_2018), length.out = 5), plot = F)$breaks
+educut <- hist(d2$pctbachelors_2019, br=seq(min(d2$pctbachelors_2019), max(d2$pctbachelors_2019), length.out = 5), plot = F)$breaks
 
-unempcut <- hist(d2$pct_unemployment_2018, br=seq(min(d2$pct_unemployment_2018), max(d2$pct_unemployment_2018), length.out = 5), plot = F)$breaks
+unempcut <- hist(d2$pct_unemployment_2019, br=seq(min(d2$pct_unemployment_2019), max(d2$pct_unemployment_2019), length.out = 5), plot = F)$breaks
 
 # Ruralities
 irrcut <- hist(d2$IRR2010, br = seq(min(d2$IRR2010), max(d2$IRR2010), length.out = 5), plot = F)$breaks
 
 
-mycp <- list(LNpop_2018 = popcut, indstry_diversity = indstrycut, pctbachelors_2018 = educut, pct_unemployment_2018 = unempcut, IRR2010 = irrcut)
+mycp <- list(LNpop_2019 = popcut, indstry_diversity = indstrycut, pctbachelors_2019 = educut, pct_unemployment_2019 = unempcut, IRR2010 = irrcut)
 
 ## List of covariates
-vars <- c("LNpop_2018", "indstry_diversity", "pctbachelors_2018", "pct_unemployment_2018", "IRR2010")
+vars <- c("LNpop_2019", "indstry_diversity", "pctbachelors_2019", "pct_unemployment_2019", "IRR2010")
 
-droplst <- c("pct_nonfarm_bea_2018", "vd_mean_20", "havd_mean_20", "nonfarmprop_percapita", "metro_f")
+droplst <- c("pct_nonfarm_bea_2019", "vd_mean_20", "havd_mean_20", "nonfarmprop_percapita", "metro_f")
 
 #### Treatment: BB_25_3_high ####
 
 d25_3 <- d2 %>% select(BB_25_3_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d25_3 <- data.frame(na.omit(d25_3))
 
 ## Overall imbalance check
@@ -182,8 +182,8 @@ match_fcc_25_3
 #### Treatment: BB_100_10_high ####
 
 d100_10 <- d2 %>% select(BB_100_10_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d100_10 <- data.frame(na.omit(d100_10))
 
 ## Overall imbalance check
@@ -201,8 +201,8 @@ match_fcc_100_10
 #### Treatment: BB_250_25_high ####
 
 d250_25 <- d2 %>% select(BB_250_25_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d250_25 <- data.frame(na.omit(d250_25))
 
 ## Overall imbalance check
@@ -220,8 +220,8 @@ match_fcc_250_25
 #### Treatment: BB_1000_100_high ####
 
 d1000_100 <- d2 %>% select(BB_1000_100_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 d1000_100 <- data.frame(na.omit(d1000_100))
 
 ## Overall imbalance check
@@ -239,8 +239,8 @@ match_fcc_1000_100
 #### Treatment: BB_adoption_high ####
 
 dadoption <- d2 %>% select(BB_adoption_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 dadoption <- data.frame(na.omit(dadoption))
 
 ## Overall imbalance check
@@ -258,8 +258,8 @@ match_fcc_adoption
 #### Treatment: BB_qos_high ####
 
 dqos <- d2 %>% select(BB_qos_high,
-                    pct_nonfarm_bea_2018, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
-                    LNpop_2018, indstry_diversity, pctbachelors_2018, pct_unemployment_2018, IRR2010, metro_f)
+                    pct_nonfarm_bea_2019, vd_mean_20, havd_mean_20, nonfarmprop_percapita,
+                    LNpop_2019, indstry_diversity, pctbachelors_2019, pct_unemployment_2019, IRR2010, metro_f)
 dqos <- data.frame(na.omit(dqos))
 
 ## Overall imbalance check
@@ -284,9 +284,9 @@ In this section, I will use linear model to estimate the sample average treatmen
 
 ```{r causal inference analysis1}
 
-#### Treatment: BB_25_3_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_25_3_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_25_3_nonfarm <- att(match_fcc_25_3, pct_nonfarm_bea_2018 ~ BB_25_3_high, data = d25_3)
+mod_25_3_nonfarm <- att(match_fcc_25_3, pct_nonfarm_bea_2019 ~ BB_25_3_high, data = d25_3)
 summary(mod_25_3_nonfarm)
 
 #### Treatment: BB_25_3_high & Outcome: vd_mean_20 ####
@@ -310,9 +310,9 @@ summary(mod_25_3_nonfarmpc)
 
 ```{r causal inference analysis2}
 
-#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_100_10_nonfarm <- att(match_fcc_100_10, pct_nonfarm_bea_2018 ~ BB_100_10_high, data = d100_10)
+mod_100_10_nonfarm <- att(match_fcc_100_10, pct_nonfarm_bea_2019 ~ BB_100_10_high, data = d100_10)
 summary(mod_100_10_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
@@ -336,9 +336,9 @@ summary(mod_100_10_nonfarmpc)
 
 ```{r causal inference analysis3}
 
-#### Treatment: BB_250_25_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_250_25_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_250_25_nonfarm <- att(match_fcc_250_25, pct_nonfarm_bea_2018 ~ BB_250_25_high, data = d250_25)
+mod_250_25_nonfarm <- att(match_fcc_250_25, pct_nonfarm_bea_2019 ~ BB_250_25_high, data = d250_25)
 summary(mod_250_25_nonfarm)
 
 #### Treatment: BB_250_25_high & Outcome: vd_mean_20 ####
@@ -362,9 +362,9 @@ summary(mod_250_25_nonfarmpc)
 
 ```{r causal inference analysis4}
 
-#### Treatment: BB_1000_100_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_1000_100_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_1000_100_nonfarm <- att(match_fcc_1000_100, pct_nonfarm_bea_2018 ~ BB_1000_100_high, data = d1000_100)
+mod_1000_100_nonfarm <- att(match_fcc_1000_100, pct_nonfarm_bea_2019 ~ BB_1000_100_high, data = d1000_100)
 summary(mod_1000_100_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
@@ -388,9 +388,9 @@ summary(mod_1000_100_nonfarmpc)
 
 ```{r causal inference analysis5}
 
-#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_100_10_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_adoption_nonfarm <- att(match_fcc_adoption, pct_nonfarm_bea_2018 ~ BB_adoption_high, data = dadoption)
+mod_adoption_nonfarm <- att(match_fcc_adoption, pct_nonfarm_bea_2019 ~ BB_adoption_high, data = dadoption)
 summary(mod_adoption_nonfarm)
 
 #### Treatment: BB_100_10_high & Outcome: vd_mean_20 ####
@@ -414,9 +414,9 @@ summary(mod_adoption_nonfarmpc)
 
 ```{r causal inference analysis6}
 
-#### Treatment: BB_qos_high & Outcome: pct_nonfarm_bea_2018 ####
+#### Treatment: BB_qos_high & Outcome: pct_nonfarm_bea_2019 ####
 
-mod_qos_nonfarm <- att(match_fcc_qos, pct_nonfarm_bea_2018 ~ BB_qos_high, data = dqos)
+mod_qos_nonfarm <- att(match_fcc_qos, pct_nonfarm_bea_2019 ~ BB_qos_high, data = dqos)
 summary(mod_qos_nonfarm)
 
 #### Treatment: BB_qos_high & Outcome: vd_mean_20 ####

@@ -779,7 +779,7 @@ acs_broadband_pct <- acs_broadband_pct %>%
 ```{r Retrieve demographic data}
 ## Educational Attainment and Industry Profile, Self-employment from the ACS 2019 ##
 acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2019,
-                      vars = c("DP02_0066PE","DP02_0064PE","DP02_0065PE", # Educational attainment
+                      vars = c("DP02_0067PE","DP02_0068PE","DP02_0066PE", # Educational attainment
                                "DP03_0033PE","DP03_0034PE","DP03_0035PE","DP03_0036PE","DP03_0037PE",
                                "DP03_0038PE","DP03_0039PE","DP03_0040PE","DP03_0041PE","DP03_0042PE",
                                "DP03_0043PE","DP03_0044PE","DP03_0045PE", # Industry profile
@@ -787,16 +787,17 @@ acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2019,
                                "DP05_0007PE","DP05_0008PE", # GenZ,
                                "DP05_0009PE","DP05_0010PE", # Millennials
                                "DP05_0011PE","DP05_0012PE", # GenX
-                               "DP05_0013PE","DP05_0014PE","DP05_0015PE"), # Boomers
+                               "DP05_0013PE","DP05_0014PE","DP05_0015PE", # Boomers
+                               "DP05_0001E"), # Total population
                       region = "county:*",
                       regionin = "state:20,23,48")
 
 # Rename variables #
 demo_cont <- acs_demo %>% 
   mutate(DP02_0066PE = 100 - DP02_0066PE) %>% # Substract from 100 to get % of ppl less than highschool
-  rename(pctlessthanhigh_2019 = DP02_0066PE,
-         pctbachelors_2019 = DP02_0064PE,
-         pctgraduate_2019 = DP02_0065PE,
+  rename(pctlessthanhigh_2019 = DP02_0067PE,
+         pctbachelors_2019 = DP02_0068PE,
+         pctgraduate_2019 = DP02_0066PE,
          pctagriculture_2019 = DP03_0033PE, pctconstruction_2019 = DP03_0034PE, pctmanufacture_2019 = DP03_0035PE,
          pctwholesale_2019 = DP03_0036PE, pctretail_2019 = DP03_0037PE, pcttransportation_2019 = DP03_0038PE,
          pctinformation_2019 = DP03_0039PE, pctfinance_2019 = DP03_0040PE, pctprofessional_2019 = DP03_0041PE,
@@ -804,6 +805,7 @@ demo_cont <- acs_demo %>%
          pctpublic_admin_2019 = DP03_0045PE, pctother_occupation_2019 = DP03_0044PE,
          pct_self_employed_2019 = DP03_0049PE,
          pct_unemployment_2019 = DP03_0009PE,
+         population_2019 = DP05_0001E,
          genz1 = DP05_0007PE, genz2 = DP05_0008PE, mill1 = DP05_0009PE, mill2 = DP05_0010PE,
          genx1 = DP05_0011PE, genx2 = DP05_0012PE, boom1 = DP05_0013PE, boom2 = DP05_0014PE,
          boom3 = DP05_0015PE) %>% 
@@ -1032,9 +1034,9 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
          pct_broadband_FCC_dec_2019 = case_when(is.na(pct_broadband_FCC_dec_2019) ~ 0, TRUE ~ pct_broadband_FCC_dec_2019),
          pct_fixed_acs_2019 = case_when(is.na(pct_fixed_acs_2019) ~ 0, TRUE ~ pct_fixed_acs_2019),
          pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab),
-         nonfarmprop_percapita = nonfarmproprietors_bea_2019 / population_2018,
-         est_10_cbp_percapita = est_10_cbp_2019 / population_2018,
-         est_50_cbp_percapita = est_50_cbp_2019 / population_2018)
+         nonfarmprop_percapita = nonfarmproprietors_bea_2019 / population_2019,
+         est_10_cbp_percapita = est_10_cbp_2019 / population_2019,
+         est_50_cbp_percapita = est_50_cbp_2019 / population_2019)
 
 ## Create composite measure of broadband Quality of Service (QoS) using Microsoft's broadband variable and Mlab data
 ## This is done by standardizing each variable, adding the two, and normalizing it
