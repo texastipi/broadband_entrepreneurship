@@ -93,13 +93,13 @@ mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 
 # Model 1 with FCC 25/3 %
 mod.1.FCC.25.3 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
                   pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
-                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019_2019 +
+                  pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                   pct25_3_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with FCC 100/10 %
 mod.1.FCC.100.10 <- lm(pct_nonfarm_bea_2019 ~ pct_genz_2019 + pct_millennial_2019 +
                        pct_genx_2019 + pct_boomers_2019 + pctlessthanhigh_2019 + pctbachelors_2019 +
-                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019_2019 +
+                       pctgraduate_2019 + indstry_diversity + pct_unemployment_2019 + digital_distress_2019 +
                        pct100_10_dec_2019_fcc * IRR2010, data = d)
 
 # Model 1 with FCC 250/25 %
