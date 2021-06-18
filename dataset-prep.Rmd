@@ -34,24 +34,31 @@ library(reticulate)
 
 ## Microsoft Broadband Availability Dataset
 
-Microsoft dataset is available in its [GitHub repository](https://github.com/microsoft/USBroadbandUsagePercentages). Therefore, we will directly import its dataset from the URL.
+Microsoft dataset is available in its [GitHub repository](https://github.com/microsoft/USBroadbandUsagePercentages). Therefore, we will directly import its dataset from the URL. Microsoft updated the dataset June, 2021 to apply data as of October 2020. The updated dataset also includes updated FCC availability as of December 2019.
 
 ```{r Microsoft Import, echo=FALSE, results='hide'}
-## Import the Dataset
-ms_broadband <- read_csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data.csv", col_types = list(col_character(),col_integer(),col_character(),col_double(),col_double()))
+## Import the Datasets
+ms_broadband_2019 <- read_csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data_2019November.csv", col_types = list(col_character(),col_integer(),col_character(),col_double(),col_double()))
 
-## Inspect Structure
-str(ms_broadband)
+ms_broadband_2020 <- read_csv("https://raw.githubusercontent.com/microsoft/USBroadbandUsagePercentages/master/dataset/broadband_data_2020October.csv",
+                              skip = 18,
+                              col_types = list(col_character(),col_integer(),col_character(),col_double(),col_double()))
+
 ```
 
 Note that the percentage variables are imported as factors. We need them to be in the form of integers. Converting factors directly to numeric vectors using `as.numeric()` would result in loss of information. Following the methods suggested [here](https://stackoverflow.com/a/3418192/11199930), the code below converts `BROADBAND.AVAILABILITY.PER.FCC` and `BROADBAND.USAGE` to numeric values.
 
 ```{r Microsoft Data Manipulation, echo=TRUE, results='hide'}
 ## Create new variabes in numeric form
-ms_broadband <- ms_broadband %>% 
-  rename(pct_broadband_FCC = `BROADBAND AVAILABILITY PER FCC`,
-         pct_broadband_MS = `BROADBAND USAGE`)
+ms_broadband_2019 <- ms_broadband_2019 %>% 
+  rename(pct_broadband_FCC_dec_2017 = `BROADBAND AVAILABILITY PER FCC`,
+         pct_broadband_MS_nov_2019 = `BROADBAND USAGE`)
 
+ms_broadband_2020 <- ms_broadband_2020 %>% 
+  rename(pct_broadband_FCC_dec_2019 = `BROADBAND AVAILABILITY PER FCC`,
+         pct_broadband_MS_oct_2020 = `BROADBAND USAGE`)
+
+ms_broadband <- left_join(ms_broadband_2019, select(ms_broadband_2020, `COUNTY ID`, pct_broadband_FCC_dec_2019, pct_broadband_MS_oct_2020), by = "COUNTY ID")
 ## Confirm the change
 str(ms_broadband)
 
@@ -465,7 +472,7 @@ getCBPemp <- function(yr, countyfips = "*", statefips){
   return(df)
 }
 
-cbp_txksme <- getCBPemp(c(2012,2017,2018), statefips = c(20,23,48))
+cbp_txksme <- getCBPemp(c(2012,2017,2018,2019), statefips = c(20,23,48))
 
 ## Retrieve Nonemployer datasets ##
 getNEMPemp <- function(yr, countyfips = "*", statefips){
@@ -633,7 +640,7 @@ getBEAstat <- function(yr, beaKey, linecode = c(10, 40, 60)) {
   
 }
 
-bea_nonfarmproprietor_txksme <- getBEAstat(c(2012, 2017, 2018), beaKey = beaKey) %>% mutate(pct_chg_bea_2012_2018 = pct_nonfarm_bea_2018 - pct_nonfarm_bea_2012)
+bea_nonfarmproprietor_txksme <- getBEAstat(c(2012, 2017, 2018, 2019), beaKey = beaKey) %>% mutate(pct_chg_bea_2012_2019 = pct_nonfarm_bea_2019 - pct_nonfarm_bea_2012)
 
 ```
 
@@ -733,7 +740,7 @@ View(listCensusMetadata(name = "acs/acs5/subject", vintage = 2018, type = "geogr
 
 ```{r Retrieve ACS broadband subscription data}
 ## Broadband Subscription Percentage from Subject Table ##
-acs_broadband_pct <- getCensus(name = "acs/acs5/subject", vintage = 2018,
+acs_broadband_pct <- getCensus(name = "acs/acs5/subject", vintage = 2019,
                                vars = c("S2801_C02_017E","S2801_C02_019E","S2801_C02_016E","S2801_C02_018E",
                                         "S2801_C02_006E","S2801_C02_002E"),
                                region = "county:*",
@@ -741,20 +748,20 @@ acs_broadband_pct <- getCensus(name = "acs/acs5/subject", vintage = 2018,
 
 # Rename variables #
 acs_broadband_pct <- acs_broadband_pct %>% 
-  rename(pct_cellularonly_acs_2018 = S2801_C02_016E,
-         pct_fixed_acs_2018 = S2801_C02_017E,
-         pct_sat_acs_2018 = S2801_C02_018E,
-         pct_nobroadband_acs_2018 = S2801_C02_019E,
-         pct_mobileonly_acs_2018 = S2801_C02_006E,
-         pct_anycomputer_acs_2018 = S2801_C02_002E) %>% 
-  mutate(pct_anybroadband_acs_2018 = (100 - pct_nobroadband_acs_2018)/100,
-         pct_nocomputer_acs_2018 = (100 - pct_anycomputer_acs_2018)/100,
-         pct_cellularonly_acs_2018 = pct_cellularonly_acs_2018/100,
-         pct_fixed_acs_2018 = pct_fixed_acs_2018/100,
-         pct_sat_acs_2018 = pct_sat_acs_2018/100,
-         pct_nobroadband_acs_2018 = pct_nobroadband_acs_2018/100,
-         pct_mobileonly_acs_2018 = pct_mobileonly_acs_2018/100,
-         pct_anycomputer_acs_2018 = pct_anycomputer_acs_2018/100,
+  rename(pct_cellularonly_acs_2019 = S2801_C02_016E,
+         pct_fixed_acs_2019 = S2801_C02_017E,
+         pct_sat_acs_2019 = S2801_C02_018E,
+         pct_nobroadband_acs_2019 = S2801_C02_019E,
+         pct_mobileonly_acs_2019 = S2801_C02_006E,
+         pct_anycomputer_acs_2019 = S2801_C02_002E) %>% 
+  mutate(pct_anybroadband_acs_2019 = (100 - pct_nobroadband_acs_2019)/100,
+         pct_nocomputer_acs_2019 = (100 - pct_anycomputer_acs_2019)/100,
+         pct_cellularonly_acs_2019 = pct_cellularonly_acs_2019/100,
+         pct_fixed_acs_2019 = pct_fixed_acs_2019/100,
+         pct_sat_acs_2019 = pct_sat_acs_2019/100,
+         pct_nobroadband_acs_2019 = pct_nobroadband_acs_2019/100,
+         pct_mobileonly_acs_2019 = pct_mobileonly_acs_2019/100,
+         pct_anycomputer_acs_2019 = pct_anycomputer_acs_2019/100,
          county_FIPS = paste(state, county, sep = ""))
 
 # Calculate Digital Distress Index informed by Gallardo & Geideman (2019) (https://medium.com/design-and-tech-co/digital-distress-what-is-it-and-who-does-it-affect-part-1-e1214f3f209b)
@@ -764,17 +771,14 @@ normalize <- function(x, range = c(0,1)) {
 } # Function that normalizes the given vector
 
 acs_broadband_pct <- acs_broadband_pct %>% 
-  mutate(distress_subscription = scale(pct_cellularonly_acs_2018 + pct_nobroadband_acs_2018)[,],
-         distress_devices = scale(pct_mobileonly_acs_2018 + pct_nocomputer_acs_2018)[,],
-         digital_distress = normalize(distress_subscription + distress_devices, range = c(0,100)))
-
-acs_broadband_pct_tx <- acs_broadband_pct %>% 
-  filter(state == "48")
+  mutate(distress_subscription_2019 = scale(pct_cellularonly_acs_2019 + pct_nobroadband_acs_2019)[,],
+         distress_devices_2019 = scale(pct_mobileonly_acs_2019 + pct_nocomputer_acs_2019)[,],
+         digital_distress_2019 = normalize(distress_subscription_2019 + distress_devices_2019, range = c(0,100)))
 ```
 
 ```{r Retrieve demographic data}
-## Educational Attainment and Industry Profile, Self-employment from the ACS 2018 ##
-acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2018,
+## Educational Attainment and Industry Profile, Self-employment from the ACS 2019 ##
+acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2019,
                       vars = c("DP02_0066PE","DP02_0064PE","DP02_0065PE", # Educational attainment
                                "DP03_0033PE","DP03_0034PE","DP03_0035PE","DP03_0036PE","DP03_0037PE",
                                "DP03_0038PE","DP03_0039PE","DP03_0040PE","DP03_0041PE","DP03_0042PE",
@@ -790,33 +794,33 @@ acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2018,
 # Rename variables #
 demo_cont <- acs_demo %>% 
   mutate(DP02_0066PE = 100 - DP02_0066PE) %>% # Substract from 100 to get % of ppl less than highschool
-  rename(pctlessthanhigh_2018 = DP02_0066PE,
-         pctbachelors_2018 = DP02_0064PE,
-         pctgraduate_2018 = DP02_0065PE,
-         pctagriculture_2018 = DP03_0033PE, pctconstruction_2018 = DP03_0034PE, pctmanufacture_2018 = DP03_0035PE,
-         pctwholesale_2018 = DP03_0036PE, pctretail_2018 = DP03_0037PE, pcttransportation_2018 = DP03_0038PE,
-         pctinformation_2018 = DP03_0039PE, pctfinance_2018 = DP03_0040PE, pctprofessional_2018 = DP03_0041PE,
-         pctedu_healthcare_social_2018 = DP03_0042PE, pctarts_ent_2018 = DP03_0043PE,
-         pctpublic_admin_2018 = DP03_0045PE, pctother_occupation_2018 = DP03_0044PE,
-         pct_self_employed_2018 = DP03_0049PE,
-         pct_unemployment_2018 = DP03_0009PE,
+  rename(pctlessthanhigh_2019 = DP02_0066PE,
+         pctbachelors_2019 = DP02_0064PE,
+         pctgraduate_2019 = DP02_0065PE,
+         pctagriculture_2019 = DP03_0033PE, pctconstruction_2019 = DP03_0034PE, pctmanufacture_2019 = DP03_0035PE,
+         pctwholesale_2019 = DP03_0036PE, pctretail_2019 = DP03_0037PE, pcttransportation_2019 = DP03_0038PE,
+         pctinformation_2019 = DP03_0039PE, pctfinance_2019 = DP03_0040PE, pctprofessional_2019 = DP03_0041PE,
+         pctedu_healthcare_social_2019 = DP03_0042PE, pctarts_ent_2019 = DP03_0043PE,
+         pctpublic_admin_2019 = DP03_0045PE, pctother_occupation_2019 = DP03_0044PE,
+         pct_self_employed_2019 = DP03_0049PE,
+         pct_unemployment_2019 = DP03_0009PE,
          genz1 = DP05_0007PE, genz2 = DP05_0008PE, mill1 = DP05_0009PE, mill2 = DP05_0010PE,
          genx1 = DP05_0011PE, genx2 = DP05_0012PE, boom1 = DP05_0013PE, boom2 = DP05_0014PE,
          boom3 = DP05_0015PE) %>% 
   mutate(county_FIPS = paste0(state, county),
-         pctlessthanhigh_2018 = pctlessthanhigh_2018/100, pctbachelors_2018 = pctbachelors_2018/100,
-         pctgraduate_2018 = pctgraduate_2018/100, pctagriculture_2018 = pctagriculture_2018/100,
-         pctconstruction_2018 = pctconstruction_2018/100, pctmanufacture_2018 = pctmanufacture_2018/100,
-         pctwholesale_2018 = pctwholesale_2018/100, pctretail_2018 = pctretail_2018/100,
-         pcttransportation_2018 = pcttransportation_2018/100, pctinformation_2018 = pctinformation_2018/100,
-         pctfinance_2018 = pctfinance_2018/100, pctprofessional_2018 = pctprofessional_2018/100,
-         pctedu_healthcare_social_2018 = pctedu_healthcare_social_2018/100, pctarts_ent_2018 = pctarts_ent_2018/100,
-         pctpublic_admin_2018 = pctpublic_admin_2018/100, pctother_occupation_2018 = pctother_occupation_2018/100,
-         pct_self_employed_2018 = pct_self_employed_2018/100, pct_unemployment_2018 = pct_unemployment_2018/100,
-         pct_genz_2018 = genz1 + genz2, pct_millennial_2018 = mill1 + mill2, pct_genx_2018 = genx1 + genx2,
-         pct_boomers_2018 = boom1 + boom2 + boom3,
-         pct_genz_2018 = pct_genz_2018/100, pct_millennial_2018 = pct_millennial_2018/100, pct_genx_2018 = pct_genx_2018/100,
-         pct_boomers_2018 = pct_boomers_2018/100) %>% 
+         pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
+         pctgraduate_2019 = pctgraduate_2019/100, pctagriculture_2019 = pctagriculture_2019/100,
+         pctconstruction_2019 = pctconstruction_2019/100, pctmanufacture_2019 = pctmanufacture_2019/100,
+         pctwholesale_2019 = pctwholesale_2019/100, pctretail_2019 = pctretail_2019/100,
+         pcttransportation_2019 = pcttransportation_2019/100, pctinformation_2019 = pctinformation_2019/100,
+         pctfinance_2019 = pctfinance_2019/100, pctprofessional_2019 = pctprofessional_2019/100,
+         pctedu_healthcare_social_2019 = pctedu_healthcare_social_2019/100, pctarts_ent_2019 = pctarts_ent_2019/100,
+         pctpublic_admin_2019 = pctpublic_admin_2019/100, pctother_occupation_2019 = pctother_occupation_2019/100,
+         pct_self_employed_2019 = pct_self_employed_2019/100, pct_unemployment_2019 = pct_unemployment_2019/100,
+         pct_genz_2019 = genz1 + genz2, pct_millennial_2019 = mill1 + mill2, pct_genx_2019 = genx1 + genx2,
+         pct_boomers_2019 = boom1 + boom2 + boom3,
+         pct_genz_2019 = pct_genz_2019/100, pct_millennial_2019 = pct_millennial_2019/100, pct_genx_2019 = pct_genx_2019/100,
+         pct_boomers_2019 = pct_boomers_2019/100) %>% 
   select(-c(state, county, genz1, genz2, mill1, mill2, genx1, genx2, boom1, boom2, boom3))
 
 ```
@@ -1016,23 +1020,26 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 ## The equation is Industry = 1 - sum(ind_share^2)
 
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
-  mutate(indstry_diversity = 1 - (pctagriculture_2018^2 + pctconstruction_2018^2 + 
-                                    pctmanufacture_2018^2 + pctwholesale_2018^2 + pctretail_2018^2 +
-                                    pcttransportation_2018^2 + pctinformation_2018^2 +
-                                    pctfinance_2018^2 + pctprofessional_2018^2 +
-                                    pctedu_healthcare_social_2018^2 + pctother_occupation_2018^2 +
-                                    pctpublic_admin_2018^2)) %>% 
-  mutate(pct_broadband_MS = case_when(is.na(pct_broadband_MS) ~ 0, TRUE ~ pct_broadband_MS),
-         pct_fixed_acs_2018 = case_when(is.na(pct_fixed_acs_2018) ~ 0, TRUE ~ pct_fixed_acs_2018),
+  mutate(indstry_diversity = 1 - (pctagriculture_2019^2 + pctconstruction_2019^2 + 
+                                    pctmanufacture_2019^2 + pctwholesale_2019^2 + pctretail_2019^2 +
+                                    pcttransportation_2019^2 + pctinformation_2019^2 +
+                                    pctfinance_2019^2 + pctprofessional_2019^2 +
+                                    pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
+                                    pctpublic_admin_2019^2)) %>% 
+  mutate(pct_broadband_MS_nov_2019 = case_when(is.na(pct_broadband_MS_nov_2019) ~ 0, TRUE ~ pct_broadband_MS_nov_2019),
+         pct_broadband_MS_oct_2020 = case_when(is.na(pct_broadband_MS_oct_2020) ~ 0, TRUE ~ pct_broadband_MS_oct_2020),
+         pct_broadband_FCC_dec_2017 = case_when(is.na(pct_broadband_FCC_dec_2017) ~ 0, TRUE ~ pct_broadband_FCC_dec_2017),
+         pct_broadband_FCC_dec_2019 = case_when(is.na(pct_broadband_FCC_dec_2019) ~ 0, TRUE ~ pct_broadband_FCC_dec_2019),
+         pct_fixed_acs_2019 = case_when(is.na(pct_fixed_acs_2019) ~ 0, TRUE ~ pct_fixed_acs_2019),
          pct_broadband_mlab = case_when(is.na(pct_broadband_mlab) ~ 0, TRUE ~ pct_broadband_mlab),
-         nonfarmprop_percapita = nonfarmproprietors_bea_2018 / population_2018,
-         est_10_cbp_percapita = est_10_cbp_2018 / population_2018,
-         est_50_cbp_percapita = est_50_cbp_2018 / population_2018)
+         nonfarmprop_percapita = nonfarmproprietors_bea_2019 / population_2018,
+         est_10_cbp_percapita = est_10_cbp_2019 / population_2018,
+         est_50_cbp_percapita = est_50_cbp_2019 / population_2018)
 
 ## Create composite measure of broadband Quality of Service (QoS) using Microsoft's broadband variable and Mlab data
 ## This is done by standardizing each variable, adding the two, and normalizing it
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
-  mutate(pct_bb_qos = normalize((scale(pct_broadband_MS)[,] + scale(pct_broadband_mlab)[,]),
+  mutate(pct_bb_qos = normalize((scale(pct_broadband_MS_oct_2020)[,] + scale(pct_broadband_mlab)[,]),
                                       range = c(0,100))/100)
 
 ## Write CSV ##
