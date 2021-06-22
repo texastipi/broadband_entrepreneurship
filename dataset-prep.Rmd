@@ -848,6 +848,7 @@ password <- "Wodnjs58640!"
 ```
 
 ```{r FCC Data Import}
+library(RSocrata)
 #### Import FCC 477 Data of Three States from Area Tables API ####
 ## Queries for ME, KS, TX for each time point
 # Dec 2016
@@ -1027,7 +1028,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
                                     pcttransportation_2019^2 + pctinformation_2019^2 +
                                     pctfinance_2019^2 + pctprofessional_2019^2 +
                                     pctedu_healthcare_social_2019^2 + pctother_occupation_2019^2 +
-                                    pctpublic_admin_2019^2)) %>% 
+                                    pctpublic_admin_2019^2 + pctarts_ent_2019^2)) %>% 
   mutate(pct_broadband_MS_nov_2019 = case_when(is.na(pct_broadband_MS_nov_2019) ~ 0, TRUE ~ pct_broadband_MS_nov_2019),
          pct_broadband_MS_oct_2020 = case_when(is.na(pct_broadband_MS_oct_2020) ~ 0, TRUE ~ pct_broadband_MS_oct_2020),
          pct_broadband_FCC_dec_2017 = case_when(is.na(pct_broadband_FCC_dec_2017) ~ 0, TRUE ~ pct_broadband_FCC_dec_2017),
