@@ -1043,7 +1043,8 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>%
 ## This is done by standardizing each variable, adding the two, and normalizing it
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
   mutate(pct_bb_qos = normalize((scale(pct_broadband_MS_oct_2020)[,] + scale(pct_broadband_mlab)[,]),
-                                      range = c(0,100))/100)
+                                      range = c(0,100))/100,
+         digital_distress_2019 = digital_distress_2019/100)
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, "Broadband-Entrepreneurship-TXKSME.csv")

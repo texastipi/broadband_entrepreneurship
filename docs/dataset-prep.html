@@ -324,8 +324,16 @@ $(document).ready(function () {
 
 #install.packages(&quot;tidyverse&quot;)
 #install.packages(&quot;ggplot2&quot;)
-library(tidyverse)
-library(ggplot2)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.1.0     ✓ dplyr   1.0.4
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggplot2)
 library(reticulate)</code></pre>
 <hr />
 <div id="microsoft-broadband-availability-dataset" class="section level2">
@@ -480,7 +488,7 @@ str(tx_proprietor)</code></pre>
 <pre class="r"><code>## Import the Dataset
 rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2000.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS2000 = col_double(),
 ##   `County Name` = col_character(),
@@ -488,7 +496,7 @@ rural_2000 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/br
 ## )</code></pre>
 <pre class="r"><code>rural_2010 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/IRR-rural-2010.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS2010 = col_double(),
 ##   `County Name` = col_character(),
@@ -520,7 +528,7 @@ str(rural_2010_txksme)</code></pre>
 <p>In addition to the IRR index, I also import the <a href="https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx">Rural-Urban Continuum Codes</a> (RUCC, 2013). The RUCC forms a classification scheme that distinguishes metropolitan counties by the population size of their metro area, and nonmetropolitan counties by degree of urbanization and adjacency to a metro area.</p>
 <pre class="r"><code>rucc2013 &lt;- read_csv(&quot;https://raw.githubusercontent.com/jwroycechoi/broadband-entrepreneurship/master/Datasets/ruralurbancodes2013.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ───────────────────────────────────────────────────────────────────────────────────
 ## cols(
 ##   FIPS = col_character(),
 ##   State = col_character(),
@@ -646,6 +654,11 @@ Sys.setenv(CENSUS_KEY=&quot;YOUR KEY GOES HERE&quot;)
 readRenviron(&quot;~/.Renviron&quot;)
 # Check to see that the expected key is output in your R console
 Sys.getenv(&quot;CENSUS_KEY&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;censusapi&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:methods&#39;:
+## 
+##     getFunction</code></pre>
 <p>You can take a look at available APIs and other important metadata related to specific APIs using the following functions. Refer to specific documentations of the functions as well as the specific API that you want to investigate.</p>
 <ul>
 <li><code>listCensusApis()</code>: Retrieve all available API handles provided by the Census Bureau.</li>
@@ -833,8 +846,24 @@ beaParams(beaKey = beaKey, &#39;Regional&#39;)
 ## Further, you can see what values are available for specific parameter using code below
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;TableName&#39;)
 beaParamVals(beaKey = beaKey, &#39;Regional&#39;, &#39;LineCode&#39;)</code></pre>
-<pre class="r"><code>library(bea.R)
-### Finally, we will use the parameter and parameter values to retrieve data table
+<pre class="r"><code>library(bea.R)</code></pre>
+<pre><code>## Loading required package: data.table</code></pre>
+<pre><code>## data.table 1.14.0 using 1 threads (see ?getDTthreads).  Latest news: r-datatable.com</code></pre>
+<pre><code>## **********
+## This installation of data.table has not detected OpenMP support. It should still work but in single-threaded mode.
+## This is a Mac. Please read https://mac.r-project.org/openmp/. Please engage with Apple and ask them for support. Check r-datatable.com for updates, and our Mac instructions here: https://github.com/Rdatatable/data.table/wiki/Installation. After several years of many reports of installation problems on Mac, it&#39;s time to gingerly point out that there have been no similar problems on Windows or Linux.
+## **********</code></pre>
+<pre><code>## 
+## Attaching package: &#39;data.table&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     between, first, last</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     transpose</code></pre>
+<pre><code>## Creating a generic function for &#39;toJSON&#39; from package &#39;jsonlite&#39; in package &#39;googleVis&#39;</code></pre>
+<pre><code>## Note: As of February 2018, beaGet() requires &#39;TableName&#39; for NIPA and NIUnderlyingDetail data instead of &#39;TableID.&#39; See https://github.us-bea/bea.R for details.</code></pre>
+<pre class="r"><code>### Finally, we will use the parameter and parameter values to retrieve data table
 ## In terms of LineCode, we are interested in:
 ## 10: Total employment
 ## 20: Wage and salary employment
@@ -1270,7 +1299,8 @@ tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;%
 ## This is done by standardizing each variable, adding the two, and normalizing it
 tx_bb_entrepreneur_merged_v2 &lt;- tx_bb_entrepreneur_merged_v2 %&gt;% 
   mutate(pct_bb_qos = normalize((scale(pct_broadband_MS_oct_2020)[,] + scale(pct_broadband_mlab)[,]),
-                                      range = c(0,100))/100)
+                                      range = c(0,100))/100,
+         digital_distress_2019 = digital_distress_2019/100)
 
 ## Write CSV ##
 write_csv(tx_bb_entrepreneur_merged_v2, &quot;Broadband-Entrepreneurship-TXKSME.csv&quot;)</code></pre>
