@@ -644,6 +644,84 @@ bea_nonfarmproprietor_txksme <- getBEAstat(c(2012, 2017, 2018, 2019), beaKey = b
 
 ```
 
+### ABS Dataset API Call
+
+In this section, I will import relevant datasets from ABS, ASE, and SBO and create a dataset that will be used for final merge.
+
+```{r ABS API call, eval=FALSE}
+#### Look at ABS Metadata ####
+## Detailed information about available tables and variables can be found in PDF documents here (https://www.census.gov/programs-surveys/abs/technical-documentation/api.html)
+
+View(listCensusMetadata(name = "abscs", vintage = 2017, type = "variables"))
+View(listCensusMetadata(name = "ase/csa", vintage = 2015, type = "variables"))
+View(listCensusMetadata(name = "ase/csa", vintage = 2015, type = "geographies"))  # Can't use ASE data because it does not have county level info
+View(listCensusMetadata(name = "sbo", vintage = 2012, type = "variables"))
+View(listCensusMetadata(name = "sbo", vintage = 2012, type = "geographies"))
+
+```
+
+```{r ABS Data Retrieve}
+## ABS Company Summary Datatable ##
+firmlevel_2017 <- getCensus(name = "abscs",
+                        vintage = 2017,
+                        vars = c("EMP","EMP_F","FIRMPDEMP","FIRMPDEMP_F"),
+                        region = "county:*",
+                        regionin = "state:20,23,48")
+
+firmlevel_2012 <- getCensus(name = "sbo",
+                            vintage = 2012,
+                            vars = c("EMP","EMP_F","FIRMPDEMP","FIRMPDEMP_F"),
+                            region = "county:*",
+                            regionin = "state:20,23,48")
+
+## Clean and transform ##
+firmlevel_2012 <- firmlevel_2012 %>% 
+  mutate(county_FIPS = paste(state, county, sep = ""),
+         EMP = as.numeric(EMP),
+         FIRMPDEMP = as.numeric(FIRMPDEMP),
+         EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
+                         EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
+                         EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
+                         EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
+                         EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
+                         EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
+                         EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
+                         EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
+                         EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
+                         EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
+                         EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
+                         EMP_F == "m" ~ 100000,
+                         TRUE ~ EMP),
+         FIRMPDEMP = case_when(FIRMPDEMP_F == "S" ~ NA_real_, TRUE ~ FIRMPDEMP)) %>% 
+  rename(emp_abs_2012 = EMP, firm_2012 = FIRMPDEMP) %>% 
+  select(-c("EMP_F","FIRMPDEMP_F","state","county"))
+
+firmlevel_2017 <- firmlevel_2017 %>% 
+  mutate(county_FIPS = paste(state, county, sep = ""),
+         EMP = as.numeric(EMP),
+         FIRMPDEMP = as.numeric(FIRMPDEMP),
+         EMP = case_when(EMP_F == "a" ~ round(median(seq(0,19)), digits = 0),  # For employment range symbols, replace with median of the range
+                         EMP_F == "b" ~ round(median(seq(20,99)), digits = 0),
+                         EMP_F == "c" ~ round(median(seq(100,249)), digits = 0),
+                         EMP_F == "e" ~ round(median(seq(250,499)), digits = 0),
+                         EMP_F == "f" ~ round(median(seq(500,999)), digits = 0),
+                         EMP_F == "g" ~ round(median(seq(1000,2499)), digits = 0),
+                         EMP_F == "h" ~ round(median(seq(2500,4999)), digits = 0),
+                         EMP_F == "i" ~ round(median(seq(5000,9999)), digits = 0),
+                         EMP_F == "j" ~ round(median(seq(10000,24999)), digits = 0),
+                         EMP_F == "k" ~ round(median(seq(25000,49999)), digits = 0),
+                         EMP_F == "l" ~ round(median(seq(50000,99999)), digits = 0),
+                         EMP_F == "m" ~ 100000,
+                         TRUE ~ EMP),
+         FIRMPDEMP = case_when(FIRMPDEMP_F == "S" ~ NA_real_, TRUE ~ FIRMPDEMP)) %>% 
+  rename(emp_abs_2017 = EMP, firm_2017 = FIRMPDEMP) %>% 
+  select(-c("EMP_F","FIRMPDEMP_F","state","county"))
+
+## Join the two years, filter Texas, and calculate change variable ##
+firmlevel_txksme <- left_join(firmlevel_2012, firmlevel_2017, by = "county_FIPS") %>% filter(str_detect(county_FIPS, "^48")|str_detect(county_FIPS, "^20")|str_detect(county_FIPS, "^23")) %>% 
+  mutate(chg_firm_2012_2017 = firm_2017 - firm_2012)
+
+```
 
 ## ACS Broadband Measures and Demographics
 
@@ -710,15 +788,10 @@ acs_demo <- getCensus(name = "acs/acs5/profile", vintage = 2019,
                                "DP05_0009PE","DP05_0010PE", # Millennials
                                "DP05_0011PE","DP05_0012PE", # GenX
                                "DP05_0013PE","DP05_0014PE","DP05_0015PE", # Boomers
-                               "DP05_0001E"), # Total population
+                               "DP05_0001E", # Total population
+                               "B06011_001E"), # Total household median income
                       region = "county:*",
                       regionin = "state:20,23,48")
-
-median_income <- getCensus(name = "acs/acs5",
-                           vintage = 2019,
-                           vars = "B06011_001E",
-                           region = "county:*", # Total median household income
-                           regionin = "state:20,23,48")
 
 # Rename variables #
 demo_cont <- acs_demo %>% 
@@ -736,7 +809,8 @@ demo_cont <- acs_demo %>%
          population_2019 = DP05_0001E,
          genz1 = DP05_0007PE, genz2 = DP05_0008PE, mill1 = DP05_0009PE, mill2 = DP05_0010PE,
          genx1 = DP05_0011PE, genx2 = DP05_0012PE, boom1 = DP05_0013PE, boom2 = DP05_0014PE,
-         boom3 = DP05_0015PE) %>% 
+         boom3 = DP05_0015PE,
+         med_income_2019 = B06011_001E) %>% 
   mutate(county_FIPS = paste0(state, county),
          pctlessthanhigh_2019 = pctlessthanhigh_2019/100, pctbachelors_2019 = pctbachelors_2019/100,
          pctgraduate_2019 = pctgraduate_2019/100, pctagriculture_2019 = pctagriculture_2019/100,
@@ -750,18 +824,9 @@ demo_cont <- acs_demo %>%
          pct_genz_2019 = genz1 + genz2, pct_millennial_2019 = mill1 + mill2, pct_genx_2019 = genx1 + genx2,
          pct_boomers_2019 = boom1 + boom2 + boom3,
          pct_genz_2019 = pct_genz_2019/100, pct_millennial_2019 = pct_millennial_2019/100, pct_genx_2019 = pct_genx_2019/100,
-         pct_boomers_2019 = pct_boomers_2019/100) %>% 
+         pct_boomers_2019 = pct_boomers_2019/100,
+         med_income_2019 = med_income_2019/1000) %>% 
   select(-c(state, county, genz1, genz2, mill1, mill2, genx1, genx2, boom1, boom2, boom3))
-
-# Income dataset
-median_income <- median_income %>% 
-  rename(med_income_2019 = B06011_001E) %>% 
-  mutate(med_income_2019 = med_income_2019/1000,
-         county_FIPS = paste0(state, county)) %>% 
-  select(-c(state, county))
-
-# Merge
-demo_cont <- left_join(demo_cont, median_income, by = "county_FIPS")
 
 ```
 
@@ -939,7 +1004,7 @@ census_api_key("YOUR-CENSUS-API-KEY", install = TRUE)
 
 ```{r eval=TRUE, echo=FALSE, results='hide'}
 library(tidycensus)
-census_api_key("9001b546c2d77876a089119664dc25a4235eea37", install = TRUE, overwrite = TRUE)
+census_api_key("9001b546c2d77876a089119664dc25a4235eea37", install = TRUE)
 ```
 
 ```{r calculate distances, results='hide'}
@@ -1006,6 +1071,7 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged %>%
   left_join(., nonemp_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., acs_broadband_pct, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., bea_nonfarmproprietor_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
+  left_join(., firmlevel_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., select(rucc2013, c("FIPS","RUCC_2013","metro_desc")), by = c("county_FIPS" = "FIPS")) %>% 
   left_join(., demo_cont, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., select(county_cbsa_dist, GEOID, ALAND, cbsa_min_dist), by = c("county_FIPS" = "GEOID"))
