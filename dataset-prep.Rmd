@@ -994,6 +994,23 @@ county_cbsa_dist <- county_cbsa_dist %>%
 glimpse(county_cbsa_dist)
 ```
 
+## Add Social Capital Index
+
+Here I will add a variable of interest. An index of social capital is provided by Penn State University [here](https://aese.psu.edu/nercrd/community/social-capital-resources). Downloaded data is stored on the GitHub page.
+
+```{r social capital index, results='hide'}
+## Import dataset
+sc_indx <- read_csv("https://raw.githubusercontent.com/texastipi/broadband_entrepreneurship/master/social_capital_index_2014.csv")
+
+# Select variables
+sc_indx <- sc_indx %>% 
+  select(FIPS, sk2014) %>% 
+  mutate(FIPS = as.character(FIPS))
+
+glimpse(sc_indx)
+
+```
+
 ## Merge Datasets
 
 Now we will merge these datasets by county FIPS numbers altogether
@@ -1008,7 +1025,8 @@ tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged %>%
   left_join(., bea_nonfarmproprietor_txksme, by = c("county_FIPS" = "county_FIPS")) %>% 
   left_join(., select(rucc2013, c("FIPS","RUCC_2013","metro_desc")), by = c("county_FIPS" = "FIPS")) %>% 
   left_join(., demo_cont, by = c("county_FIPS" = "county_FIPS")) %>% 
-  left_join(., select(county_cbsa_dist, GEOID, ALAND, cbsa_min_dist), by = c("county_FIPS" = "GEOID"))
+  left_join(., select(county_cbsa_dist, GEOID, ALAND, cbsa_min_dist), by = c("county_FIPS" = "GEOID")) %>% 
+  left_join(., sc_indx, by = c("county_FIPS" = "FIPS"))
 
 ## Generate average GoDaddy & M-lab broadband measures and clean unnecessary variables ##
 tx_bb_entrepreneur_merged_v2 <- tx_bb_entrepreneur_merged_v2 %>% 
